@@ -1,4 +1,4 @@
-# FDRA Framework, self-hosted version, adapted for[ADORA-Compiler](https://github.com/MIONkb/adora-compiler).
+# FDRA Framework, self-hosted version, adapted for [ADORA-Compiler](https://github.com/MIONkb/adora-compiler).
 
 
 ## Please follow the build instructions below.
