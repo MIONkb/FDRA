@@ -1,0 +1,15 @@
+Digraph G {
+Input3[opcode=Input, ref_name="reg", size="4", offset="0, 0", pattern="0, 8, 0, 3"];
+Output7[opcode=Output, ref_name="A", size="96", offset="0, 0", pattern="4, 8, 4, 3"];
+SLT13[opcode=SLT];
+CONST21[opcode=CONST, label="CONST21, Const=2", value=2];
+CONST22[opcode=CONST, label="CONST22, Const=1", value=1];
+CACC30[opcode=CACC, acc_params="3, 8, 1, 3", acc_first=0];
+ACC34[opcode=ACC, acc_params="0, 8, 1, 3", acc_first=0];
+Input3 -> SLT13[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+ACC34 -> SLT13[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+CACC30 -> Output7[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+CONST22 -> ACC34[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+CONST21 -> CACC30[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+SLT13 -> CACC30[operand = 1, Width = 1 ,color = red, style = bold, label = "Op=1"];
+}

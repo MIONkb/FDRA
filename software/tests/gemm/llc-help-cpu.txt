@@ -1,0 +1,127 @@
+Available CPUs for this target:
+
+  generic         - Select the generic processor.
+  generic-rv32    - Select the generic-rv32 processor.
+  generic-rv64    - Select the generic-rv64 processor.
+  rocket          - Select the rocket processor.
+  rocket-rv32     - Select the rocket-rv32 processor.
+  rocket-rv64     - Select the rocket-rv64 processor.
+  sifive-7-series - Select the sifive-7-series processor.
+  sifive-e20      - Select the sifive-e20 processor.
+  sifive-e21      - Select the sifive-e21 processor.
+  sifive-e24      - Select the sifive-e24 processor.
+  sifive-e31      - Select the sifive-e31 processor.
+  sifive-e34      - Select the sifive-e34 processor.
+  sifive-e76      - Select the sifive-e76 processor.
+  sifive-s21      - Select the sifive-s21 processor.
+  sifive-s51      - Select the sifive-s51 processor.
+  sifive-s54      - Select the sifive-s54 processor.
+  sifive-s76      - Select the sifive-s76 processor.
+  sifive-u54      - Select the sifive-u54 processor.
+  sifive-u74      - Select the sifive-u74 processor.
+
+Available features for this target:
+
+  32bit                - Implements RV32.
+  64bit                - Implements RV64.
+  a                    - 'A' (Atomic Instructions).
+  c                    - 'C' (Compressed Instructions).
+  d                    - 'D' (Double-Precision Floating-Point).
+  e                    - Implements RV32E (provides 16 rather than 32 GPRs).
+  experimental-zbe     - 'Zbe' (Extract-Deposit 'Zb' Instructions).
+  experimental-zbf     - 'Zbf' (Bit-Field 'Zb' Instructions).
+  experimental-zbm     - 'Zbm' (Matrix 'Zb' Instructions).
+  experimental-zbp     - 'Zbp' (Permutation 'Zb' Instructions).
+  experimental-zbr     - 'Zbr' (Polynomial Reduction 'Zb' Instructions).
+  experimental-zbt     - 'Zbt' (Ternary 'Zb' Instructions).
+  experimental-zca     - 'Zca' (part of the C extension, excluding compressed floating point loads/stores).
+  experimental-zvfh    - 'Zvfh' (Vector Half-Precision Floating-Point).
+  f                    - 'F' (Single-Precision Floating-Point).
+  forced-atomics       - Assume that lock-free native-width atomics are available.
+  lui-addi-fusion      - Enable LUI+ADDI macrofusion.
+  m                    - 'M' (Integer Multiplication and Division).
+  no-default-unroll    - Disable default unroll preference..
+  no-rvc-hints         - Disable RVC Hint Instructions..
+  relax                - Enable Linker relaxation..
+  reserve-x1           - Reserve X1.
+  reserve-x10          - Reserve X10.
+  reserve-x11          - Reserve X11.
+  reserve-x12          - Reserve X12.
+  reserve-x13          - Reserve X13.
+  reserve-x14          - Reserve X14.
+  reserve-x15          - Reserve X15.
+  reserve-x16          - Reserve X16.
+  reserve-x17          - Reserve X17.
+  reserve-x18          - Reserve X18.
+  reserve-x19          - Reserve X19.
+  reserve-x2           - Reserve X2.
+  reserve-x20          - Reserve X20.
+  reserve-x21          - Reserve X21.
+  reserve-x22          - Reserve X22.
+  reserve-x23          - Reserve X23.
+  reserve-x24          - Reserve X24.
+  reserve-x25          - Reserve X25.
+  reserve-x26          - Reserve X26.
+  reserve-x27          - Reserve X27.
+  reserve-x28          - Reserve X28.
+  reserve-x29          - Reserve X29.
+  reserve-x3           - Reserve X3.
+  reserve-x30          - Reserve X30.
+  reserve-x31          - Reserve X31.
+  reserve-x4           - Reserve X4.
+  reserve-x5           - Reserve X5.
+  reserve-x6           - Reserve X6.
+  reserve-x7           - Reserve X7.
+  reserve-x8           - Reserve X8.
+  reserve-x9           - Reserve X9.
+  save-restore         - Enable save/restore..
+  sifive7              - SiFive 7-Series processors.
+  unaligned-scalar-mem - Has reasonably performant unaligned scalar loads and stores.
+  v                    - 'V' (Vector Extension for Application Processors).
+  zba                  - 'Zba' (Address Generation Instructions).
+  zbb                  - 'Zbb' (Basic Bit-Manipulation).
+  zbc                  - 'Zbc' (Carry-Less Multiplication).
+  zbkb                 - 'Zbkb' (Bitmanip instructions for Cryptography).
+  zbkc                 - 'Zbkc' (Carry-less multiply instructions for Cryptography).
+  zbkx                 - 'Zbkx' (Crossbar permutation instructions).
+  zbs                  - 'Zbs' (Single-Bit Instructions).
+  zdinx                - 'Zdinx' (Double in Integer).
+  zfh                  - 'Zfh' (Half-Precision Floating-Point).
+  zfhmin               - 'Zfhmin' (Half-Precision Floating-Point Minimal).
+  zfinx                - 'Zfinx' (Float in Integer).
+  zhinx                - 'Zhinx' (Half Float in Integer).
+  zhinxmin             - 'Zhinxmin' (Half Float in Integer Minimal).
+  zicbom               - 'Zicbom' (Cache-Block Management Instructions).
+  zicbop               - 'Zicbop' (Cache-Block Prefetch Instructions).
+  zicboz               - 'Zicboz' (Cache-Block Zero Instructions).
+  zihintpause          - 'zihintpause' (Pause Hint).
+  zk                   - 'Zk' (Standard scalar cryptography extension).
+  zkn                  - 'Zkn' (NIST Algorithm Suite).
+  zknd                 - 'Zknd' (NIST Suite: AES Decryption).
+  zkne                 - 'Zkne' (NIST Suite: AES Encryption).
+  zknh                 - 'Zknh' (NIST Suite: Hash Function Instructions).
+  zkr                  - 'Zkr' (Entropy Source Extension).
+  zks                  - 'Zks' (ShangMi Algorithm Suite).
+  zksed                - 'Zksed' (ShangMi Suite: SM4 Block Cipher Instructions).
+  zksh                 - 'Zksh' (ShangMi Suite: SM3 Hash Function Instructions).
+  zkt                  - 'Zkt' (Data Independent Execution Latency).
+  zmmul                - 'Zmmul' (Integer Multiplication).
+  zve32f               - 'Zve32f' (Vector Extensions for Embedded Processors with maximal 32 EEW and F extension).
+  zve32x               - 'Zve32x' (Vector Extensions for Embedded Processors with maximal 32 EEW).
+  zve64d               - 'Zve64d' (Vector Extensions for Embedded Processors with maximal 64 EEW, F and D extension).
+  zve64f               - 'Zve64f' (Vector Extensions for Embedded Processors with maximal 64 EEW and F extension).
+  zve64x               - 'Zve64x' (Vector Extensions for Embedded Processors with maximal 64 EEW).
+  zvl1024b             - 'Zvl' (Minimum Vector Length) 1024.
+  zvl128b              - 'Zvl' (Minimum Vector Length) 128.
+  zvl16384b            - 'Zvl' (Minimum Vector Length) 16384.
+  zvl2048b             - 'Zvl' (Minimum Vector Length) 2048.
+  zvl256b              - 'Zvl' (Minimum Vector Length) 256.
+  zvl32768b            - 'Zvl' (Minimum Vector Length) 32768.
+  zvl32b               - 'Zvl' (Minimum Vector Length) 32.
+  zvl4096b             - 'Zvl' (Minimum Vector Length) 4096.
+  zvl512b              - 'Zvl' (Minimum Vector Length) 512.
+  zvl64b               - 'Zvl' (Minimum Vector Length) 64.
+  zvl8192b             - 'Zvl' (Minimum Vector Length) 8192.
+
+Use +feature to enable a feature, or -feature to disable it.
+For example, llc -mcpu=mycpu -mattr=+feature1,-feature2

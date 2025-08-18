@@ -1,0 +1,18 @@
+Digraph G {
+CInput4[opcode=CInput, ref_name="A", size="8192", offset="0, 8184", pattern="-4, 2047", multiport=1];
+Input6[opcode=Input, ref_name="B", size="8192", offset="0, 4", pattern="4, 2047", multiport=0];
+ADD7[opcode=ADD];
+Input9[opcode=Input, ref_name="B", size="8192", offset="0, 8184", pattern="-4, 2047", multiport=0];
+ADD10[opcode=ADD];
+Input12[opcode=Input, ref_name="C", size="8192", offset="0, 4", pattern="4, 2047", multiport=0];
+MUL13[opcode=MUL];
+Output15[opcode=Output, ref_name="A", size="8192", offset="0, 4", pattern="4, 2047", multiport=1];
+CInput4 -> ADD7[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+Input6 -> ADD7[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+ADD7 -> ADD10[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+Input9 -> ADD10[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+ADD10 -> MUL13[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+Input12 -> MUL13[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+MUL13 -> Output15[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+Output15 -> CInput4[operand = 0 ,color = blue, style = dashed, constraint=false, backedge=1, Width = 1,iterdist = 1, type = 0, label = "Op=1, iterdist = 1, type = 0"];
+}

@@ -1,0 +1,29 @@
+Digraph G {
+Input3[opcode=Input, ref_name="A", size="48", offset="0, 0", pattern="4, 4", multiport=2, parallel = 1, B=4, N=4];
+Input6[opcode=Input, ref_name="A", size="48", offset="0, 16", pattern="4, 4", multiport=2, parallel = 1, B=4, N=4];
+Input9[opcode=Input, ref_name="A", size="48", offset="0, 32", pattern="4, 4", multiport=2, parallel = 1, B=4, N=4];
+MUL10[opcode=MUL];
+MUL11[opcode=MUL];
+ADD12[opcode=ADD];
+MUL13[opcode=MUL];
+ADD14[opcode=ADD];
+Output17[opcode=Output, ref_name="P", size="60", offset="0, 0", pattern="16, 4", multiport=2, parallel = 0, B=4, N=4];
+Output20[opcode=Output, ref_name="P", size="60", offset="0, 4", pattern="16, 4", multiport=2, parallel = 0, B=4, N=4];
+Output23[opcode=Output, ref_name="P", size="60", offset="0, 8", pattern="16, 4", multiport=2, parallel = 0, B=4, N=4];
+CONST29[opcode=CONST, label="CONST29, Const=5", value=5];
+CONST30[opcode=CONST, label="CONST30, Const=6", value=6];
+CONST31[opcode=CONST, label="CONST31, Const=7", value=7];
+Input3 -> MUL10[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+Input6 -> MUL11[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+Input9 -> MUL13[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+CONST29 -> MUL10[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+MUL10 -> ADD12[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+CONST30 -> MUL11[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+MUL11 -> ADD12[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+ADD12 -> ADD14[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+CONST31 -> MUL13[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+MUL13 -> ADD14[operand = 1, Width = 32 ,color = black, style = bold, label = "Op=1"];
+ADD14 -> Output23[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+ADD14 -> Output20[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+ADD14 -> Output17[operand = 0, Width = 32 ,color = black, style = bold, label = "Op=0"];
+}

@@ -1,0 +1,10 @@
+[0m[[0m[31merror[0m] [0m[0m/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/scala/vitra/dsa/MultiTileCGRAParam.scala:104:72: not found: type GpeSpec[0m
+[0m[[0m[31merror[0m] [0m[0m  val gpesSpec = attrs("cgra_gpes").asInstanceOf[ListBuffer[ListBuffer[GpeSpec]]][0m
+[0m[[0m[31merror[0m] [0m[0m                                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/scala/vitra/dsa/MultiTileCGRAParam.scala:119:72: not found: type GibSpec[0m
+[0m[[0m[31merror[0m] [0m[0m  val gibsSpec = attrs("cgra_gibs").asInstanceOf[ListBuffer[ListBuffer[GibSpec]]][0m
+[0m[[0m[31merror[0m] [0m[0m                                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/scala/vitra/dsa/MultiTileCGRAParam.scala:147:72: not found: type IobSpec[0m
+[0m[[0m[31merror[0m] [0m[0m  val iobsSpec = attrs("cgra_iobs").asInstanceOf[ListBuffer[ListBuffer[IobSpec]]][0m
+[0m[[0m[31merror[0m] [0m[0m                                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
