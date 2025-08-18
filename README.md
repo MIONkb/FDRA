@@ -1,14 +1,16 @@
-FDRA Framework, self-hosted version, adapted for[ADORA-Compiler](https://github.com/MIONkb/adora-compiler).
+# FDRA Framework, self-hosted version, adapted for[ADORA-Compiler](https://github.com/MIONkb/adora-compiler).
 
+
+## Please follow the build instructions below.
 =======================
 
-Framework for a hybrid system with RISC-V and CGRA, including:
+FDRA Framework for a hybrid system with RISC-V and CGRA, including:
 
 1. CGRA-MG: SoC modeling
 
-2. App-Compiler: LLVM-based DFG generator
+2. App-Compiler: LLVM-based DFG generator (Another choice is MLIR based [ADORA-Compiler](https://github.com/MIONkb/adora-compiler))
 
-3. CGRA-Compiler: CGRA mapper.
+3. CGRA-Compiler: CGRA mapper. (Has been integrated in [ADORA-Compiler](https://github.com/MIONkb/adora-compiler))
 
 4. Bechmarks: C programs with target loop kernel annotated
 
