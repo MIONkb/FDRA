@@ -342,6 +342,9 @@ class FMUL(val expWidth: Int, val precision: Int) extends Module {
 class FPMult16 extends FMUL(5, 11) {}
 class FPMult32 extends FMUL(8, 24) {}
 class FPMult64 extends FMUL(11, 53) {}
+
+// BF16
+class BFMult16 extends FMUL(8, 8) {}
 //class FMUL(val expWidth: Int, val precision: Int) extends Module {
 //  val io = IO(new Bundle() {
 //    val a, b = Input(UInt((expWidth + precision).W))

@@ -69,6 +69,7 @@ class CGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
   apply("num_row", rows)
   apply("num_colum", cols)
   apply("data_width", dataWidth)
+  apply("bus_width", dataWidth)
   apply("cfg_data_width", cfgDataWidth)
   apply("cfg_addr_width", cfgAddrWidth)
   apply("cfg_blk_offset", cfgBlkOffset)
@@ -833,7 +834,7 @@ class CGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
 //    "cgra_cfg_blk_offset" -> 2,
 //    "num_rf_reg" -> 1,
 //   //  "operations" -> ListBuffer("PASS", "ADD", "SUB", "MUL", "AND", "OR", "XOR", "SEL"),
-//    "operations" -> ListBuffer("MERGE4"),
+//    "operations" -> ListBuffer("INTLV4"),
 //    "max_delay" -> 4,
 //    "num_track" -> 3,
 //    "connect_flexibility" -> connect_flexibility,

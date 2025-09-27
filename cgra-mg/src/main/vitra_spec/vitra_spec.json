@@ -3,109 +3,33 @@
   "cgra_lg_max_ii" : 4,
   "cgra_gpes" : [ [ {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   } ], [ {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  } ], [ {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  } ], [ {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   } ] ],
   "id_width" : 6,
+  "tile_num_row" : 2,
+  "cgra_tile_num" : 2,
   "system_bus_beat_bits" : 64,
   "cgra_gpe_max_delay" : 10,
-  "spad_num_banks" : 16,
+  "spad_num_banks" : 12,
   "cgra_gpe_in_from_dir" : [ 4, 5, 7, 6 ],
   "cgra_lg_max_cycles" : 12,
   "axilite_addrspace" : 256,
-  "spad_cfg_lg_size" : 10,
+  "spad_cfg_lg_size" : 12,
   "cgra_cfg_data_width" : 32,
   "cgra_lg_max_lat" : 6,
   "cgra_iobs" : [ [ {
@@ -117,37 +41,7 @@
   }, {
     "mode" : 1,
     "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
   } ], [ {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
     "mode" : 1,
     "max_delay" : 10
   }, {
@@ -159,7 +53,7 @@
   } ] ],
   "rs_load_queue_depth" : 8,
   "cgra_iob_sram_addr_width" : 16,
-  "cgra_gpe_operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ],
+  "cgra_gpe_operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ],
   "axilite_datawidth" : 8,
   "cgra_gib_diag_iopin_connect" : true,
   "operation_set_filename" : "operations.json",
@@ -167,154 +61,55 @@
   "cgra_iob_sram_add_reg" : 2,
   "cgra_iob_mode" : 1,
   "ls_stream_queue_depth" : 0,
-  "cgra_data_width" : 32,
-  "cgra_gpe_out_to_dir" : [ 4, 5, 7, 6 ],
+  "cgra_data_width" : 16,
+  "cgra_gpe_out_to_dir" : [ 4, 6 ],
   "cgra_iob_max_delay" : 10,
   "cgra_gibs" : [ [ {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   } ], [ {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   } ], [ {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   }, {
     "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  } ], [ {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  } ], [ {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 2, 2, 4 ]
+    "fc_list" : [ 1, 1, 2 ]
   } ] ],
   "spad_bank_lg_size" : 13,
   "dumpADG" : true,
   "tlb_num_ways" : 32,
-  "cgra_gib_connect_flexibility" : [ 2, 2, 4 ],
+  "cgra_gib_connect_flexibility" : [ 1, 1, 2 ],
   "cgra_iob_sram_has_mask" : true,
-  "cgra_num_row" : 4,
   "cgra_lg_max_stride" : 13,
   "cgra_iob_num_sides" : 2,
   "cgra_lg_max_init" : 12,
+  "tile_num_column" : 3,
   "cgra_gib_track_reged_mode" : 1,
   "cgra_adg_filename" : "cgra_adg.json",
   "cgra_cfg_blk_offset" : 3,
@@ -323,12 +118,11 @@
   "tlb_is_shared" : true,
   "spad_data_width" : 64,
   "cgra_cfg_addr_width_align" : 16,
-  "cgra_num_colum" : 8,
   "cgra_gib_num_track" : 1,
   "rs_exe_queue_depth" : 4,
   "cgra_iob_ag_nest_levels" : 4,
   "cgra_cfg_sram_add_reg" : false,
   "dumpOperationSet" : true,
-  "cgra_cfg_addr_width" : 11,
+  "cgra_cfg_addr_width" : 12,
   "spad_addr_num" : 5
 }

@@ -8,9 +8,15 @@ sbt "project fdra; runMain tram.axi.VerilogGen -td ./verilog" -mem 4096
 sbt
 project fdra
 runMain tram.axi.VerilogGen -td /home/jhlou/projects/cocotb/verilog
-runMain tram.axi.VerilogGen -td /home/jhlou/chipyard/generators/fdra 
+runMain tram.axi.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
 runMain tram.axi.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
-runMain tram.vitra.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
+runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+
+runMain tram.vitra.FirGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src 
+
+# firtool /home/jhlou/CGRVOPT/MatrixMeld/rtl/CGRAwithAXI.fir \
+#   --split-verilog \
+#   --output-dir=verilog_out 
 # # generate verilog file
 # sbt "runMain dsa.VerilogGen -td ./test_run_dir"
 # # generate CGRA top module, no-check-comb-loops

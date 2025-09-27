@@ -371,3 +371,8 @@ class AXICGRAController(attrs: mutable.Map[String, Any]) extends Module with IR{
   io.s_axilite.r.bits.data  := r_data
   io.s_axilite.r.bits.resp  := 0.U
 }
+
+
+object VerilogGenWithoutSRAM extends App {
+ (new chisel3.stage.ChiselStage).emitVerilog(new AXICGRAController(TramSpec.attrs), args)
+}

@@ -38,9 +38,9 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
   val ops = attrs("operations").asInstanceOf[ListBuffer[String]]
   //val ops = opsStr.map(OPC.withName(_))
   val hasISel = ops.map(OpInfo.isISelection(_) < 0).reduce(_ | _)
-  val hasMerge = ops.map { op => OpInfo.MergeInfoMap.contains(op) }.reduce(_ | _) // @jhlou: has merge operations
+  val hasInterleaverOp = ops.map { op => OpInfo.InterleaverInfoMap.contains(op) }.reduce(_ | _) // @jhlou: has INTLV operations
   val hasMac = ops.map { op => OpInfo.MacOpInfoMap.contains(op) }.reduce(_ | _) // @jhlou: has mac operations
-  val hasAcc = ops.map(OpInfo.isAccumulative(_) > 0).reduce(_ | _) || hasISel || hasMerge || hasMac// has accumulate operations
+  val hasAcc = ops.map(OpInfo.isAccumulative(_) > 0).reduce(_ | _) || hasISel || hasInterleaverOp || hasMac// has accumulate operations
 //  val hasNonAcc = ops.map(OpInfo.isAccumulative(_) == 0).reduce(_ | _) // has no accumulate operations
 //  val hasCondAcc = ops.map { op =>
 //    OpInfo.CondAccOpInfoMap.contains(op) || OpInfo.CondInitAccOpInfoMap.contains(op)
@@ -219,12 +219,12 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
 //    alu.io.in(1) := dmr.io.out(1)
 //    connections.append((smi_id("REG")(0), "REG", 1, smi_id("ALU")(0), "ALU", 1))
 //  }
-  if(!hasAcc && !hasMerge) { // no accumulative operation
+  if(!hasAcc && !hasInterleaverOp) { // no accumulative operation
     alu.io.in.zipWithIndex.foreach { case (in, i) =>
       in := delay_pipe.io.out(i)
       connections.append((smi_id("DelayPipe")(0), "DelayPipe", i, smi_id("ALU")(0), "ALU", i))
     }
-  }else if(!hasNonAcc && !hasMerge){ // no basic (non-acc) operation
+  }else if(!hasNonAcc && !hasInterleaverOp){ // no basic (non-acc) operation
     when(OpInfo.isMacOp(opc)) {
       alu.io.in(0) := delay_pipe.io.out(0)
       alu.io.in(1) := delay_pipe.io.out(1)
@@ -236,7 +236,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     //    connections.append((smi_id("DMR")(0), "DMR", 1, smi_id("ALU")(0), "ALU", 0))
     connections.append((smi_id("DelayPipe")(0), "DelayPipe", 0, smi_id("ALU")(0), "ALU", 1))
   } else { // has both basic and acc operations
-    when(OpInfo.isnotAccOp(opc) || OpInfo.isMergeOp(opc)) {
+    when(OpInfo.isnotAccOp(opc) || OpInfo.isInterleaverOp(opc)) {
       alu.io.in(0) := delay_pipe.io.out(0)
       alu.io.in(1) := delay_pipe.io.out(1)
     }.elsewhen(OpInfo.isMacOp(opc)) {
@@ -431,7 +431,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
 //     "cfg_blk_index" -> 1,
 //     "cfg_blk_offset" -> 4,
 //     "num_rf_reg" -> 1,
-//     "operations" -> ListBuffer(/*"ADD", "SUB", "ACC", "ASUB",*/ "MERGE4"),
+//     "operations" -> ListBuffer(/*"ADD", "SUB", "ACC", "ASUB",*/ "INTLV4"),
 //     "num_input_per_operand" -> ListBuffer(4, 4, 4, 4),
 //     "max_delay" -> 7,
 //     "lg_max_lat" -> 8,

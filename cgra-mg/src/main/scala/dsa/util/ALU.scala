@@ -17,7 +17,7 @@ class ALU(width: Int, ops: ListBuffer[String] ) extends Module {
   val cfgDataWidth =  OpInfo.BasicOPCWidth
   val io = IO(new Bundle {
     val en = Input(Bool())
-    val launch = Input(Bool()) /// For MergeOp
+    val launch = Input(Bool()) /// For INTLV DEINTLV
     val config = Input(UInt(cfgDataWidth.W))
     val in = Input(Vec(maxNumOperands, UInt(width.W)))
     val out = Output(UInt(width.W)) 
@@ -50,5 +50,5 @@ class ALU(width: Int, ops: ListBuffer[String] ) extends Module {
 
 
 // object VerilogGen extends App {
-//   (new chisel3.stage.ChiselStage).emitVerilog(new ALU(32, ListBuffer("MERGE4", "ADD")),args)
+//   (new chisel3.stage.ChiselStage).emitVerilog(new ALU(32, ListBuffer("INTLV4", "ADD")),args)
 // }

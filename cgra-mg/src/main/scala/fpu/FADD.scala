@@ -777,6 +777,9 @@ class FPAdd16 extends FADD(5, 11) {}
 class FPAdd32 extends FADD(8, 24) {}
 class FPAdd64 extends FADD(11, 53) {}
 
+// BF16
+class BFAdd16 extends FADD(8, 8) {}
+
 object VerilogFADDGen extends App {
   (new chisel3.stage.ChiselStage).emitVerilog(new FADD(6, 10), args)
 }

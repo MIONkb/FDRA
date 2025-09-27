@@ -21,3 +21,32 @@
 1755006987260:runMain tram.axi.VerilogGen -td /home/jhlou/chipyard/generators/fdra
 1755328546874:runMain tram.axi.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
 1755417281177:runMain tram.vitra.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
+1755530692542:runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra
+1756110829269:runMain tram.vitra.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
+1756300687457:runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra
+1756301206270:runMain tram.vitra.VerilogGenFir -td /home/jhlou/chipyard/generators/fdra
+1756301410927:runMain tram.vitra.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
+1756569252159:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/rtl
+1756820755707:runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra
+1756902655157:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/rtl
+1757413588302:runMain tram.vitra.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
+1757417293172:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/rtl
+1757648652021:runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra
+1757947064181:runMain tram.axi.VerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src --split-modules
+1757947103183:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src --split-modules
+1757947171467:runMain tram.vitra.SplitVerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src
+1757947222646:runMain tram.vitra.SplitVerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src spplit-modules
+1757947227822:runMain tram.vitra.SplitVerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src split-modules
+1758011283530:runMain tram.vitra.SplitVerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src spplit-modules
+1758013165194:runMain tram.vitra.SplitVerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src
+1758013575672:runMain tram.vitra.FirgEN -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src
+1758013638001:runMain tram.vitra.FirGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src
+1758014642602:firtool /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src/VitraWithAxi.fir \\\n  --split-verilog \\\n  --output-dir=verilog_out \\\n  --disable-all-randomization \\\n  --strip-debug-info
+1758014712848:runMain tram.vitra.FirGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src
+1758014775357:firtool /home/jhlou/CGRVOPT/MatrixMeld/rtl/CGRAwithAXI.fir \\\n  --split-verilog \\\n  --output-dir=verilog_out
+1758035380125:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src
+1758035437195:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/rtl
+1758090093273:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA
+1758188763339:runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+1758467252826:runMain tram.axi.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+1758521678349:runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl

@@ -54,6 +54,9 @@ class FPCmp16 extends FCMP(5, 11) {}
 class FPCmp32 extends FCMP(8, 24) {}
 class FPCmp64 extends FCMP(11, 53) {}
 
+// BF16
+class BFCmp16 extends FCMP(8, 24) {}
+
 object VerilogFCMPGen extends App {
   (new chisel3.stage.ChiselStage).emitVerilog(new FCMP(6, 10), args)
 }

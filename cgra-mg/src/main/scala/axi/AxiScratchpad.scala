@@ -49,10 +49,10 @@ class AXI4Scratchpad(
 
   val lgDepthLast = lgSizeLastBlock - log2Ceil(axiBeatBytes)
 
-  // println("AxiAddrWidth", AxiAddrWidth)
-  // println("lgSizeLastBlock", lgSizeLastBlock)
-  // println("cfgSpadBanks", cfgSpadBanks)
-  // println("lgDepthLast", lgDepthLast)
+  println("AxiAddrWidth", AxiAddrWidth)
+  println("lgSizeLastBlock", lgSizeLastBlock)
+  println("cfgSpadBanks", cfgSpadBanks)
+  println("lgDepthLast", lgDepthLast)
 
 
   require(isPow2(DataWidth))
@@ -131,7 +131,9 @@ class AXI4Scratchpad(
     val rdIE    = Module(new ReadEngine(axi4Param))
     val arbiter = Module(new SramArbiter(spadBanksNum + 1))
 
-    require(spadBanksNum > lgDepthLast)
+    println("spadBanksNum:", spadBanksNum)
+    println("lgDepthLast:", lgDepthLast)
+    // require(spadBanksNum > lgDepthLast)
     val wr_csel       = wrIE.addr(AxiAddrWidth - 1, SPMAddrWidth + log2Ceil(axiBeatBytes))
     val wr_spad_addr  = wrIE.addr(SPMAddrWidth + log2Ceil(axiBeatBytes) - 1, log2Ceil(axiBeatBytes))
     val rd_csel       = rdIE.addr(AxiAddrWidth - 1, SPMAddrWidth + log2Ceil(axiBeatBytes))

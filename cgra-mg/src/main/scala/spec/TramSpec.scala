@@ -51,21 +51,21 @@ object TramSpec{
   val attrs: mutable.Map[String, Any] = mutable.Map(
     // 1. CGRA Controller parameters
     // 1.1. CGRA Global parameters
-    "cgra_num_row" -> 4,    // number of PE rows // adora: 8 fdra: 4
-    "cgra_num_colum" -> 8,  // number of PE colums // adora: 16 fdra: 8
+    "cgra_num_row" -> 8,    // number of PE rows // adora: 8 fdra: 4
+    "cgra_num_colum" -> 16,  // number of PE colums // adora: 16 fdra: 8
     "cgra_data_width" -> 32,
     "cgra_cfg_data_width" -> 32, // config bus: data width
-    "cgra_cfg_addr_width" -> 11, // adora: 12 fdra: 11 // config bus: address width
+    "cgra_cfg_addr_width" -> 12, // adora: 12 fdra: 11 // config bus: address width
     "cgra_cfg_blk_offset" -> 3,  // config bus: block index offset in the address
     // 1.2. GPE attributes (default for all)
 //    "cgra_gpe_num_rf_reg" -> 1,
     "cgra_gpe_operations" -> ListBuffer("PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", 
-                                        "UDIV", "SDIV",
+                                        // "UDIV", "SDIV",
                                         "SEL", 
                                         "FMUL32", "FSUB32", "FADD32", "FACC32",
-                                        "FDIV32",
+                                        // "FDIV32",
                                         "FEQ32", "FOLT32", "FOLE32", "FUNO32",
-                                        "ISEL" ,"MERGE4" , "MERGE3", "MERGE2",
+                                        "ISEL" ,"INTLV4" , "INTLV3", "INTLV2",
                                         "MAC", "FMAC32"),
     // "specific_gpe_operations" -> Map(
     //         (1, 3) -> ListBuffer(     "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", 

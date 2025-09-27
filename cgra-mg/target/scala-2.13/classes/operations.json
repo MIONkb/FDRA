@@ -176,7 +176,7 @@
     "numRes" : 1,
     "OPC" : 160
   }, {
-    "name" : "MERGE4",
+    "name" : "INTLV4",
     "commutative" : 0,
     "latency" : 1,
     "accumulative" : 1,
@@ -184,7 +184,7 @@
     "numRes" : 1,
     "OPC" : 242
   }, {
-    "name" : "MERGE3",
+    "name" : "INTLV3",
     "commutative" : 0,
     "latency" : 1,
     "accumulative" : 1,
@@ -192,7 +192,7 @@
     "numRes" : 1,
     "OPC" : 243
   }, {
-    "name" : "MERGE2",
+    "name" : "INTLV2",
     "commutative" : 0,
     "latency" : 1,
     "accumulative" : 1,

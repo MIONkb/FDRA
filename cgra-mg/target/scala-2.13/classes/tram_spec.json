@@ -3,100 +3,100 @@
   "cgra_lg_max_ii" : 4,
   "cgra_gpes" : [ [ {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   } ], [ {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   } ], [ {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   } ], [ {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   }, {
     "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ]
+    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ]
   } ] ],
   "id_width" : 6,
   "system_bus_beat_bits" : 64,
@@ -159,7 +159,7 @@
   } ] ],
   "rs_load_queue_depth" : 8,
   "cgra_iob_sram_addr_width" : 15,
-  "cgra_gpe_operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "MERGE4", "MERGE3", "MERGE2", "MAC", "FMAC32" ],
+  "cgra_gpe_operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "UDIV", "SDIV", "SEL", "FMUL32", "FSUB32", "FADD32", "FACC32", "FDIV32", "FEQ32", "FOLT32", "FOLE32", "FUNO32", "ISEL", "INTLV4", "INTLV3", "INTLV2", "MAC", "FMAC32" ],
   "axilite_datawidth" : 8,
   "cgra_gib_diag_iopin_connect" : true,
   "operation_set_filename" : "operations.json",

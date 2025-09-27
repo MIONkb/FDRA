@@ -22,7 +22,7 @@ class AffineCtrlReg(width: Int, lgMaxWI: Int,numIn: Int, lgMaxLat: Int, lgMaxCyc
   val io = IO(new Bundle {
     val start = Input(Bool()) // pulse signal, should be valid before latency 0, namely -1
     //val bypass = Input(Bool()) // in -> reg -> out
-    val mode = Input(UInt(3.W)) // 0: no acc, in -> reg -> out; 1: acc; 2: conditional acc; 3: conditional init and acc; 4: merge
+    val mode = Input(UInt(3.W)) // 0: no acc, in -> reg -> out; 1: acc; 2: conditional acc; 3: conditional init and acc; 4: INTLV
     val en = Input(Bool())
     val con_en = Input(Bool())
     val config = Input(UInt(cfgWidth.W))
@@ -104,12 +104,12 @@ class AffineCtrlReg(width: Int, lgMaxWI: Int,numIn: Int, lgMaxLat: Int, lgMaxCyc
   val repeatCntEnd = (repeatCnt+1.U >= repeats)
 
   ///// mode
-  val Merge = io.mode === 7.U
+  val INTLV = io.mode === 7.U
   val Mac   = io.mode === 6.U
   val initSel = io.mode === 5.U
   val IACC = io.mode === 4.U
   val init = (io.mode === 3.U && io.init) || (io.mode =/= 3.U && cycleCnt === 0.U && skipFirst)
-  val en = (io.mode === 1.U) || (io.mode > 1.U && io.con_en)|| initSel || IACC || Merge || Mac
+  val en = (io.mode === 1.U) || (io.mode > 1.U && io.con_en)|| initSel || IACC || INTLV || Mac
 
   switch(state){
     is(s_idle){
@@ -127,7 +127,7 @@ class AffineCtrlReg(width: Int, lgMaxWI: Int,numIn: Int, lgMaxLat: Int, lgMaxCyc
       latCnt := latCnt + 1.U
     }
     is(s_data){
-      when(Merge && io.en){
+      when(INTLV && io.en){
         state := s_data
       }
       .elsewhen((repeatCntEnd && cycleCntEnd && wiEnd) || !io.en){
@@ -174,7 +174,7 @@ class AffineCtrlReg(width: Int, lgMaxWI: Int,numIn: Int, lgMaxLat: Int, lgMaxCyc
 //  }
 
 
-  when(io.mode === 0.U || Merge) {
+  when(io.mode === 0.U || INTLV) {
     valueReg := io.in(0)
   }.elsewhen(launch && wiCnt === 0.U) { // the first is acc value
     when(init) { 
@@ -261,7 +261,7 @@ class DualModeReg(width: Int, isAffine: Boolean,isDualIn: Boolean, lgMaxWI: Int,
     val in = Input(Vec(numIn, UInt(width.W)))
     val init = Input({if(isAffine) Bool() else UInt(0.W)}) // initialize reg value
     val en = Input({if(isAffine) Bool() else UInt(0.W)})
-    val launch = Output({if(isAffine) Bool() else UInt(0.W)}) // for Merge
+    val launch = Output({if(isAffine) Bool() else UInt(0.W)}) // for INTLV/DEINTLV
     val out = Output(Vec(numOut, UInt(width.W)))
   })
 
