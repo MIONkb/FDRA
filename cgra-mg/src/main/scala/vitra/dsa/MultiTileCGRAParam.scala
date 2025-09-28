@@ -70,6 +70,17 @@ case class GibParam(
   var track_reged = false
 
   def == (gib : GibParam):Boolean = {
+
+    if(num_track == gib.num_track &&
+    diag_iopin_connect == gib.diag_iopin_connect &&
+    fc_list == gib.fc_list &&
+    track_directions == gib.track_directions &&
+    num_iopin_list == gib.num_iopin_list){
+      println("this.num_iopin_list:", num_iopin_list)
+      println("that.num_iopin_list:", gib.num_iopin_list)
+    }
+
+
     num_track == gib.num_track &&
     diag_iopin_connect == gib.diag_iopin_connect &&
     fc_list == gib.fc_list &&
@@ -123,6 +134,7 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
   val gibsParam = gibsSpec.map{ buf =>
     buf.map{ spec => GibParam(numTrack, spec.diag_iopin_connect, spec.fc_list) }
   }
+  // println("gibsParam:", gibsParam)
   // different types of GIBs (as submodules)
   // the type of each GIB (as instance)
   val gib_typemap : mutable.Map[Int, GibParam] =  mutable.Map()
@@ -246,7 +258,9 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
     // get the type of each GIB (as instance)
     for(i <- 0 until gibsParam.size){
       for(j <- 0 until gibsParam.head.size){
-        val gib = gibsParam(i)(j)
+        // println("gib param:", tile, i ,j)
+        println("#########################")
+        val gib = gibsParam(i)(j).copy()
         val num_iopin_list = mutable.Map[String, Int]()
         num_iopin_list += "ipin_nw" -> {
           if(i == 0 && j > 0)
@@ -258,7 +272,19 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
               0
             }
           }
-          else if(i>0 && j ==0){
+          else if(i == 0 && j == 0 && tile > 0)
+            iobsParam(0)(tile_cols - 1).num_input_per_operand.size // operand number
+          else if(i > 0 && j ==0 && tile > 0) {
+            // println("here")
+            // println("gpesParam(i - 1)(tile_cols - 1):", gpesParam(i - 1)(tile_cols - 1))
+            if(gpesParam(i - 1)(tile_cols - 1).from_dir.contains(SOUTHEAST)) {
+              // println("gpesParam(i - 1)(tile_cols - 1).num_input_per_operand.size:", gpesParam(i - 1)(tile_cols - 1).num_input_per_operand.size)
+              gpesParam(i - 1)(tile_cols - 1).num_input_per_operand.size // operand number
+            } else {
+              0
+            }
+          }
+          else if(i>0 && j ==0  && tile == 0){
             if (numIOBSides > 2)
               iobsParam(2)(i - 1).num_input_per_operand.size // operand number
             else
@@ -275,7 +301,17 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
             }else {
               0
             }
-          } else if (i > 0 && j == 0) {
+          } 
+          else if(i == 0 && j == 0 && tile > 0)
+            iobsParam(0)(tile_cols - 1).num_output
+          else if(i>0 && j ==0 && tile > 0) {
+            if(gpesParam(i - 1)(tile_cols - 1).to_dir.contains(SOUTHEAST)){
+              gpesParam(i - 1)(tile_cols - 1).num_output
+            }else {
+              0
+            }
+          } 
+          else if (i > 0 && j == 0 && tile == 0) {
             if (numIOBSides > 2)
               iobsParam(2)(i - 1).num_output // operand number
             else
@@ -367,14 +403,28 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
               iobsParam(1)(j-1).num_input_per_operand.size // operand number
             else
               0
-          }else if(i < tile_rows && j > 0) {
+          }
+          else if(i < tile_rows && j > 0) {
             if(gpesParam(i)(j-1).from_dir.contains(NORTHEAST)) {
               gpesParam(i)(j-1).num_input_per_operand.size
             }else{
               0
             }
           }
-          else if (i < tile_rows && j == 0) {
+          else if(i == tile_rows && j == 0 && tile > 0) {
+            if(numIOBSides > 1)
+              iobsParam(1)(tile_cols-1).num_input_per_operand.size // operand number
+            else
+              0
+          }
+          else if (i < tile_rows && j == 0 && tile > 0){
+            if(gpesParam(i)(tile_cols-1).from_dir.contains(NORTHEAST)) {
+              gpesParam(i)(tile_cols-1).num_input_per_operand.size
+            }else{
+              0
+            }
+          }
+          else if (i < tile_rows && j == 0 && tile == 0) {
             if (numIOBSides > 2)
               iobsParam(2)(i).num_input_per_operand.size
             else
@@ -388,9 +438,23 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
               iobsParam(1)(j-1).num_output
             else
               0
-          }else if(i < tile_rows && j > 0) {
+          }
+          else if(i < tile_rows && j > 0) {
             if(gpesParam(i)(j-1).to_dir.contains(NORTHEAST)){
               gpesParam(i)(j-1).num_output
+            }else{
+              0
+            }
+          }
+          else if(i == tile_rows && j == 0 && tile > 0) {
+            if(numIOBSides > 1)
+              iobsParam(1)(tile_cols-1).num_output 
+            else
+              0
+          }
+          else if(i < tile_rows && j == 0 && tile > 0) {
+            if(gpesParam(i)(tile_cols - 1).to_dir.contains(NORTHEAST)){
+              gpesParam(i)(tile_cols - 1).num_output
             }else{
               0
             }
@@ -403,7 +467,10 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
           }
           else 0
         }
+        // println("num_iopin_list:", num_iopin_list)
+        println("gib:", gib)
         gib.num_iopin_list = num_iopin_list
+        println("gib.num_iopin_list:", gib.num_iopin_list)
         // if there are register behind the GIB
         val reged = {
           if(trackRegedMode == 0) false
@@ -413,13 +480,16 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
         gib.track_reged= reged
         // which side has tracks
         val trackdirbuf : ListBuffer[Int] = ListBuffer()
-        if(j > 0) trackdirbuf.append( WEST ) // WEST
+        if(j > 0 || tile > 0) trackdirbuf.append( WEST ) // WEST
         if(i > 0) trackdirbuf.append( NORTH ) // NORTH
         if((j + 1) < gibsParam.head.size )  trackdirbuf.append( EAST ) // EAST
         if((i + 1) < gibsParam.size  )  trackdirbuf.append( SOUTH )  // SOUTH
         gib.track_directions = trackdirbuf
         // find the type of each GIB
         val res = gib_typemap.find(ins => ins._2 == gib)
+        println("gib_typemap:", gib_typemap)
+        println("gib:", gib)
+        println("res:", res)
         val type_id = {
           if(res.isDefined){ // find a type
             res.get._1
@@ -429,6 +499,7 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
             new_type_id
           }
         }
+        println("tile, i , j: gib type", tile, i, j, type_id)
         gib_posmap += ((tile, i, j) -> type_id)
       }
     }

@@ -61,7 +61,7 @@ object VitraSpec{
 
     // tile parameters
     "tile_num_row" -> 2,  
-    "tile_num_column" -> 3,  
+    "tile_num_column" -> 2,  
     "cgra_tile_num" -> 2,  
 
     // 1.2. GPE attributes (default for all)
@@ -162,8 +162,8 @@ object VitraSpec{
     "axilite_addrspace" -> 256, // Bytes
     "axilite_datawidth" -> 8,  // bits    
   )
-  attrs += ("spad_num_banks" -> (
-    attrs("cgra_iob_num_sides").asInstanceOf[Int] * attrs("tile_num_column").asInstanceOf[Int] * attrs("cgra_tile_num").asInstanceOf[Int]))
+  attrs += ("tile_spad_num_banks" -> (
+    attrs("cgra_iob_num_sides").asInstanceOf[Int] * attrs("tile_num_column").asInstanceOf[Int]))
 
   // set default values from attr
   // the attributes in attrs are used as default values

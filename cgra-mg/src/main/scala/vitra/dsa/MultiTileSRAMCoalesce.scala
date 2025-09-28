@@ -41,23 +41,27 @@ class SRAMBanksCoalesce(width: Int, lgDepth: Int, hasMask: Boolean, nBanks: Int)
     val orig = Vec(nBanks, Flipped(new SRAMIO(width, lgDepth, hasMask)))
     val coal = Vec(nBanks, new SRAMIO(width, coalAddrWidth, hasMask))
   })
-
-  for(i <- 0 until nBanks){
-    val inSel = io.coal.map( c => c.en && c.addr(coalAddrWidth-1, lgDepth) === i.U )
-    io.orig(i).en := MuxCase(false.B, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).en })
-    io.orig(i).we := MuxCase(0.U, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).we })
-    io.orig(i).addr := MuxCase(0.U, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).addr(lgDepth-1, 0) })
-    io.orig(i).din := MuxCase(0.U, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).din })
-    val outSel = (0 until nBanks).map{ j =>
-      RegNext(io.coal(i).en && io.coal(i).addr(coalAddrWidth-1, lgDepth) === j.U) }
-    io.coal(i).dout := MuxCase(0.U, outSel.zipWithIndex.map{ case (sel, j) => sel-> io.orig(j).dout })
-//    io.orig(i).en := PriorityMux(inSel, io.coal.map(_.en))
-//    io.orig(i).we := PriorityMux(inSel, io.coal.map(_.we))
-//    io.orig(i).addr := PriorityMux(inSel, io.coal.map(_.addr(lgDepth-1, 0)))
-//    io.orig(i).din := PriorityMux(inSel, io.coal.map(_.din))
-//    val outSel = (0 until nBanks).map{ j =>
-//      RegNext(io.coal(i).en && io.coal(i).addr(coalAddrWidth-1, lgDepth) === j.U) }
-//    io.coal(i).dout := PriorityMux(outSel, io.orig.map(_.dout))
+  if(nBanks == 1){
+    io.orig <> io.coal
+  }
+  else {  
+    for(i <- 0 until nBanks){
+      val inSel = io.coal.map( c => c.en && c.addr(coalAddrWidth-1, lgDepth) === i.U )
+      io.orig(i).en := MuxCase(false.B, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).en })
+      io.orig(i).we := MuxCase(0.U, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).we })
+      io.orig(i).addr := MuxCase(0.U, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).addr(lgDepth-1, 0) })
+      io.orig(i).din := MuxCase(0.U, inSel.zipWithIndex.map{ case (sel, i) => sel-> io.coal(i).din })
+      val outSel = (0 until nBanks).map{ j =>
+        RegNext(io.coal(i).en && io.coal(i).addr(coalAddrWidth-1, lgDepth) === j.U) }
+      io.coal(i).dout := MuxCase(0.U, outSel.zipWithIndex.map{ case (sel, j) => sel-> io.orig(j).dout })
+  //    io.orig(i).en := PriorityMux(inSel, io.coal.map(_.en))
+  //    io.orig(i).we := PriorityMux(inSel, io.coal.map(_.we))
+  //    io.orig(i).addr := PriorityMux(inSel, io.coal.map(_.addr(lgDepth-1, 0)))
+  //    io.orig(i).din := PriorityMux(inSel, io.coal.map(_.din))
+  //    val outSel = (0 until nBanks).map{ j =>
+  //      RegNext(io.coal(i).en && io.coal(i).addr(coalAddrWidth-1, lgDepth) === j.U) }
+  //    io.coal(i).dout := PriorityMux(outSel, io.orig.map(_.dout))
+    }
   }
 }
 
@@ -72,8 +76,8 @@ class SRAMBanksCoalesce(width: Int, lgDepth: Int, hasMask: Boolean, nBanks: Int)
 class MultiTileSRAMCoalesce(width: Int, lgDepth: Int, hasMask: Boolean, nTiles: Int, tileNBanks: Int, coalesceBanks: Int) extends Module {
   val coalAddrWidth = lgDepth + log2Ceil(coalesceBanks)
   val io = IO(new Bundle {
-    val orig = Vec(nTiles * tileNBanks, Flipped(new SRAMIO(width, lgDepth, hasMask)))
-    val coal = Vec(nTiles, Vec(tileNBanks, new SRAMIO(width, coalAddrWidth, hasMask)))
+    val orig = Vec(nTiles * tileNBanks, Flipped(new SRAMIO(width, lgDepth, hasMask)))  // to sram
+    val coal = Vec(nTiles, Vec(tileNBanks, new SRAMIO(width, coalAddrWidth, hasMask))) // to iob
   })
 
   // divide all the banks into n groups where the internal banks are coalesced
@@ -88,15 +92,19 @@ class MultiTileSRAMCoalesce(width: Int, lgDepth: Int, hasMask: Boolean, nTiles: 
   // }
 
   // IOB on one side of one tile could access all SPM on this side of this tile
-  for(tile <- 0 until nTiles by tileNBanks){
-    // for(i <- 0 until tileNBanks by coalesceBanks){
-      // val coalBanks = coalesceBanks min (tileNBanks-i) // last group may have banks no more than coalesceBanks
-    val group = Module(new SRAMBanksCoalesce(width, lgDepth, hasMask, tileNBanks))
-    for(j <- 0 until tileNBanks){
-      group.io.orig(j) <> io.orig(tile+j)
-      group.io.coal(j) <> io.coal(tile)(j)
+  println("nTiles:", nTiles, "tileNBanks:", tileNBanks)
+  for(tile <- 0 until nTiles){
+    for(group_idx <- 0 until 2){
+      // for(i <- 0 until tileNBanks by coalesceBanks){
+        // val coalBanks = coalesceBanks min (tileNBanks-i) // last group may have banks no more than coalesceBanks
+      val group = Module(new SRAMBanksCoalesce(width, lgDepth, hasMask, tileNBanks/2))
+      for(j <- 0 until tileNBanks/2){
+        println("tile:", tile, "group_idx:", group_idx, "j:", j)
+        group.io.orig(j) <> io.orig(tile*tileNBanks+j+group_idx*tileNBanks/2)
+        group.io.coal(j) <> io.coal(tile)(j+group_idx*tileNBanks/2)
+      }
+      // }
     }
-    // }
   }
 
 }

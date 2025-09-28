@@ -60,7 +60,7 @@ class VitraWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends M
   println(s"adg path: $cgra_adg_filename")
   // scratchpad banks used for IOB
   val lgSizeSpadBank = VitraSpec.attrs("spad_bank_lg_size").asInstanceOf[Int]
-  val nSpadBanksEachTile = VitraSpec.attrs("spad_num_banks").asInstanceOf[Int]
+  val nSpadBanksEachTile = VitraSpec.attrs("tile_spad_num_banks").asInstanceOf[Int]
   val nTiles = VitraSpec.attrs("cgra_tile_num").asInstanceOf[Int]
   val nSpadBanksTotal = nSpadBanksEachTile * nTiles
 

@@ -420,16 +420,149 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     ////////////////////////////////////
     /// connections attribute
     ////////////////////////////////////
-    // val portNameMap = gibs(0).portNameMap
 
+    //////////////////////////////////////
+    /// Firstly, connect left most column gib with last tile
+    //////////////////////////////////////
+    if(tile > 0){
+      println("unconnectedIOBs:", unconnectedIOBs)
+      println("unconnectedGPEs:", unconnectedGPEs)
+      println("unconnectedGIBs:", unconnectedGIBs)
+      println("connections:", connections)
+      // IOB connections to GIB
+      for((iob_idx, iob) <- unconnectedIOBs){
+        if(iob_idx == tile_cols - 1){
+          val c_idx = iob_idx + tile_cols * numIOBSides * (tile - 1)
+          val gib_idx = 0 + tile_cols * (tile_rows + 1) * tile
+          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
+          iob.io.in.zipWithIndex.foreach { case (in, j) =>
+            if (j % 2 != 0) {
+              in := gibs(gib_idx).io.ipinNW(j / 2)
+              val index = gibs(gib_idx).oPortMap("ipinNW" + (j / 2).toString)
+              connections.append((smi_id("GIB")(gib_idx), "GIB", index, smi_id("IOB")(c_idx), "IOB", j))
+            } 
+          }
+          iob.io.out.zipWithIndex.foreach { case (out, j) =>
+            gibs(gib_idx).io.opinNW(j) := out
+            val index1 = gibs(gib_idx).iPortMap("opinNW" + j.toString)
+            connections.append((smi_id("IOB")(c_idx), "IOB", j, smi_id("GIB")(gib_idx), "GIB", index1))
+          }
+        }
+        else if(iob_idx == 2 * tile_cols - 1){
+          val c_idx = iob_idx + tile_cols * numIOBSides * (tile - 1)
+          val gib_idx = tile_rows * tile_cols + tile_cols * (tile_rows + 1) * tile
+          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
+          iob.io.in.zipWithIndex.foreach { case (in, j) =>
+            if (j % 2 != 0) {
+              in := gibs(gib_idx).io.ipinSW(j / 2)
+              val index = gibs(gib_idx).oPortMap("ipinSW" + (j / 2).toString)
+              connections.append((smi_id("GIB")(gib_idx), "GIB", index, smi_id("IOB")(c_idx), "IOB", j))
+            } 
+          }
+          iob.io.out.zipWithIndex.foreach { case (out, j) =>
+            gibs(gib_idx).io.opinSW(j) := out
+            val index1 = gibs(gib_idx).iPortMap("opinSW" + j.toString)
+            connections.append((smi_id("IOB")(c_idx), "IOB", j, smi_id("GIB")(gib_idx), "GIB", index1))
+          }          
+        }        
+        else{
+          assert(false)
+        }
+      }
+      println("connections:", connections)
+
+      for(((i, j), gpe) <- unconnectedGPEs){
+        val idx_c_pe = i*tile_cols + j + tile_cols * tile_rows * (tile - 1)
+        val idx_sw = i*(tile_cols)+0 + tile_cols * (tile_rows + 1) * tile // in GIB's perspective
+        val idx_nw = (i+1)*(tile_cols)+0 + tile_cols * (tile_rows + 1) * tile
+
+        println("idx_c_pe, idx_sw, idx_nw:", idx_c_pe, idx_sw, idx_nw)
+        
+        val gpe_param = gpe_typemap(gpe_posmap(tile - 1, i, j))
+        val numOperand = gpe_param.num_input_per_operand.size // operand number
+        val from_dir = gpesParam(i)(j).from_dir
+
+        if(from_dir.contains(NORTHEAST)){
+          val baseindex = from_dir.indexOf(NORTHEAST)
+          for( k <- 0 until numOperand ){
+            val indexgpe = baseindex + k*from_dir.size
+            gpe.io.in(indexgpe) := gibs(idx_sw).io.ipinSW(k)
+            val indexgib = gibs(idx_sw).oPortMap("ipinSW" + (k).toString)
+            connections.append((smi_id("GIB")(idx_sw), "GIB", indexgib, smi_id("GPE")(idx_c_pe), "GPE", indexgpe))
+          }
+        }
+        if(from_dir.contains(SOUTHEAST)){
+          val baseindex = from_dir.indexOf(SOUTHEAST)
+          for( k <- 0 until numOperand ){
+            val indexgpe = baseindex + k*from_dir.size
+            gpe.io.in(indexgpe) := gibs(idx_nw).io.ipinNW(k)
+            val indexgib = gibs(idx_nw).oPortMap("ipinNW" + (k).toString)
+            connections.append((smi_id("GIB")(idx_nw), "GIB", indexgib, smi_id("GPE")(idx_c_pe), "GPE", indexgpe))
+          }
+        }
+
+        val to_dir = gpe_param.to_dir
+        gpe.io.out.zipWithIndex.foreach { case (out, k) =>
+          if (to_dir.contains(NORTHEAST)) {
+            gibs(idx_sw).io.opinSW(k) := out
+            val index = gibs(idx_sw).iPortMap("opinSW" + k.toString)
+            connections.append((smi_id("GPE")(idx_c_pe), "GPE", k, smi_id("GIB")(idx_sw), "GIB", index))
+          }
+          if (to_dir.contains(SOUTHEAST)) {
+            gibs(idx_nw).io.opinNW(k) := out
+            val index = gibs(idx_nw).iPortMap("opinNW" + k.toString)
+            connections.append((smi_id("GPE")(idx_c_pe), "GPE", k, smi_id("GIB")(idx_nw), "GIB", index))
+          }
+          // dontTouch(pes(idx_c).io.out) /// add by jhlou
+        }
+      }
+      println("before gib connections:", connections)
+      // GIB to GIB connections
+      if(numTrack > 0) {
+        println("gibs:", gibs)
+        for(((i, j), gib) <- unconnectedGIBs){
+          val idx_w = i * (tile_cols) + j + (tile_rows + 1) * tile_cols * (tile - 1)
+          val idx_e = i * (tile_cols) + (tile_rows + 1) * tile_cols * tile
+          println("i , j , idx_w, idx_e, gib:", i, j, idx_w, idx_e, gib)
+          gibs(idx_e).io.itrackW.zipWithIndex.foreach { case (in, k) =>
+            in := gib.io.otrackE(k)
+            val index1 = gibs(idx_e).iPortMap("itrackW" + k.toString)
+            val index2 = gib.oPortMap("otrackE" + k.toString)
+            connections.append((smi_id("GIB")(idx_w), "GIB", index2, smi_id("GIB")(idx_e), "GIB", index1))
+          }
+
+          gib.io.itrackE.zipWithIndex.foreach { case (in, k) =>
+            in := gibs(idx_e).io.otrackW(k)
+            val index1 = gib.iPortMap("itrackE" + k.toString)
+            val index2 = gibs(idx_e).oPortMap("otrackW" + k.toString)
+            connections.append((smi_id("GIB")(idx_e), "GIB", index2, smi_id("GIB")(idx_w), "GIB", index1))
+          }
+        }
+      }
+    }
+    println("after gib connections:", connections)
+    //// clear map
+    unconnectedIOBs = mutable.Map[Int, IOB] ()
+    unconnectedGPEs = mutable.Map[(Int, Int), GPE] ()
+    unconnectedGIBs = mutable.Map[(Int, Int), GIB] ()
+
+    //////////////////////////////////////
+    /// Secondly, connect within this tile
+    //////////////////////////////////////
+    // val portNameMap = gibs(0).portNameMap
+    println("before connections attribute:", connections)
     // IOB connections to GIB
-    println("iobs:", iobs)
-    iobs.zipWithIndex.foreach { case (iob, i) =>
+    val done = Wire(Vec(numIOBSides * tile_cols, Bool()))
+    // iobs.zipWithIndex.foreach { case (iob, i) =>
+    for(i <- 0 until numIOBSides * tile_cols) {  
+      val iobIdx = i + tile_cols * numIOBSides * tile
+      val iob = iobs(iobIdx)
       iob.io.start := io.start(tile) && io.iob_ens(tile)(i)
       iob.io.en := io.en(tile) && io.iob_ens(tile)(i)
       iob.io.sram <> io.srams(tile)(i)
+      done(i) := iob.io.done || (!io.iob_ens(tile)(i).asBool)
+      println("i, iobIdx:", i, iobIdx)
       if(i < tile_cols - 1){ // top row
-        val iobIdx = i + tile_cols * numIOBSides * tile
         val gibIdx = i + tile_cols * (tile_rows + 1) * tile
         iob.io.in.zipWithIndex.foreach { case (in, j) =>
           if (j % 2 == 0) {
@@ -447,12 +580,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           gibs(gibIdx+1).io.opinNW(j) := out
           val index1 = gibs(gibIdx).iPortMap("opinNE" + j.toString)
           val index2 = gibs(gibIdx+1).iPortMap("opinNW" + j.toString)
-          connections.append((smi_id("IOB")(i), "IOB", j, smi_id("GIB")(gibIdx), "GIB", index1))
-          connections.append((smi_id("IOB")(i), "IOB", j, smi_id("GIB")(gibIdx+1), "GIB", index2))
+          connections.append((smi_id("IOB")(iobIdx), "IOB", j, smi_id("GIB")(gibIdx), "GIB", index1))
+          connections.append((smi_id("IOB")(iobIdx), "IOB", j, smi_id("GIB")(gibIdx+1), "GIB", index2))
         }
       }
       else if(i == tile_cols - 1){ // last iob of top row
-        val iobIdx = i + tile_cols * numIOBSides * tile
         val gibIdx = i + tile_cols * (tile_rows + 1) * tile
         iob.io.in.zipWithIndex.foreach { case (in, j) =>
           if (j % 2 == 0) {
@@ -466,13 +598,12 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           // gibs(gibIdx+1).io.opinNW(j) := out
           val index1 = gibs(gibIdx).iPortMap("opinNE" + j.toString)
           // val index2 = gibs(gibIdx+1).iPortMap("opinNW" + j.toString)
-          connections.append((smi_id("IOB")(i), "IOB", j, smi_id("GIB")(gibIdx), "GIB", index1))
+          connections.append((smi_id("IOB")(iobIdx), "IOB", j, smi_id("GIB")(gibIdx), "GIB", index1))
           // connections.append((smi_id("IOB")(i), "IOB", j, smi_id("GIB")(gibIdx+1), "GIB", index2))
         }
         unconnectedIOBs += i -> iob
       }
       else if (i < 2 * tile_cols - 1) { // Bottom row IOB (cols+rows to 2*cols+rows-1)
-        val iobIdx = i + tile_cols * numIOBSides * tile
         //val gibIdx = (rows * (cols + 1) - cols) + (i - cols - rows) // 底部行 GIB 索引// buttom row
         // val gibIdx = rows * (cols + 1) - cols + i
         val gibIdx = tile_rows * (tile_cols) + i - tile_cols + tile_cols * (tile_rows + 1) * tile
@@ -492,12 +623,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           gibs(gibIdx + 1).io.opinSW(j) := out
           val index1 = gibs(gibIdx).iPortMap("opinSE" + j.toString)
           val index2 = gibs(gibIdx + 1).iPortMap("opinSW" + j.toString)
-          connections.append((smi_id("IOB")(i), "IOB", j, smi_id("GIB")(gibIdx), "GIB", index1))
-          connections.append((smi_id("IOB")(i), "IOB", j, smi_id("GIB")(gibIdx + 1), "GIB", index2))
+          connections.append((smi_id("IOB")(iobIdx), "IOB", j, smi_id("GIB")(gibIdx), "GIB", index1))
+          connections.append((smi_id("IOB")(iobIdx), "IOB", j, smi_id("GIB")(gibIdx + 1), "GIB", index2))
         }
       } 
       else if (i == 2 * tile_cols - 1) { // Bottom row last IOB 
-        val iobIdx = i + tile_cols * numIOBSides * tile
         //val gibIdx = (rows * (cols + 1) - cols) + (i - cols - rows) // buttom row
         // val gibIdx = rows * (cols + 1) - cols + i
         val gibIdx = tile_rows * (tile_cols) + i - tile_cols + tile_cols * (tile_rows + 1) * tile
@@ -529,18 +659,17 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       }
     }
 
-    val done = iobs.zipWithIndex.map{ case (iob, i) => iob.io.done || (!io.iob_ens(tile)(i).asBool) }.reduce(_ & _)
-    io.done(tile) := RegNext(done)
-
+    io.done(tile) := RegNext(done.asUInt)
+    println("before PE to GIB connections attribute:", connections)
     // PE to GIB connections
     for(i <- 0 until tile_rows){
       for(j <- 0 until tile_cols){
         // println("i", i, "j", j)
-        val idx_c = i*tile_cols+j + tile_numSubModules * tile // center
-        val idx_se = i*(tile_cols)+j + tile_numSubModules * tile // in GIB's perspective
-        val idx_sw = i*(tile_cols)+j+1 + tile_numSubModules * tile
-        val idx_ne = (i+1)*(tile_cols)+j + tile_numSubModules * tile
-        val idx_nw = (i+1)*(tile_cols)+j+1 + tile_numSubModules * tile
+        val idx_c = i*tile_cols+j + tile_cols * tile_rows * tile // center
+        val idx_se = i*(tile_cols)+j + tile_cols * (tile_rows + 1) * tile // in GIB's perspective
+        val idx_sw = i*(tile_cols)+j+1 + tile_cols * (tile_rows + 1) * tile
+        val idx_ne = (i+1)*(tile_cols)+j + tile_cols * (tile_rows + 1) * tile
+        val idx_nw = (i+1)*(tile_cols)+j+1 + tile_cols * (tile_rows + 1) * tile
         pes(idx_c).io.start := io.start(tile)
         pes(idx_c).io.en := io.en(tile) /// TODO 
         val gpe_param = gpe_typemap(gpe_posmap(tile, i, j))
@@ -624,11 +753,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         // for (j <- 0 to tile_cols) {
         for (j <- 0 until tile_cols) {
           // println("i", i, "j", j)
-          val idx_c = i * (tile_cols) + j + tile_numSubModules * tile // center
-          val idx_n = (i - 1) * (tile_cols) + j + tile_numSubModules * tile // in center GIB's perspective
-          val idx_w = i * (tile_cols) + j - 1 + tile_numSubModules * tile
-          val idx_e = i * (tile_cols ) + j + 1 + tile_numSubModules * tile
-          val idx_s = (i + 1) * (tile_cols) + j + tile_numSubModules * tile
+          val idx_c = i * (tile_cols) + j + (tile_rows + 1) * tile_cols * tile // center
+          val idx_n = (i - 1) * (tile_cols) + j + (tile_rows + 1) * tile_cols * tile // in center GIB's perspective
+          val idx_w = i * (tile_cols) + j - 1 + (tile_rows + 1) * tile_cols * tile
+          val idx_e = i * (tile_cols ) + j + 1 + (tile_rows + 1) * tile_cols * tile
+          val idx_s = (i + 1) * (tile_cols) + j + (tile_rows + 1) * tile_cols * tile
           if (i == 0) {
             gibs(idx_c).io.itrackN.foreach { in => in := 0.U }
             gibs(idx_c).io.itrackS.zipWithIndex.foreach { case (in, k) =>
@@ -699,109 +828,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       }
     }
 
-    //////////////////////////////////////
-    /// connect left most column gib with last tile
-    //////////////////////////////////////
-    if(tile > 0){
-      println("unconnectedIOBs:", unconnectedIOBs)
-      println("unconnectedGPEs:", unconnectedGPEs)
-      println("unconnectedGIBs:", unconnectedGIBs)
-      // IOB connections to GIB
-      for((iob_idx, iob) <- unconnectedIOBs){
-        if(iob_idx == tile_cols - 1){
-          val c_idx = iob_idx + tile_cols * numIOBSides * tile
-          val gib_idx = 0 + tile_cols * (tile_rows + 1) * tile
-          println("iob_idx, gib_idx:", iob_idx, gib_idx)
-          iob.io.in.zipWithIndex.foreach { case (in, j) =>
-            if (j % 2 != 0) {
-              in := gibs(gib_idx).io.ipinNW(j / 2)
-              val index = gibs(gib_idx).oPortMap("ipinNW" + (j / 2).toString)
-              connections.append((smi_id("GIB")(gib_idx), "GIB", index, smi_id("IOB")(c_idx), "IOB", j))
-            } 
-          }
-          iob.io.out.zipWithIndex.foreach { case (out, j) =>
-            gibs(gib_idx).io.opinNW(j) := out
-            val index1 = gibs(gib_idx).iPortMap("opinNW" + j.toString)
-            connections.append((smi_id("IOB")(c_idx), "IOB", j, smi_id("GIB")(gib_idx), "GIB", index1))
-          }
-        }
-        else if(iob_idx == 2 * tile_cols - 1){
-          val c_idx = iob_idx + tile_cols * numIOBSides * tile
-          val gib_idx = tile_rows * tile_cols + tile_cols * (tile_rows + 1) * tile
-          println("iob_idx, gib_idx:", iob_idx, gib_idx)
-          iob.io.in.zipWithIndex.foreach { case (in, j) =>
-            if (j % 2 != 0) {
-              in := gibs(gib_idx).io.ipinSW(j / 2)
-              val index = gibs(gib_idx).oPortMap("ipinSW" + (j / 2).toString)
-              connections.append((smi_id("GIB")(gib_idx), "GIB", index, smi_id("IOB")(c_idx), "IOB", j))
-            } 
-          }
-          iob.io.out.zipWithIndex.foreach { case (out, j) =>
-            gibs(gib_idx).io.opinSW(j) := out
-            val index1 = gibs(gib_idx).iPortMap("opinSW" + j.toString)
-            connections.append((smi_id("IOB")(c_idx), "IOB", j, smi_id("GIB")(gib_idx), "GIB", index1))
-          }          
-        }        
-        else{
-          assert(false)
-        }
-      }
-
-      for(((i, j), gpe) <- unconnectedGPEs){
-        val idx_c_pe = i*tile_cols + j + tile_cols * tile_rows * (tile - 1)
-        val idx_sw = i*(tile_cols)+0 + tile_cols * (tile_rows + 1) * tile // in GIB's perspective
-        val idx_nw = (i+1)*(tile_cols)+0 + tile_cols * (tile_rows + 1) * tile
-
-        println("idx_c_pe, idx_sw, idx_nw:", idx_c_pe, idx_sw, idx_nw)
-        
-        val gpe_param = gpe_typemap(gpe_posmap(tile - 1, i, j))
-        val numOperand = gpe_param.num_input_per_operand.size // operand number
-        val from_dir = gpesParam(i)(j).from_dir
-
-        if(from_dir.contains(NORTHEAST)){
-          val baseindex = from_dir.indexOf(NORTHEAST)
-          for( k <- 0 until numOperand ){
-            val indexgpe = baseindex + k*from_dir.size
-            gpe.io.in(indexgpe) := gibs(idx_sw).io.ipinSW(k)
-            val indexgib = gibs(idx_sw).oPortMap("ipinSW" + (k).toString)
-            connections.append((smi_id("GIB")(idx_sw), "GIB", indexgib, smi_id("GPE")(idx_c_pe), "GPE", indexgpe))
-          }
-        }
-        if(from_dir.contains(SOUTHEAST)){
-          val baseindex = from_dir.indexOf(SOUTHEAST)
-          for( k <- 0 until numOperand ){
-            val indexgpe = baseindex + k*from_dir.size
-            gpe.io.in(indexgpe) := gibs(idx_nw).io.ipinNW(k)
-            val indexgib = gibs(idx_nw).oPortMap("ipinNW" + (k).toString)
-            connections.append((smi_id("GIB")(idx_nw), "GIB", indexgib, smi_id("GPE")(idx_c_pe), "GPE", indexgpe))
-          }
-        }
-      }
-      // GIB to GIB connections
-      if(numTrack > 0) {
-        for(((i, j), gib) <- unconnectedGIBs){
-          val idx_w = i * (tile_cols) + j + 1 + (tile_rows + 1) * tile_cols * (tile - 1)
-          val idx_e = i * (tile_cols) + (tile_rows + 1) * tile_cols * tile
-          println("idx_w, idx_e", idx_w, idx_e)
-          gibs(idx_e).io.itrackW.zipWithIndex.foreach { case (in, k) =>
-            in := gib.io.otrackE(k)
-            val index1 = gibs(idx_e).iPortMap("itrackW" + k.toString)
-            val index2 = gib.oPortMap("otrackE" + k.toString)
-            connections.append((smi_id("GIB")(idx_w), "GIB", index2, smi_id("GIB")(idx_e), "GIB", index1))
-          }
-
-          gib.io.itrackE.zipWithIndex.foreach { case (in, k) =>
-            in := gibs(idx_e).io.otrackW(k)
-            val index1 = gib.iPortMap("itrackE" + k.toString)
-            val index2 = gibs(idx_e).oPortMap("otrackW" + k.toString)
-            connections.append((smi_id("GIB")(idx_e), "GIB", index2, smi_id("GIB")(idx_w), "GIB", index1))
-          }
-        }
-      }
-    }
-
     /////////////////////////////
-    /// for the last tile , add one column of GIB at right side
+    /// Thirdly, for the last tile , add one column of GIB at right side
     /////////////////////////////
     println("smi_id:", smi_id)
     if(tile == tile_num - 1){
@@ -867,7 +895,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         if(iob_idx == tile_cols - 1){
           val c_idx = iob_idx + tile_cols * numIOBSides * tile
           val gib_idx = (tile_rows + 1) * tile_cols + tile_cols * (tile_rows + 1) * tile
-          println("c_idx, gib_idx:", c_idx, gib_idx)
+          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
           iob.io.in.zipWithIndex.foreach { case (in, j) =>
             if (j % 2 != 0) {
               in := gibs(gib_idx).io.ipinNW(j / 2)
@@ -884,7 +912,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         else if(iob_idx == 2 * tile_cols - 1){
           val c_idx = iob_idx + tile_cols * numIOBSides * tile
           val gib_idx = (tile_rows + 1) * tile_cols + tile_rows + tile_cols * (tile_rows + 1) * tile
-          println("gib_idx:", gib_idx)
+          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
           iob.io.in.zipWithIndex.foreach { case (in, j) =>
             if (j % 2 != 0) {
               in := gibs(gib_idx).io.ipinSW(j / 2)
@@ -914,7 +942,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         val from_dir = gpesParam(i)(j).from_dir
 
         println("idx_sw:", idx_sw, "idx_nw:", idx_nw, "gpe_param:", gpe_param, "from_dir:", from_dir, "numOperand:", numOperand)
-
+        println("numOperand:", numOperand, "from_dir:", from_dir)
         if(from_dir.contains(NORTHEAST)){
           val baseindex = from_dir.indexOf(NORTHEAST)
           for( k <- 0 until numOperand ){
@@ -1010,49 +1038,51 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           }
         }
       }
-    }
-
-    //// clear map
-    unconnectedIOBs = mutable.Map[Int, IOB] ()
-    unconnectedGPEs = mutable.Map[(Int, Int), GPE] ()
-    unconnectedGIBs = mutable.Map[(Int, Int), GIB] ()
+    } //// End of "if tile == tile_num - 1"
 
     // Configurations, each row share one config bus
     cfgRegNum = totalRows - 1
  
-    iobs.zipWithIndex.foreach{ case (iob, j) => // top and buttom row
-        iob.io.cfg_en   := io.cfg_en(tile)
-        // iob.io.cfg_en_w := io.cfg_en_w
-        iob.io.cfg_addr := io.cfg_addr
-        iob.io.cfg_data := io.cfg_data
+    ///////////////////////////////
+    /// connect cfg_addr cfg_en cfg_data
+    ///////////////////////////////
+    for(i <- 0 until numIOBSides * tile_cols) {  
+      val iob = iobs(i + tile*numIOBSides * tile_cols)
+      iob.io.cfg_en   := io.cfg_en(tile)
+      // iob.io.cfg_en_w := io.cfg_en_w
+      iob.io.cfg_addr := io.cfg_addr
+      iob.io.cfg_data := io.cfg_data
     }
+
     for(i <- 0 to tile_rows){
       val gibCfgIdx = row_idxs_gib(i) - 1
       val peCfgIdx = {if(i < tile_rows) row_idxs_pe(i) - 1 else 0}
       // for(j <- 0 to tile_cols){
       for(j <- 0 until tile_cols){  
-        gibs(i*(tile_cols)+j).io.cfg_en   := io.cfg_en(tile)
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_en   := io.cfg_en(tile)
         // gibs(i*(cols+1)+j).io.cfg_en_w   := io.cfg_en_w
-        gibs(i*(tile_cols)+j).io.cfg_addr := io.cfg_addr
-        gibs(i*(tile_cols)+j).io.cfg_data := io.cfg_data
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_addr := io.cfg_addr
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_data := io.cfg_data
         if((i < tile_rows) && (j < tile_cols)){
-          pes(i*tile_cols+j).io.cfg_en   := io.cfg_en(tile)
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_en   := io.cfg_en(tile)
           // pes(i*cols+j).io.cfg_en_w   := io.cfg_en_w
-          pes(i*tile_cols+j).io.cfg_addr := io.cfg_addr
-          pes(i*tile_cols+j).io.cfg_data := io.cfg_data
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_addr := io.cfg_addr
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_data := io.cfg_data
         }
       }
 
       if(tile == tile_num - 1){
-        gibs((tile_rows + 1) * tile_cols + i).io.cfg_en   := io.cfg_en(tile)
-        gibs((tile_rows + 1) * tile_cols + i).io.cfg_addr := io.cfg_addr
-        gibs((tile_rows + 1) * tile_cols + i).io.cfg_data := io.cfg_data
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_en   := io.cfg_en(tile)
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_addr := io.cfg_addr
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_data := io.cfg_data
       }
     }
+    println("gibs:", gibs)
+    println("###########################\n################ NEXT TILE ##############")
   } /// end of multi tile
   
-  println("sm_id:", sm_id)
-  println("smi_id:", smi_id)
+  // println("sm_id:", sm_id)
+  // println("smi_id:", smi_id)
 
   val sub_modules = sm_id.map{case (name, ids) =>
     ids.map{id => mutable.Map(
@@ -1062,7 +1092,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     )}
   }.flatten
   apply("sub_modules", sub_modules)
-  println("smi_id_attrs:", smi_id_attrs)
+  // println("smi_id_attrs:", smi_id_attrs)
 
   val instances = smi_id.map{case (name, ids) =>
     ids.map{id => mutable.Map(
@@ -1073,7 +1103,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
   }.flatten
 
   apply("instances", instances)
-  println("instances", instances)
+  // println("instances", instances)
   
   apply("connections", connections.zipWithIndex.map{case (c, i) => i -> c}.toMap)
 
