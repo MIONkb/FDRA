@@ -213,7 +213,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         // val iob_index_base = if(numIOBSides>2) x * (cols + 1+ numIOBSides - 2 ) else x * (cols + 1)
         val iob_index_base = if(numIOBSides>2) x * (tile_cols + numIOBSides - 2)
                              else x * (tile_cols) 
-        println("iob_index_base:", iob_index_base, "i:", i)
         for (j <- 0 until tile_cols) {
           val y = if(numIOBSides>2) 2 * j + 2 else 2 * j + 1
           val index = iob_index_base + j + 1 + tile_numSubModules * tile // start from 1
@@ -222,7 +221,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           iob_attrs("tile") = tile
           iob_attrs("x") = x
           iob_attrs("y") = y
-          println("iob x, y", x, y)
           val iob_type = iob_posmap((tile, i, j))
           val iob_param = iob_typemap(iob_type)
           iob_attrs("iob_mode") = iob_param.mode
@@ -385,7 +383,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         //        else (i%2 + j%2) == 1
         //      }
         // val reged = gibsParam(i)(j).track_reged // gib_param.track_reged //
-        val reged = if(tile % 2 == 0) gibsParam(i)(j).track_reged else !(gibsParam(i)(j).track_reged) // gib_param.track_reged //
+        // val reged = if(tile % 2 == 0) gibsParam(i)(j).track_reged else !(gibsParam(i)(j).track_reged) // gib_param.track_reged //
+        val reged = gib_param.track_reged
         gib_attrs("track_reged") = reged
         gib_attrs("num_iopin_list") = gib_param.num_iopin_list
         gib_attrs("diag_iopin_connect") = gib_param.diag_iopin_connect
@@ -425,16 +424,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     /// Firstly, connect left most column gib with last tile
     //////////////////////////////////////
     if(tile > 0){
-      println("unconnectedIOBs:", unconnectedIOBs)
-      println("unconnectedGPEs:", unconnectedGPEs)
-      println("unconnectedGIBs:", unconnectedGIBs)
-      println("connections:", connections)
       // IOB connections to GIB
       for((iob_idx, iob) <- unconnectedIOBs){
         if(iob_idx == tile_cols - 1){
           val c_idx = iob_idx + tile_cols * numIOBSides * (tile - 1)
           val gib_idx = 0 + tile_cols * (tile_rows + 1) * tile
-          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
           iob.io.in.zipWithIndex.foreach { case (in, j) =>
             if (j % 2 != 0) {
               in := gibs(gib_idx).io.ipinNW(j / 2)
@@ -451,7 +445,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         else if(iob_idx == 2 * tile_cols - 1){
           val c_idx = iob_idx + tile_cols * numIOBSides * (tile - 1)
           val gib_idx = tile_rows * tile_cols + tile_cols * (tile_rows + 1) * tile
-          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
           iob.io.in.zipWithIndex.foreach { case (in, j) =>
             if (j % 2 != 0) {
               in := gibs(gib_idx).io.ipinSW(j / 2)
@@ -469,14 +462,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           assert(false)
         }
       }
-      println("connections:", connections)
 
       for(((i, j), gpe) <- unconnectedGPEs){
         val idx_c_pe = i*tile_cols + j + tile_cols * tile_rows * (tile - 1)
         val idx_sw = i*(tile_cols)+0 + tile_cols * (tile_rows + 1) * tile // in GIB's perspective
         val idx_nw = (i+1)*(tile_cols)+0 + tile_cols * (tile_rows + 1) * tile
-
-        println("idx_c_pe, idx_sw, idx_nw:", idx_c_pe, idx_sw, idx_nw)
         
         val gpe_param = gpe_typemap(gpe_posmap(tile - 1, i, j))
         val numOperand = gpe_param.num_input_per_operand.size // operand number
@@ -516,14 +506,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           // dontTouch(pes(idx_c).io.out) /// add by jhlou
         }
       }
-      println("before gib connections:", connections)
       // GIB to GIB connections
       if(numTrack > 0) {
-        println("gibs:", gibs)
         for(((i, j), gib) <- unconnectedGIBs){
           val idx_w = i * (tile_cols) + j + (tile_rows + 1) * tile_cols * (tile - 1)
           val idx_e = i * (tile_cols) + (tile_rows + 1) * tile_cols * tile
-          println("i , j , idx_w, idx_e, gib:", i, j, idx_w, idx_e, gib)
           gibs(idx_e).io.itrackW.zipWithIndex.foreach { case (in, k) =>
             in := gib.io.otrackE(k)
             val index1 = gibs(idx_e).iPortMap("itrackW" + k.toString)
@@ -540,7 +527,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         }
       }
     }
-    println("after gib connections:", connections)
+
     //// clear map
     unconnectedIOBs = mutable.Map[Int, IOB] ()
     unconnectedGPEs = mutable.Map[(Int, Int), GPE] ()
@@ -549,8 +536,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     //////////////////////////////////////
     /// Secondly, connect within this tile
     //////////////////////////////////////
-    // val portNameMap = gibs(0).portNameMap
-    println("before connections attribute:", connections)
     // IOB connections to GIB
     val done = Wire(Vec(numIOBSides * tile_cols, Bool()))
     // iobs.zipWithIndex.foreach { case (iob, i) =>
@@ -561,7 +546,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       iob.io.en := io.en(tile) && io.iob_ens(tile)(i)
       iob.io.sram <> io.srams(tile)(i)
       done(i) := iob.io.done || (!io.iob_ens(tile)(i).asBool)
-      println("i, iobIdx:", i, iobIdx)
+
       if(i < tile_cols - 1){ // top row
         val gibIdx = i + tile_cols * (tile_rows + 1) * tile
         iob.io.in.zipWithIndex.foreach { case (in, j) =>
@@ -660,7 +645,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     }
 
     io.done(tile) := RegNext(done.asUInt)
-    println("before PE to GIB connections attribute:", connections)
+
     // PE to GIB connections
     for(i <- 0 until tile_rows){
       for(j <- 0 until tile_cols){
@@ -831,14 +816,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     /////////////////////////////
     /// Thirdly, for the last tile , add one column of GIB at right side
     /////////////////////////////
-    println("smi_id:", smi_id)
     if(tile == tile_num - 1){
-      println("unconnectedIOBs:", unconnectedIOBs)
-      println("unconnectedGPEs:", unconnectedGPEs)
-      println("unconnectedGIBs:", unconnectedGIBs)
-
       /// generate gib
-      println("gib_typemap:", gib_typemap)
       for(i <- 0 to tile_rows){
         val gib_type = gib_posmap(tile, i, tile_cols)
         val gib_param = gib_typemap(gib_type)
@@ -851,7 +830,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         gib_attrs("y") = y
         gib_attrs("tile") = tile
 
-        println("x:", x, "y:", y, "index:",index , "gib_param:", gib_param)
         // if there are register behind the GIB
         //	    val reged = {
         //        if(trackRegedMode == 0) false
@@ -859,7 +837,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         //        else (i%2 + j%2) == 1
         // //      }
         // val reged = gibsParam(i)(tile_cols).track_reged // gib_param.track_reged //
-        val reged = if(tile % 2 == 0) gibsParam(i)(tile_cols).track_reged else !(gibsParam(i)(tile_cols).track_reged)
+        // val reged = if(tile % 2 == 0) gibsParam(i)(tile_cols).track_reged else !(gibsParam(i)(tile_cols).track_reged)
+        val reged = gib_param.track_reged
         gib_attrs("track_reged") = reged
         gib_attrs("num_iopin_list") = gib_param.num_iopin_list
         gib_attrs("diag_iopin_connect") = gib_param.diag_iopin_connect
@@ -895,7 +874,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         if(iob_idx == tile_cols - 1){
           val c_idx = iob_idx + tile_cols * numIOBSides * tile
           val gib_idx = (tile_rows + 1) * tile_cols + tile_cols * (tile_rows + 1) * tile
-          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
           iob.io.in.zipWithIndex.foreach { case (in, j) =>
             if (j % 2 != 0) {
               in := gibs(gib_idx).io.ipinNW(j / 2)
@@ -912,7 +890,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         else if(iob_idx == 2 * tile_cols - 1){
           val c_idx = iob_idx + tile_cols * numIOBSides * tile
           val gib_idx = (tile_rows + 1) * tile_cols + tile_rows + tile_cols * (tile_rows + 1) * tile
-          println("iob_idx, c_idx, gib_idx:", iob_idx, c_idx, gib_idx)
           iob.io.in.zipWithIndex.foreach { case (in, j) =>
             if (j % 2 != 0) {
               in := gibs(gib_idx).io.ipinSW(j / 2)
@@ -935,14 +912,11 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         val idx_c_pe = i*tile_cols + j + tile_cols * tile_rows * tile
         val idx_sw = (tile_rows + 1) * tile_cols + i + tile_cols * (tile_rows + 1) * tile // in GIB's perspective
         val idx_nw = (tile_rows + 1) * tile_cols + i + 1 + tile_cols * (tile_rows + 1) * tile
-        println("idx_c_pe, idx_sw, idx_nw:", idx_c_pe, idx_sw, idx_nw)
 
         val gpe_param = gpe_typemap(gpe_posmap(tile, i, j))
         val numOperand = gpe_param.num_input_per_operand.size // operand number
         val from_dir = gpesParam(i)(j).from_dir
 
-        println("idx_sw:", idx_sw, "idx_nw:", idx_nw, "gpe_param:", gpe_param, "from_dir:", from_dir, "numOperand:", numOperand)
-        println("numOperand:", numOperand, "from_dir:", from_dir)
         if(from_dir.contains(NORTHEAST)){
           val baseindex = from_dir.indexOf(NORTHEAST)
           for( k <- 0 until numOperand ){
@@ -1077,8 +1051,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_data := io.cfg_data
       }
     }
-    println("gibs:", gibs)
-    println("###########################\n################ NEXT TILE ##############")
   } /// end of multi tile
   
   // println("sm_id:", sm_id)

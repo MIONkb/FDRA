@@ -62,7 +62,7 @@ object VitraSpec{
     // tile parameters
     "tile_num_row" -> 2,  
     "tile_num_column" -> 2,  
-    "cgra_tile_num" -> 2,  
+    "cgra_tile_num" -> 1,  
 
     // 1.2. GPE attributes (default for all)
 //    "cgra_gpe_num_rf_reg" -> 1,

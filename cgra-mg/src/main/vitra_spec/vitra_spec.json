@@ -7,13 +7,7 @@
   }, {
     "max_delay" : 10,
     "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
-  }, {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   } ], [ {
-    "max_delay" : 10,
-    "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
-  }, {
     "max_delay" : 10,
     "operations" : [ "PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB" ]
   }, {
@@ -22,10 +16,9 @@
   } ] ],
   "id_width" : 6,
   "tile_num_row" : 2,
-  "cgra_tile_num" : 2,
+  "cgra_tile_num" : 1,
   "system_bus_beat_bits" : 64,
   "cgra_gpe_max_delay" : 10,
-  "spad_num_banks" : 12,
   "cgra_gpe_in_from_dir" : [ 4, 5, 7, 6 ],
   "cgra_lg_max_cycles" : 12,
   "axilite_addrspace" : 256,
@@ -38,13 +31,7 @@
   }, {
     "mode" : 1,
     "max_delay" : 10
-  }, {
-    "mode" : 1,
-    "max_delay" : 10
   } ], [ {
-    "mode" : 1,
-    "max_delay" : 10
-  }, {
     "mode" : 1,
     "max_delay" : 10
   }, {
@@ -59,6 +46,7 @@
   "operation_set_filename" : "operations.json",
   "dma_num_req_in_flight" : 8,
   "cgra_iob_sram_add_reg" : 2,
+  "tile_spad_num_banks" : 4,
   "cgra_iob_mode" : 1,
   "ls_stream_queue_depth" : 0,
   "cgra_data_width" : 16,
@@ -73,9 +61,6 @@
   }, {
     "diag_iopin_connect" : true,
     "fc_list" : [ 1, 1, 2 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 1, 1, 2 ]
   } ], [ {
     "diag_iopin_connect" : true,
     "fc_list" : [ 1, 1, 2 ]
@@ -85,13 +70,7 @@
   }, {
     "diag_iopin_connect" : true,
     "fc_list" : [ 1, 1, 2 ]
-  }, {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 1, 1, 2 ]
   } ], [ {
-    "diag_iopin_connect" : true,
-    "fc_list" : [ 1, 1, 2 ]
-  }, {
     "diag_iopin_connect" : true,
     "fc_list" : [ 1, 1, 2 ]
   }, {
@@ -109,7 +88,7 @@
   "cgra_lg_max_stride" : 13,
   "cgra_iob_num_sides" : 2,
   "cgra_lg_max_init" : 12,
-  "tile_num_column" : 3,
+  "tile_num_column" : 2,
   "cgra_gib_track_reged_mode" : 1,
   "cgra_adg_filename" : "cgra_adg.json",
   "cgra_cfg_blk_offset" : 3,

@@ -32,7 +32,7 @@ def parse_adg_and_generate_dot(adg_file, output_dot_file, enable_pos=False):
             node_type = instance["type"]
             tile, x, y = instance.get("tile", 0), instance.get("x", 0), instance.get("y", 0)
 
-            pos = f'{(tile) * tile_col * 2 + y * 2}, {x * 2}!'
+            pos = f'{(tile) * tile_col * 2 * 2 + y * 2}, {x * 2}!'
 
             if(x not in samex.keys()):
                 samex[x] = []
@@ -50,7 +50,7 @@ def parse_adg_and_generate_dot(adg_file, output_dot_file, enable_pos=False):
                 label = f'{node_id}({tile, x, y})'
                 Ops =  f'{", ".join(supported_ops)}'
                 
-                dot_file.write(f'{node_id}[label = "{label}" , operations= "{Ops}" color = black, shape="box"')
+                dot_file.write(f'{node_id}[label = "{label}" , operations= "{Ops}", color = black, shape="box"')
                 if(enable_pos):
                     dot_file.write(f', pos="{pos}"')
                 dot_file.write(f'];\n')

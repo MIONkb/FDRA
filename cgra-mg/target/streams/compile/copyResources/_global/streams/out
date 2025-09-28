@@ -1,6 +1,0 @@
-[0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/resources/cgra_adg1.json,/home/jhlou/chipyard/generators/fdra/cgra-mg/target/scala-2.13/classes/cgra_adg1.json)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/resources/tram_spec.json,/home/jhlou/chipyard/generators/fdra/cgra-mg/target/scala-2.13/classes/tram_spec.json)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/resources/cgra_adg.json,/home/jhlou/chipyard/generators/fdra/cgra-mg/target/scala-2.13/classes/cgra_adg.json)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/resources/operations.json,/home/jhlou/chipyard/generators/fdra/cgra-mg/target/scala-2.13/classes/operations.json)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/resources/axilite_spec.json,/home/jhlou/chipyard/generators/fdra/cgra-mg/target/scala-2.13/classes/axilite_spec.json)[0m

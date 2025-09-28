@@ -71,21 +71,21 @@ case class GibParam(
 
   def == (gib : GibParam):Boolean = {
 
-    if(num_track == gib.num_track &&
-    diag_iopin_connect == gib.diag_iopin_connect &&
-    fc_list == gib.fc_list &&
-    track_directions == gib.track_directions &&
-    num_iopin_list == gib.num_iopin_list){
-      println("this.num_iopin_list:", num_iopin_list)
-      println("that.num_iopin_list:", gib.num_iopin_list)
-    }
-
+    // if(num_track == gib.num_track &&
+    // diag_iopin_connect == gib.diag_iopin_connect &&
+    // fc_list == gib.fc_list &&
+    // track_directions == gib.track_directions &&
+    // num_iopin_list == gib.num_iopin_list){
+    //   println("this.num_iopin_list:", num_iopin_list)
+    //   println("that.num_iopin_list:", gib.num_iopin_list)
+    // }
 
     num_track == gib.num_track &&
     diag_iopin_connect == gib.diag_iopin_connect &&
     fc_list == gib.fc_list &&
     track_directions == gib.track_directions &&
-    num_iopin_list == gib.num_iopin_list
+    num_iopin_list == gib.num_iopin_list && 
+    track_reged == gib.track_reged
   }
 
 }
@@ -468,16 +468,14 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
           else 0
         }
         // println("num_iopin_list:", num_iopin_list)
-        println("gib:", gib)
         gib.num_iopin_list = num_iopin_list
-        println("gib.num_iopin_list:", gib.num_iopin_list)
         // if there are register behind the GIB
         val reged = {
           if(trackRegedMode == 0) false
           else if(trackRegedMode == 2) true
           else (i%2 + j%2) == 1
         }
-        gib.track_reged= reged
+        gib.track_reged = if(tile % 2 == 1 && tile_cols % 2 == 1) !reged else reged
         // which side has tracks
         val trackdirbuf : ListBuffer[Int] = ListBuffer()
         if(j > 0 || tile > 0) trackdirbuf.append( WEST ) // WEST
@@ -487,9 +485,7 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
         gib.track_directions = trackdirbuf
         // find the type of each GIB
         val res = gib_typemap.find(ins => ins._2 == gib)
-        println("gib_typemap:", gib_typemap)
-        println("gib:", gib)
-        println("res:", res)
+
         val type_id = {
           if(res.isDefined){ // find a type
             res.get._1
@@ -499,7 +495,7 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
             new_type_id
           }
         }
-        println("tile, i , j: gib type", tile, i, j, type_id)
+        println("tile, i , j, tracked_reg: gib type", tile, i, j,gib.track_reged, type_id)
         gib_posmap += ((tile, i, j) -> type_id)
       }
     }
