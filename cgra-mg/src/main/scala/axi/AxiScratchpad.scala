@@ -31,7 +31,7 @@ class AXI4Scratchpad(
 
               //// B port parameters
               bPortBytes: Int = 4, /// 32bit
-              hasMask: Boolean = false
+              hasMask: Boolean = true
           ) extends Module {
 
   /// set axi4 Parameters
@@ -53,7 +53,6 @@ class AXI4Scratchpad(
   println("lgSizeLastBlock", lgSizeLastBlock)
   println("cfgSpadBanks", cfgSpadBanks)
   println("lgDepthLast", lgDepthLast)
-
 
   require(isPow2(DataWidth))
   val axi4Param = new AXI4BundleParameters(
@@ -179,7 +178,7 @@ class AXI4Scratchpad(
         sp.a.addr       := Mux(we, wr_spad_addr, rd_spad_addr)
         sp.a.en         := we | re
         sp.a.din        := wrIE.data
-        sp.a.we         := {if(hasMask) ~wrIE.strb else we}
+        sp.a.we         := {if(hasMask) wrIE.strb & Fill(wrIE.strb.getWidth, we) else we}
         // sp.a.strb       := ~wrIE.strb
       }.otherwise{
         sp.a.addr       := DontCare
@@ -188,7 +187,7 @@ class AXI4Scratchpad(
         sp.a.we         := 0.U
       }
     }
-
+  
     /////////////////////
     /// last config spad
     /////////////////////
@@ -204,7 +203,7 @@ class AXI4Scratchpad(
       spad_last_bank_io.a.addr   := Mux(we_last, wr_last_addr, rd_last_addr)
       spad_last_bank_io.a.en     := we_last | re_last
       spad_last_bank_io.a.din    := wrIE.data
-      spad_last_bank_io.a.we     := {if(hasMask) ~wrIE.strb else we_last}
+      spad_last_bank_io.a.we     := {if(hasMask) wrIE.strb & Fill(wrIE.strb.getWidth, we_last) else we_last}
       // sp.a.strb       := ~wrIE.strb
     }.otherwise{
       spad_last_bank_io.a.addr   := DontCare

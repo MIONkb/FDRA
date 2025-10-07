@@ -119,7 +119,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   val dataWidthSramCfg = attrs("spad_data_width").asInstanceOf[Int] // data width in bit
   val byteWidthSramCfg = dataWidthSramCfg / 8
   val addrWidthSramCfg = attrs("spad_cfg_lg_size").asInstanceOf[Int] - log2Ceil(dataWidthSramCfg/8) // add 1 per data
-  val hasMaskSram = false // attrs("cgra_iob_sram_has_mask").asInstanceOf[Boolean]
+  val hasMaskSram = attrs("cgra_iob_sram_has_mask").asInstanceOf[Boolean]
   val hasMaskSramCfg = false  // if has write data byte mask
   val readLatencySramCfg = 1  // read latency
   val coalesceBanksIOB = attrs("cgra_iob_sram_banks_coalesce").asInstanceOf[Int]
@@ -147,13 +147,14 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   ////////////////////////////////
   //// Registers address map defination
   ////////////////////////////////
-  val Num_regs_cfg_base_addr =  (cfgAddrWidth / AxiLiteAddrWidth) + 1
-  val Num_regs_cfg_num = (cfgAddrWidth / AxiLiteAddrWidth) + 1
-  val Num_regs_cfg_en  = (cfgAddrWidth / AxiLiteAddrWidth) + 1
+  val Num_regs_cfg_base_addr =  (cfgAddrWidth / AxiLiteDataWidth) + 1
+  val Num_regs_cfg_num = (cfgAddrWidth / AxiLiteDataWidth) + 1
+  val Num_regs_cfg_en  = (cfgAddrWidth / AxiLiteDataWidth) + 1
   val Num_reg_cfg_en_tile = (nTiles / AxiLiteDataWidth) + 1
   val Num_regs_iob_ens = (nTiles * nBanksIOB + AxiLiteDataWidth - 1) / AxiLiteDataWidth 
   // val Num_regs_start   = (nTiles / AxiLiteDataWidth) + 1
   val Num_regs_done    = (nTiles / AxiLiteDataWidth) + 1
+  val offsetBits       = math.min(/*4bytes*/ 2, log2Ceil(AxiLiteDataWidth))
 
   //// writable regs
   val reg_cfg_base_addr = Seq.fill(Num_regs_cfg_base_addr){RegInit(0.U(AxiLiteDataWidth.W))}
@@ -173,23 +174,23 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   val regMap : Map[UInt, UInt] = (
     /// cfg regs
     (0 until Num_regs_cfg_base_addr).map { i =>
-      reg_cfg_base_addr(i) -> (i).U
+      reg_cfg_base_addr(i) -> (i << offsetBits).U
     } ++ (0 until Num_regs_cfg_num).map { i =>
-      reg_cfg_num(i)       -> (i + Num_regs_cfg_base_addr).U
+      reg_cfg_num(i)       -> ((i + Num_regs_cfg_base_addr) << offsetBits).U
     } ++ (0 until Num_reg_cfg_en_tile).map { i =>
-      reg_cfg_en_tile(i)   -> (i + Num_regs_cfg_base_addr + Num_regs_cfg_num).U
+      reg_cfg_en_tile(i)   -> ((i + Num_regs_cfg_base_addr + Num_regs_cfg_num)<< offsetBits).U
     } ++ Map(
-      reg_cfg_en        -> (Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile).U,
+      reg_cfg_en        -> ((Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile) << offsetBits).U,
     ) 
     /// exe regs
     ++ (0 until Num_regs_iob_ens).map { i =>
-      reg_exe_iob_ens(i)  -> (i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1).U
+      reg_exe_iob_ens(i)  -> ((i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1) << offsetBits).U
     } ++ Map(
-      reg_exe_start     -> (Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1 
-                            + Num_regs_iob_ens).U,
+      reg_exe_start     -> ((Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1 
+                            + Num_regs_iob_ens) << offsetBits).U,
     ) ++ (0 until Num_regs_done).map { i =>
-      reg_exe_done(i)     -> (i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1 
-                              + Num_regs_iob_ens + 0x1).U
+      reg_exe_done(i)     -> ((i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1 
+                              + Num_regs_iob_ens + 0x1) << offsetBits).U
     }
   ).toMap
 
@@ -226,7 +227,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
 
   printIR(axil_reg_spec_filename)
   println(s"axilite reg spec path: $axil_reg_spec_filename")
-  println(regMap, "regMap")
+  // println(regMap, "regMap")
   ////////////////////////////////
   //// End of registers address map defination
   ////////////////////////////////
@@ -286,7 +287,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
       //// could emit cfg or exe
       when(reg_cfg_en){
         cgra_state    := s_cgra_cfg_wait
-        cfg_base_addr := Cat(reg_cfg_base_addr.reverse)
+        cfg_base_addr := Cat(reg_cfg_base_addr.reverse)(AxiLiteDataWidth * Num_regs_cfg_base_addr - 1, log2Ceil(byteWidthSramCfg))
         cfg_num       := Cat(reg_cfg_num.reverse)
         cfg_en_tiles  := Cat(reg_cfg_en_tile.reverse)
       }

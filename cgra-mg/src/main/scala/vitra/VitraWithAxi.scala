@@ -36,8 +36,8 @@ object VitraParam {
   val FPGAImp = false
   val spec_dir = (
     if(FPGAImp == true) "/home/jhlou/CGRVOPT/AXIFPGA/spec"
-    // else "/home/jhlou/CGRVOPT/MatrixMeld/rtl/spec"
-    else "/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/vitra_spec"
+    else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl/spec"
+    // else "/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/vitra_spec"
   )
 
   val vitra_spec_filename = spec_dir + "/vitra_spec.json"
@@ -78,7 +78,7 @@ class VitraWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends M
 
   val lgMaxDataLen = spadAddrWidth
   val spadAddrNum = VitraSpec.attrs("spad_addr_num").asInstanceOf[Int]
-  val hasMask = false //true // spadDataWidth != cgraDataWidth
+  val hasMask = VitraSpec.attrs("cgra_iob_sram_has_mask").asInstanceOf[Boolean] //true // spadDataWidth != cgraDataWidth
 
   val idWidth = VitraSpec.attrs("id_width").asInstanceOf[Int]
   val nReqInflight = VitraSpec.attrs("dma_num_req_in_flight").asInstanceOf[Int]

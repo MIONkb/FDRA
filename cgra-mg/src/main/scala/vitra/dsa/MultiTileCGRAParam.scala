@@ -152,8 +152,11 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
 //  val maxDelayIob = attrs("cgra_iob_max_delay").asInstanceOf[Int]          // max delay cycles of the DelayPipe in IOB
 //  val numInIOCtrl = { if(iobMode == FIFO_MODE) 1 else 2 }
   val tile_numIOB = if(numIOBSides>2) 2*tile_cols+(numIOBSides-2)*tile_rows  else numIOBSides*tile_cols
+
   require(numIOBSides<=2)
   val tile_numSubModules = numIOBSides*tile_cols/*iobs*/ + tile_rows*tile_cols/*gpes*/ + (tile_rows + 1)*tile_cols/*gibs*/
+  var cfgTileOffset = tile_numSubModules << cfgBlkOffset
+  
   val iobModeNames = Map(
     FIFO_MODE -> "FIFO_MODE",
     SRAM_MODE -> "SRAM_MODE",
@@ -194,27 +197,30 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
   var cfg_spad_data_width : Int = cfgDataWidth
 
   for(tile <- 0 until tile_num){
-    ///// set coalesce after initialize each tile
-    // if(attrs.contains("cgra_iob_sram_banks_coalesce")){
-    //   // divide all the banks into n groups where the internal banks are coalesced
-    //   // eg. {0, 1}, {2, 3}, {4, 5},...
-    //   val coalesceBanksIOB = attrs("cgra_iob_sram_banks_coalesce").asInstanceOf[Int]
-    //   for(i <- 0 until tile_numIOB by coalesceBanksIOB){
-    //     val coalBanks = coalesceBanksIOB min (tile_numIOB-i) // last group may have banks no more than coalesceBanks
-    //     val range = (i until (i+coalBanks)).toList
-    //     range.foreach{ x =>
-    //       iob_to_spad_banks += x -> range
-    //     }
-    //   }
-    //   spad_bank_lg_size = attrs("spad_bank_lg_size").asInstanceOf[Int]
-    //   cfg_spad_lg_size = attrs("spad_cfg_lg_size").asInstanceOf[Int]
-    //   cfg_spad_data_width = attrs("spad_data_width").asInstanceOf[Int]
-    // }else{
-    //   (0 until tile_numIOB).foreach{ x =>
-    //     iob_to_spad_banks += x -> List(x)
-    //   }
-    //   spad_bank_lg_size = attrs("cgra_iob_sram_addr_width").asInstanceOf[Int]
-    // }
+    /// set coalesce after initialize each tile
+    if(attrs.contains("cgra_iob_sram_banks_coalesce")){
+      // divide all the banks into n groups where the internal banks are coalesced
+      // eg. {0, 1}, {2, 3}, {4, 5},...
+      // val coalesceBanksIOB = attrs("cgra_iob_sram_banks_coalesce").asInstanceOf[Int]
+      val i_offset = tile*tile_numIOB
+      for(i <- 0 until tile_numIOB by tile_numIOB/2){
+        val coalBanks = tile_numIOB/2 min (tile_numIOB-(i)) // last group may have banks no more than coalesceBanks
+        // println(i, coalBanks)
+        val range = (i+i_offset until (i+coalBanks+i_offset)).toList
+        range.foreach{ x =>
+          iob_to_spad_banks += x -> range
+        }
+        // println(range)
+      }
+      spad_bank_lg_size = attrs("spad_bank_lg_size").asInstanceOf[Int]
+      cfg_spad_lg_size = attrs("spad_cfg_lg_size").asInstanceOf[Int]
+      cfg_spad_data_width = attrs("spad_data_width").asInstanceOf[Int]
+    }else{
+      (0 until tile_numIOB).foreach{ x =>
+        iob_to_spad_banks += x -> List(x)
+      }
+      spad_bank_lg_size = attrs("cgra_iob_sram_addr_width").asInstanceOf[Int]
+    }
 
 
     // find different types of GPEs (as submodules) according to the GPE Parameter
@@ -258,8 +264,6 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
     // get the type of each GIB (as instance)
     for(i <- 0 until gibsParam.size){
       for(j <- 0 until gibsParam.head.size){
-        // println("gib param:", tile, i ,j)
-        println("#########################")
         val gib = gibsParam(i)(j).copy()
         val num_iopin_list = mutable.Map[String, Int]()
         num_iopin_list += "ipin_nw" -> {
@@ -495,7 +499,7 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
             new_type_id
           }
         }
-        println("tile, i , j, tracked_reg: gib type", tile, i, j,gib.track_reged, type_id)
+        // println("tile, i , j, tracked_reg: gib type", tile, i, j,gib.track_reged, type_id)
         gib_posmap += ((tile, i, j) -> type_id)
       }
     }

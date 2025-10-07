@@ -1,15 +1,16 @@
 {
   "axilite_addr_bit_with" : 8,
   "reg_bit_width" : 8,
-  "tile_num" : 1,
+  "tile_num" : 3,
   "tile_iob_bank_num" : 4,
+  "reg_exe_iob_ens_1" : "0x7",
   "reg_exe_iob_ens_0" : "0x6",
   "reg_cfg_en_tile_0" : "0x4",
   "reg_cfg_base_addr_1" : "0x1",
   "reg_cfg_num_1" : "0x3",
   "reg_cfg_base_addr_0" : "0x0",
   "reg_cfg_en" : "0x5",
-  "reg_exe_start" : "0x7",
+  "reg_exe_start" : "0x8",
   "reg_cfg_num_0" : "0x2",
-  "reg_exe_done_0" : "0x8"
+  "reg_exe_done_0" : "0x9"
 }

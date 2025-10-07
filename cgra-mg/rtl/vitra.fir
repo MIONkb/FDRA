@@ -2,103 +2,183 @@ circuit vitra :
   module TrueDualPortSRAM_16_10 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_1 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_2 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_3 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAMAsym :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
 
     inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10 @[SRAM.scala 249:32]
     TrueDualPortSRAM_16_10.clock <= clock
@@ -113,56 +193,60 @@ circuit vitra :
     TrueDualPortSRAM_16_10_3.clock <= clock
     TrueDualPortSRAM_16_10_3.reset <= reset
     TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10.io.a.din <= _T @[SRAM.scala 261:21]
-    node _T_1 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_2 = eq(_T_1, UInt<1>("h0")) @[SRAM.scala 262:55]
-    node _T_3 = and(io.b.en, _T_2) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10.io.b.en <= _T_3 @[SRAM.scala 262:20]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_4 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10.io.b.addr <= _T_4 @[SRAM.scala 264:22]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_1.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_5 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_1.io.a.din <= _T_5 @[SRAM.scala 261:21]
-    node _T_6 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_7 = eq(_T_6, UInt<1>("h1")) @[SRAM.scala 262:55]
-    node _T_8 = and(io.b.en, _T_7) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_1.io.b.en <= _T_8 @[SRAM.scala 262:20]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_9 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_9 @[SRAM.scala 264:22]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_2.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_10 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_2.io.a.din <= _T_10 @[SRAM.scala 261:21]
-    node _T_11 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_12 = eq(_T_11, UInt<2>("h2")) @[SRAM.scala 262:55]
-    node _T_13 = and(io.b.en, _T_12) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_2.io.b.en <= _T_13 @[SRAM.scala 262:20]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_14 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_14 @[SRAM.scala 264:22]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_3.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_15 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_3.io.a.din <= _T_15 @[SRAM.scala 261:21]
-    node _T_16 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_17 = eq(_T_16, UInt<2>("h3")) @[SRAM.scala 262:55]
-    node _T_18 = and(io.b.en, _T_17) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_3.io.b.en <= _T_18 @[SRAM.scala 262:20]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_19 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_19 @[SRAM.scala 264:22]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
     node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
     node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
@@ -189,103 +273,183 @@ circuit vitra :
   module TrueDualPortSRAM_16_10_4 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_5 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_6 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_7 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAMAsym_1 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
 
     inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_4 @[SRAM.scala 249:32]
     TrueDualPortSRAM_16_10.clock <= clock
@@ -300,56 +464,60 @@ circuit vitra :
     TrueDualPortSRAM_16_10_3.clock <= clock
     TrueDualPortSRAM_16_10_3.reset <= reset
     TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10.io.a.din <= _T @[SRAM.scala 261:21]
-    node _T_1 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_2 = eq(_T_1, UInt<1>("h0")) @[SRAM.scala 262:55]
-    node _T_3 = and(io.b.en, _T_2) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10.io.b.en <= _T_3 @[SRAM.scala 262:20]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_4 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10.io.b.addr <= _T_4 @[SRAM.scala 264:22]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_1.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_5 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_1.io.a.din <= _T_5 @[SRAM.scala 261:21]
-    node _T_6 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_7 = eq(_T_6, UInt<1>("h1")) @[SRAM.scala 262:55]
-    node _T_8 = and(io.b.en, _T_7) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_1.io.b.en <= _T_8 @[SRAM.scala 262:20]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_9 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_9 @[SRAM.scala 264:22]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_2.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_10 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_2.io.a.din <= _T_10 @[SRAM.scala 261:21]
-    node _T_11 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_12 = eq(_T_11, UInt<2>("h2")) @[SRAM.scala 262:55]
-    node _T_13 = and(io.b.en, _T_12) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_2.io.b.en <= _T_13 @[SRAM.scala 262:20]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_14 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_14 @[SRAM.scala 264:22]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_3.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_15 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_3.io.a.din <= _T_15 @[SRAM.scala 261:21]
-    node _T_16 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_17 = eq(_T_16, UInt<2>("h3")) @[SRAM.scala 262:55]
-    node _T_18 = and(io.b.en, _T_17) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_3.io.b.en <= _T_18 @[SRAM.scala 262:20]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_19 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_19 @[SRAM.scala 264:22]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
     node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
     node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
@@ -376,103 +544,183 @@ circuit vitra :
   module TrueDualPortSRAM_16_10_8 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_9 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_10 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_11 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAMAsym_2 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
 
     inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_8 @[SRAM.scala 249:32]
     TrueDualPortSRAM_16_10.clock <= clock
@@ -487,56 +735,60 @@ circuit vitra :
     TrueDualPortSRAM_16_10_3.clock <= clock
     TrueDualPortSRAM_16_10_3.reset <= reset
     TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10.io.a.din <= _T @[SRAM.scala 261:21]
-    node _T_1 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_2 = eq(_T_1, UInt<1>("h0")) @[SRAM.scala 262:55]
-    node _T_3 = and(io.b.en, _T_2) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10.io.b.en <= _T_3 @[SRAM.scala 262:20]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_4 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10.io.b.addr <= _T_4 @[SRAM.scala 264:22]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_1.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_5 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_1.io.a.din <= _T_5 @[SRAM.scala 261:21]
-    node _T_6 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_7 = eq(_T_6, UInt<1>("h1")) @[SRAM.scala 262:55]
-    node _T_8 = and(io.b.en, _T_7) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_1.io.b.en <= _T_8 @[SRAM.scala 262:20]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_9 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_9 @[SRAM.scala 264:22]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_2.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_10 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_2.io.a.din <= _T_10 @[SRAM.scala 261:21]
-    node _T_11 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_12 = eq(_T_11, UInt<2>("h2")) @[SRAM.scala 262:55]
-    node _T_13 = and(io.b.en, _T_12) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_2.io.b.en <= _T_13 @[SRAM.scala 262:20]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_14 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_14 @[SRAM.scala 264:22]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_3.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_15 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_3.io.a.din <= _T_15 @[SRAM.scala 261:21]
-    node _T_16 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_17 = eq(_T_16, UInt<2>("h3")) @[SRAM.scala 262:55]
-    node _T_18 = and(io.b.en, _T_17) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_3.io.b.en <= _T_18 @[SRAM.scala 262:20]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_19 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_19 @[SRAM.scala 264:22]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
     node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
     node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
@@ -563,103 +815,183 @@ circuit vitra :
   module TrueDualPortSRAM_16_10_12 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_13 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_14 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAM_16_10_15 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
 
-    smem mem : UInt<16> [1024] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module TrueDualPortSRAMAsym_3 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
 
     inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_12 @[SRAM.scala 249:32]
     TrueDualPortSRAM_16_10.clock <= clock
@@ -674,56 +1006,1144 @@ circuit vitra :
     TrueDualPortSRAM_16_10_3.clock <= clock
     TrueDualPortSRAM_16_10_3.reset <= reset
     TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10.io.a.din <= _T @[SRAM.scala 261:21]
-    node _T_1 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_2 = eq(_T_1, UInt<1>("h0")) @[SRAM.scala 262:55]
-    node _T_3 = and(io.b.en, _T_2) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10.io.b.en <= _T_3 @[SRAM.scala 262:20]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_4 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10.io.b.addr <= _T_4 @[SRAM.scala 264:22]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_1.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_5 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_1.io.a.din <= _T_5 @[SRAM.scala 261:21]
-    node _T_6 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_7 = eq(_T_6, UInt<1>("h1")) @[SRAM.scala 262:55]
-    node _T_8 = and(io.b.en, _T_7) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_1.io.b.en <= _T_8 @[SRAM.scala 262:20]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_9 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_9 @[SRAM.scala 264:22]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_2.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_10 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_2.io.a.din <= _T_10 @[SRAM.scala 261:21]
-    node _T_11 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_12 = eq(_T_11, UInt<2>("h2")) @[SRAM.scala 262:55]
-    node _T_13 = and(io.b.en, _T_12) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_2.io.b.en <= _T_13 @[SRAM.scala 262:20]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_14 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_14 @[SRAM.scala 264:22]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
     TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
-    TrueDualPortSRAM_16_10_3.io.a.we <= io.a.we @[SRAM.scala 258:22]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
     TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
-    node _T_15 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
-    TrueDualPortSRAM_16_10_3.io.a.din <= _T_15 @[SRAM.scala 261:21]
-    node _T_16 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
-    node _T_17 = eq(_T_16, UInt<2>("h3")) @[SRAM.scala 262:55]
-    node _T_18 = and(io.b.en, _T_17) @[SRAM.scala 262:31]
-    TrueDualPortSRAM_16_10_3.io.b.en <= _T_18 @[SRAM.scala 262:20]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
     TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
-    node _T_19 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
-    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_19 @[SRAM.scala 264:22]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
+    node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
+    node _io_a_dout_T = cat(io_a_dout_hi, io_a_dout_lo) @[Cat.scala 33:92]
+    io.a.dout <= _io_a_dout_T @[SRAM.scala 267:15]
+    reg benRegs_0 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_0) @[SRAM.scala 268:41]
+    benRegs_0 <= TrueDualPortSRAM_16_10.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_1) @[SRAM.scala 268:41]
+    benRegs_1 <= TrueDualPortSRAM_16_10_1.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_2 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_2) @[SRAM.scala 268:41]
+    benRegs_2 <= TrueDualPortSRAM_16_10_2.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_3 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_3) @[SRAM.scala 268:41]
+    benRegs_3 <= TrueDualPortSRAM_16_10_3.io.b.en @[SRAM.scala 268:41]
+    node _io_b_dout_T = mux(benRegs_3, TrueDualPortSRAM_16_10_3.io.b.dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_b_dout_T_1 = mux(benRegs_2, TrueDualPortSRAM_16_10_2.io.b.dout, _io_b_dout_T) @[Mux.scala 101:16]
+    node _io_b_dout_T_2 = mux(benRegs_1, TrueDualPortSRAM_16_10_1.io.b.dout, _io_b_dout_T_1) @[Mux.scala 101:16]
+    node _io_b_dout_T_3 = mux(benRegs_0, TrueDualPortSRAM_16_10.io.b.dout, _io_b_dout_T_2) @[Mux.scala 101:16]
+    io.b.dout <= _io_b_dout_T_3 @[SRAM.scala 269:15]
+
+  module TrueDualPortSRAM_16_10_16 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_17 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_18 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_19 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAMAsym_4 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_16 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10.clock <= clock
+    TrueDualPortSRAM_16_10.reset <= reset
+    inst TrueDualPortSRAM_16_10_1 of TrueDualPortSRAM_16_10_17 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_1.clock <= clock
+    TrueDualPortSRAM_16_10_1.reset <= reset
+    inst TrueDualPortSRAM_16_10_2 of TrueDualPortSRAM_16_10_18 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_2.clock <= clock
+    TrueDualPortSRAM_16_10_2.reset <= reset
+    inst TrueDualPortSRAM_16_10_3 of TrueDualPortSRAM_16_10_19 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_3.clock <= clock
+    TrueDualPortSRAM_16_10_3.reset <= reset
+    TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
+    node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
+    node _io_a_dout_T = cat(io_a_dout_hi, io_a_dout_lo) @[Cat.scala 33:92]
+    io.a.dout <= _io_a_dout_T @[SRAM.scala 267:15]
+    reg benRegs_0 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_0) @[SRAM.scala 268:41]
+    benRegs_0 <= TrueDualPortSRAM_16_10.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_1) @[SRAM.scala 268:41]
+    benRegs_1 <= TrueDualPortSRAM_16_10_1.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_2 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_2) @[SRAM.scala 268:41]
+    benRegs_2 <= TrueDualPortSRAM_16_10_2.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_3 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_3) @[SRAM.scala 268:41]
+    benRegs_3 <= TrueDualPortSRAM_16_10_3.io.b.en @[SRAM.scala 268:41]
+    node _io_b_dout_T = mux(benRegs_3, TrueDualPortSRAM_16_10_3.io.b.dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_b_dout_T_1 = mux(benRegs_2, TrueDualPortSRAM_16_10_2.io.b.dout, _io_b_dout_T) @[Mux.scala 101:16]
+    node _io_b_dout_T_2 = mux(benRegs_1, TrueDualPortSRAM_16_10_1.io.b.dout, _io_b_dout_T_1) @[Mux.scala 101:16]
+    node _io_b_dout_T_3 = mux(benRegs_0, TrueDualPortSRAM_16_10.io.b.dout, _io_b_dout_T_2) @[Mux.scala 101:16]
+    io.b.dout <= _io_b_dout_T_3 @[SRAM.scala 269:15]
+
+  module TrueDualPortSRAM_16_10_20 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_21 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_22 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_23 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAMAsym_5 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_20 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10.clock <= clock
+    TrueDualPortSRAM_16_10.reset <= reset
+    inst TrueDualPortSRAM_16_10_1 of TrueDualPortSRAM_16_10_21 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_1.clock <= clock
+    TrueDualPortSRAM_16_10_1.reset <= reset
+    inst TrueDualPortSRAM_16_10_2 of TrueDualPortSRAM_16_10_22 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_2.clock <= clock
+    TrueDualPortSRAM_16_10_2.reset <= reset
+    inst TrueDualPortSRAM_16_10_3 of TrueDualPortSRAM_16_10_23 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_3.clock <= clock
+    TrueDualPortSRAM_16_10_3.reset <= reset
+    TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
+    node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
+    node _io_a_dout_T = cat(io_a_dout_hi, io_a_dout_lo) @[Cat.scala 33:92]
+    io.a.dout <= _io_a_dout_T @[SRAM.scala 267:15]
+    reg benRegs_0 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_0) @[SRAM.scala 268:41]
+    benRegs_0 <= TrueDualPortSRAM_16_10.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_1) @[SRAM.scala 268:41]
+    benRegs_1 <= TrueDualPortSRAM_16_10_1.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_2 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_2) @[SRAM.scala 268:41]
+    benRegs_2 <= TrueDualPortSRAM_16_10_2.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_3 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_3) @[SRAM.scala 268:41]
+    benRegs_3 <= TrueDualPortSRAM_16_10_3.io.b.en @[SRAM.scala 268:41]
+    node _io_b_dout_T = mux(benRegs_3, TrueDualPortSRAM_16_10_3.io.b.dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_b_dout_T_1 = mux(benRegs_2, TrueDualPortSRAM_16_10_2.io.b.dout, _io_b_dout_T) @[Mux.scala 101:16]
+    node _io_b_dout_T_2 = mux(benRegs_1, TrueDualPortSRAM_16_10_1.io.b.dout, _io_b_dout_T_1) @[Mux.scala 101:16]
+    node _io_b_dout_T_3 = mux(benRegs_0, TrueDualPortSRAM_16_10.io.b.dout, _io_b_dout_T_2) @[Mux.scala 101:16]
+    io.b.dout <= _io_b_dout_T_3 @[SRAM.scala 269:15]
+
+  module TrueDualPortSRAM_16_10_24 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_25 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_26 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_27 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAMAsym_6 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_24 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10.clock <= clock
+    TrueDualPortSRAM_16_10.reset <= reset
+    inst TrueDualPortSRAM_16_10_1 of TrueDualPortSRAM_16_10_25 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_1.clock <= clock
+    TrueDualPortSRAM_16_10_1.reset <= reset
+    inst TrueDualPortSRAM_16_10_2 of TrueDualPortSRAM_16_10_26 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_2.clock <= clock
+    TrueDualPortSRAM_16_10_2.reset <= reset
+    inst TrueDualPortSRAM_16_10_3 of TrueDualPortSRAM_16_10_27 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_3.clock <= clock
+    TrueDualPortSRAM_16_10_3.reset <= reset
+    TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
+    node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
+    node _io_a_dout_T = cat(io_a_dout_hi, io_a_dout_lo) @[Cat.scala 33:92]
+    io.a.dout <= _io_a_dout_T @[SRAM.scala 267:15]
+    reg benRegs_0 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_0) @[SRAM.scala 268:41]
+    benRegs_0 <= TrueDualPortSRAM_16_10.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_1) @[SRAM.scala 268:41]
+    benRegs_1 <= TrueDualPortSRAM_16_10_1.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_2 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_2) @[SRAM.scala 268:41]
+    benRegs_2 <= TrueDualPortSRAM_16_10_2.io.b.en @[SRAM.scala 268:41]
+    reg benRegs_3 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), benRegs_3) @[SRAM.scala 268:41]
+    benRegs_3 <= TrueDualPortSRAM_16_10_3.io.b.en @[SRAM.scala 268:41]
+    node _io_b_dout_T = mux(benRegs_3, TrueDualPortSRAM_16_10_3.io.b.dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_b_dout_T_1 = mux(benRegs_2, TrueDualPortSRAM_16_10_2.io.b.dout, _io_b_dout_T) @[Mux.scala 101:16]
+    node _io_b_dout_T_2 = mux(benRegs_1, TrueDualPortSRAM_16_10_1.io.b.dout, _io_b_dout_T_1) @[Mux.scala 101:16]
+    node _io_b_dout_T_3 = mux(benRegs_0, TrueDualPortSRAM_16_10.io.b.dout, _io_b_dout_T_2) @[Mux.scala 101:16]
+    io.b.dout <= _io_b_dout_T_3 @[SRAM.scala 269:15]
+
+  module TrueDualPortSRAM_16_10_28 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_29 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_30 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAM_16_10_31 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<10>, flip din : UInt<16>, dout : UInt<16>}}
+
+    smem mem : UInt<8>[2] [1024] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+      else :
+        node _io_a_dout_T = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_5 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_5 : @[SRAM.scala 63:30]
+        node _T_6 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_7 = bits(_T_6, 0, 0) @[SRAM.scala 65:28]
+        when _T_7 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_8 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_9 = bits(_T_8, 0, 0) @[SRAM.scala 65:28]
+        when _T_9 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+      else :
+        node _io_b_dout_T = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
+
+
+  module TrueDualPortSRAMAsym_7 :
+    input clock : Clock
+    input reset : Reset
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<10>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst TrueDualPortSRAM_16_10 of TrueDualPortSRAM_16_10_28 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10.clock <= clock
+    TrueDualPortSRAM_16_10.reset <= reset
+    inst TrueDualPortSRAM_16_10_1 of TrueDualPortSRAM_16_10_29 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_1.clock <= clock
+    TrueDualPortSRAM_16_10_1.reset <= reset
+    inst TrueDualPortSRAM_16_10_2 of TrueDualPortSRAM_16_10_30 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_2.clock <= clock
+    TrueDualPortSRAM_16_10_2.reset <= reset
+    inst TrueDualPortSRAM_16_10_3 of TrueDualPortSRAM_16_10_31 @[SRAM.scala 249:32]
+    TrueDualPortSRAM_16_10_3.clock <= clock
+    TrueDualPortSRAM_16_10_3.reset <= reset
+    TrueDualPortSRAM_16_10.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T = bits(io.a.we, 1, 0) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10.io.a.we <= _T @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_1 = bits(io.a.din, 15, 0) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10.io.a.din <= _T_1 @[SRAM.scala 261:21]
+    node _T_2 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_3 = eq(_T_2, UInt<1>("h0")) @[SRAM.scala 262:55]
+    node _T_4 = and(io.b.en, _T_3) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10.io.b.en <= _T_4 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_5 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10.io.b.addr <= _T_5 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_1.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_6 = bits(io.a.we, 3, 2) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_1.io.a.we <= _T_6 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_1.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_7 = bits(io.a.din, 31, 16) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_1.io.a.din <= _T_7 @[SRAM.scala 261:21]
+    node _T_8 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_9 = eq(_T_8, UInt<1>("h1")) @[SRAM.scala 262:55]
+    node _T_10 = and(io.b.en, _T_9) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_1.io.b.en <= _T_10 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_1.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_11 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_1.io.b.addr <= _T_11 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_1.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_2.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_12 = bits(io.a.we, 5, 4) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_2.io.a.we <= _T_12 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_2.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_13 = bits(io.a.din, 47, 32) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_2.io.a.din <= _T_13 @[SRAM.scala 261:21]
+    node _T_14 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_15 = eq(_T_14, UInt<2>("h2")) @[SRAM.scala 262:55]
+    node _T_16 = and(io.b.en, _T_15) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_2.io.b.en <= _T_16 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_2.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_17 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_2.io.b.addr <= _T_17 @[SRAM.scala 264:22]
+    TrueDualPortSRAM_16_10_2.io.b.din <= io.b.din @[SRAM.scala 265:21]
+    TrueDualPortSRAM_16_10_3.io.a.en <= io.a.en @[SRAM.scala 254:20]
+    node _T_18 = bits(io.a.we, 7, 6) @[SRAM.scala 256:32]
+    TrueDualPortSRAM_16_10_3.io.a.we <= _T_18 @[SRAM.scala 256:22]
+    TrueDualPortSRAM_16_10_3.io.a.addr <= io.a.addr @[SRAM.scala 260:22]
+    node _T_19 = bits(io.a.din, 63, 48) @[SRAM.scala 261:32]
+    TrueDualPortSRAM_16_10_3.io.a.din <= _T_19 @[SRAM.scala 261:21]
+    node _T_20 = bits(io.b.addr, 1, 0) @[SRAM.scala 262:44]
+    node _T_21 = eq(_T_20, UInt<2>("h3")) @[SRAM.scala 262:55]
+    node _T_22 = and(io.b.en, _T_21) @[SRAM.scala 262:31]
+    TrueDualPortSRAM_16_10_3.io.b.en <= _T_22 @[SRAM.scala 262:20]
+    TrueDualPortSRAM_16_10_3.io.b.we <= io.b.we @[SRAM.scala 263:20]
+    node _T_23 = bits(io.b.addr, 11, 2) @[SRAM.scala 264:34]
+    TrueDualPortSRAM_16_10_3.io.b.addr <= _T_23 @[SRAM.scala 264:22]
     TrueDualPortSRAM_16_10_3.io.b.din <= io.b.din @[SRAM.scala 265:21]
     node io_a_dout_lo = cat(TrueDualPortSRAM_16_10_1.io.a.dout, TrueDualPortSRAM_16_10.io.a.dout) @[Cat.scala 33:92]
     node io_a_dout_hi = cat(TrueDualPortSRAM_16_10_3.io.a.dout, TrueDualPortSRAM_16_10_2.io.a.dout) @[Cat.scala 33:92]
@@ -750,33 +2170,125 @@ circuit vitra :
   module TrueDualPortSRAM_64_9 :
     input clock : Clock
     input reset : Reset
-    output io : { a : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}}
+    output io : { a : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}, b : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}}
 
-    smem mem : UInt<64> [512] @[SRAM.scala 75:28]
-    io.a.dout is invalid @[SRAM.scala 77:16]
-    when io.a.en : @[SRAM.scala 78:20]
-      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 79:27]
-      node _T = bits(io.a.we, 0, 0) @[SRAM.scala 80:21]
-      when _T : @[SRAM.scala 80:29]
-        rwPort <= io.a.din @[SRAM.scala 81:20]
+    smem mem : UInt<8>[8] [512] @[SRAM.scala 58:28]
+    io.a.dout is invalid @[SRAM.scala 60:16]
+    when io.a.en : @[SRAM.scala 61:20]
+      infer mport rwPort = mem[io.a.addr], clock @[SRAM.scala 62:27]
+      node _T = neq(io.a.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T : @[SRAM.scala 63:30]
+        node _T_1 = bits(io.a.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_2 = bits(_T_1, 0, 0) @[SRAM.scala 65:28]
+        when _T_2 : @[SRAM.scala 65:36]
+          node _rwPort_0_T = bits(io.a.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort[0] <= _rwPort_0_T @[SRAM.scala 66:27]
+        node _T_3 = bits(io.a.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_4 = bits(_T_3, 0, 0) @[SRAM.scala 65:28]
+        when _T_4 : @[SRAM.scala 65:36]
+          node _rwPort_1_T = bits(io.a.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort[1] <= _rwPort_1_T @[SRAM.scala 66:27]
+        node _T_5 = bits(io.a.we, 2, 2) @[SRAM.scala 65:24]
+        node _T_6 = bits(_T_5, 0, 0) @[SRAM.scala 65:28]
+        when _T_6 : @[SRAM.scala 65:36]
+          node _rwPort_2_T = bits(io.a.din, 23, 16) @[SRAM.scala 66:35]
+          rwPort[2] <= _rwPort_2_T @[SRAM.scala 66:27]
+        node _T_7 = bits(io.a.we, 3, 3) @[SRAM.scala 65:24]
+        node _T_8 = bits(_T_7, 0, 0) @[SRAM.scala 65:28]
+        when _T_8 : @[SRAM.scala 65:36]
+          node _rwPort_3_T = bits(io.a.din, 31, 24) @[SRAM.scala 66:35]
+          rwPort[3] <= _rwPort_3_T @[SRAM.scala 66:27]
+        node _T_9 = bits(io.a.we, 4, 4) @[SRAM.scala 65:24]
+        node _T_10 = bits(_T_9, 0, 0) @[SRAM.scala 65:28]
+        when _T_10 : @[SRAM.scala 65:36]
+          node _rwPort_4_T = bits(io.a.din, 39, 32) @[SRAM.scala 66:35]
+          rwPort[4] <= _rwPort_4_T @[SRAM.scala 66:27]
+        node _T_11 = bits(io.a.we, 5, 5) @[SRAM.scala 65:24]
+        node _T_12 = bits(_T_11, 0, 0) @[SRAM.scala 65:28]
+        when _T_12 : @[SRAM.scala 65:36]
+          node _rwPort_5_T = bits(io.a.din, 47, 40) @[SRAM.scala 66:35]
+          rwPort[5] <= _rwPort_5_T @[SRAM.scala 66:27]
+        node _T_13 = bits(io.a.we, 6, 6) @[SRAM.scala 65:24]
+        node _T_14 = bits(_T_13, 0, 0) @[SRAM.scala 65:28]
+        when _T_14 : @[SRAM.scala 65:36]
+          node _rwPort_6_T = bits(io.a.din, 55, 48) @[SRAM.scala 66:35]
+          rwPort[6] <= _rwPort_6_T @[SRAM.scala 66:27]
+        node _T_15 = bits(io.a.we, 7, 7) @[SRAM.scala 65:24]
+        node _T_16 = bits(_T_15, 0, 0) @[SRAM.scala 65:28]
+        when _T_16 : @[SRAM.scala 65:36]
+          node _rwPort_7_T = bits(io.a.din, 63, 56) @[SRAM.scala 66:35]
+          rwPort[7] <= _rwPort_7_T @[SRAM.scala 66:27]
       else :
-        io.a.dout <= rwPort @[SRAM.scala 83:20]
-    io.b.dout is invalid @[SRAM.scala 77:16]
-    when io.b.en : @[SRAM.scala 78:20]
-      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 79:27]
-      node _T_1 = bits(io.b.we, 0, 0) @[SRAM.scala 80:21]
-      when _T_1 : @[SRAM.scala 80:29]
-        rwPort_1 <= io.b.din @[SRAM.scala 81:20]
+        node io_a_dout_lo_lo = cat(rwPort[1], rwPort[0]) @[Cat.scala 33:92]
+        node io_a_dout_lo_hi = cat(rwPort[3], rwPort[2]) @[Cat.scala 33:92]
+        node io_a_dout_lo = cat(io_a_dout_lo_hi, io_a_dout_lo_lo) @[Cat.scala 33:92]
+        node io_a_dout_hi_lo = cat(rwPort[5], rwPort[4]) @[Cat.scala 33:92]
+        node io_a_dout_hi_hi = cat(rwPort[7], rwPort[6]) @[Cat.scala 33:92]
+        node io_a_dout_hi = cat(io_a_dout_hi_hi, io_a_dout_hi_lo) @[Cat.scala 33:92]
+        node _io_a_dout_T = cat(io_a_dout_hi, io_a_dout_lo) @[Cat.scala 33:92]
+        io.a.dout <= _io_a_dout_T @[SRAM.scala 70:20]
+    io.b.dout is invalid @[SRAM.scala 60:16]
+    when io.b.en : @[SRAM.scala 61:20]
+      infer mport rwPort_1 = mem[io.b.addr], clock @[SRAM.scala 62:27]
+      node _T_17 = neq(io.b.we, UInt<1>("h0")) @[SRAM.scala 63:21]
+      when _T_17 : @[SRAM.scala 63:30]
+        node _T_18 = bits(io.b.we, 0, 0) @[SRAM.scala 65:24]
+        node _T_19 = bits(_T_18, 0, 0) @[SRAM.scala 65:28]
+        when _T_19 : @[SRAM.scala 65:36]
+          node _rwPort_0_T_1 = bits(io.b.din, 7, 0) @[SRAM.scala 66:35]
+          rwPort_1[0] <= _rwPort_0_T_1 @[SRAM.scala 66:27]
+        node _T_20 = bits(io.b.we, 1, 1) @[SRAM.scala 65:24]
+        node _T_21 = bits(_T_20, 0, 0) @[SRAM.scala 65:28]
+        when _T_21 : @[SRAM.scala 65:36]
+          node _rwPort_1_T_1 = bits(io.b.din, 15, 8) @[SRAM.scala 66:35]
+          rwPort_1[1] <= _rwPort_1_T_1 @[SRAM.scala 66:27]
+        node _T_22 = bits(io.b.we, 2, 2) @[SRAM.scala 65:24]
+        node _T_23 = bits(_T_22, 0, 0) @[SRAM.scala 65:28]
+        when _T_23 : @[SRAM.scala 65:36]
+          node _rwPort_2_T_1 = bits(io.b.din, 23, 16) @[SRAM.scala 66:35]
+          rwPort_1[2] <= _rwPort_2_T_1 @[SRAM.scala 66:27]
+        node _T_24 = bits(io.b.we, 3, 3) @[SRAM.scala 65:24]
+        node _T_25 = bits(_T_24, 0, 0) @[SRAM.scala 65:28]
+        when _T_25 : @[SRAM.scala 65:36]
+          node _rwPort_3_T_1 = bits(io.b.din, 31, 24) @[SRAM.scala 66:35]
+          rwPort_1[3] <= _rwPort_3_T_1 @[SRAM.scala 66:27]
+        node _T_26 = bits(io.b.we, 4, 4) @[SRAM.scala 65:24]
+        node _T_27 = bits(_T_26, 0, 0) @[SRAM.scala 65:28]
+        when _T_27 : @[SRAM.scala 65:36]
+          node _rwPort_4_T_1 = bits(io.b.din, 39, 32) @[SRAM.scala 66:35]
+          rwPort_1[4] <= _rwPort_4_T_1 @[SRAM.scala 66:27]
+        node _T_28 = bits(io.b.we, 5, 5) @[SRAM.scala 65:24]
+        node _T_29 = bits(_T_28, 0, 0) @[SRAM.scala 65:28]
+        when _T_29 : @[SRAM.scala 65:36]
+          node _rwPort_5_T_1 = bits(io.b.din, 47, 40) @[SRAM.scala 66:35]
+          rwPort_1[5] <= _rwPort_5_T_1 @[SRAM.scala 66:27]
+        node _T_30 = bits(io.b.we, 6, 6) @[SRAM.scala 65:24]
+        node _T_31 = bits(_T_30, 0, 0) @[SRAM.scala 65:28]
+        when _T_31 : @[SRAM.scala 65:36]
+          node _rwPort_6_T_1 = bits(io.b.din, 55, 48) @[SRAM.scala 66:35]
+          rwPort_1[6] <= _rwPort_6_T_1 @[SRAM.scala 66:27]
+        node _T_32 = bits(io.b.we, 7, 7) @[SRAM.scala 65:24]
+        node _T_33 = bits(_T_32, 0, 0) @[SRAM.scala 65:28]
+        when _T_33 : @[SRAM.scala 65:36]
+          node _rwPort_7_T_1 = bits(io.b.din, 63, 56) @[SRAM.scala 66:35]
+          rwPort_1[7] <= _rwPort_7_T_1 @[SRAM.scala 66:27]
       else :
-        io.b.dout <= rwPort_1 @[SRAM.scala 83:20]
+        node io_b_dout_lo_lo = cat(rwPort_1[1], rwPort_1[0]) @[Cat.scala 33:92]
+        node io_b_dout_lo_hi = cat(rwPort_1[3], rwPort_1[2]) @[Cat.scala 33:92]
+        node io_b_dout_lo = cat(io_b_dout_lo_hi, io_b_dout_lo_lo) @[Cat.scala 33:92]
+        node io_b_dout_hi_lo = cat(rwPort_1[5], rwPort_1[4]) @[Cat.scala 33:92]
+        node io_b_dout_hi_hi = cat(rwPort_1[7], rwPort_1[6]) @[Cat.scala 33:92]
+        node io_b_dout_hi = cat(io_b_dout_hi_hi, io_b_dout_hi_lo) @[Cat.scala 33:92]
+        node _io_b_dout_T = cat(io_b_dout_hi, io_b_dout_lo) @[Cat.scala 33:92]
+        io.b.dout <= _io_b_dout_T @[SRAM.scala 70:20]
 
 
   module SramAddrGen :
-    input CurAddr : UInt<16>
+    input CurAddr : UInt<17>
     input Len : UInt<8>
     input Size : UInt<3>
     input Burst : UInt<2>
-    output NextAddr : UInt<16>
+    output NextAddr : UInt<17>
 
     node iCurAddr = bits(CurAddr, 11, 0) @[SramAddrGen.scala 26:30]
     wire iNextAddr : UInt<12> @[SramAddrGen.scala 27:27]
@@ -819,17 +2331,17 @@ circuit vitra :
     node _iNextAddr_T_4 = eq(UInt<2>("h2"), Burst) @[Mux.scala 81:61]
     node _iNextAddr_T_5 = mux(_iNextAddr_T_4, wrapNextAddr, _iNextAddr_T_3) @[Mux.scala 81:58]
     iNextAddr <= _iNextAddr_T_5 @[SramAddrGen.scala 43:15]
-    node _NextAddr_T = bits(CurAddr, 15, 12) @[SramAddrGen.scala 44:29]
+    node _NextAddr_T = bits(CurAddr, 16, 12) @[SramAddrGen.scala 44:29]
     node _NextAddr_T_1 = cat(_NextAddr_T, iNextAddr) @[Cat.scala 33:92]
     NextAddr <= _NextAddr_T_1 @[SramAddrGen.scala 44:15]
 
   module WriteEngine :
     input aclk : Clock
     input aresetn : UInt<1>
-    input s_axi : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}}
+    input s_axi : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}}
     input ready : UInt<1>
     output valid : UInt<1>
-    output addr : UInt<16>
+    output addr : UInt<17>
     output data : UInt<64>
     output strb : UInt<8>
 
@@ -853,11 +2365,11 @@ circuit vitra :
       reset => (reset, UInt<8>("h0")) @[WriteEngine.scala 72:30]
     reg success : UInt<1>, aclk with :
       reset => (reset, UInt<1>("h1")) @[WriteEngine.scala 73:30]
-    reg iAddr : UInt<16>, aclk with :
-      reset => (reset, UInt<16>("h0")) @[WriteEngine.scala 77:34]
+    reg iAddr : UInt<17>, aclk with :
+      reset => (reset, UInt<17>("h0")) @[WriteEngine.scala 77:34]
     reg iAddrvalid : UInt<1>, aclk with :
       reset => (reset, UInt<1>("h0")) @[WriteEngine.scala 78:34]
-    wire NextAddr : UInt<16> @[WriteEngine.scala 79:31]
+    wire NextAddr : UInt<17> @[WriteEngine.scala 79:31]
     inst NextAddr_m of SramAddrGen @[SramAddrGen.scala 50:23]
     NextAddr_m.CurAddr <= iAddr @[SramAddrGen.scala 51:21]
     NextAddr_m.Len <= spad_needed_len @[SramAddrGen.scala 52:21]
@@ -931,11 +2443,11 @@ circuit vitra :
     addr <= iAddr @[WriteEngine.scala 164:21]
 
   module SramAddrGen_1 :
-    input CurAddr : UInt<16>
+    input CurAddr : UInt<17>
     input Len : UInt<8>
     input Size : UInt<3>
     input Burst : UInt<2>
-    output NextAddr : UInt<16>
+    output NextAddr : UInt<17>
 
     node iCurAddr = bits(CurAddr, 11, 0) @[SramAddrGen.scala 26:30]
     wire iNextAddr : UInt<12> @[SramAddrGen.scala 27:27]
@@ -978,17 +2490,17 @@ circuit vitra :
     node _iNextAddr_T_4 = eq(UInt<2>("h2"), Burst) @[Mux.scala 81:61]
     node _iNextAddr_T_5 = mux(_iNextAddr_T_4, wrapNextAddr, _iNextAddr_T_3) @[Mux.scala 81:58]
     iNextAddr <= _iNextAddr_T_5 @[SramAddrGen.scala 43:15]
-    node _NextAddr_T = bits(CurAddr, 15, 12) @[SramAddrGen.scala 44:29]
+    node _NextAddr_T = bits(CurAddr, 16, 12) @[SramAddrGen.scala 44:29]
     node _NextAddr_T_1 = cat(_NextAddr_T, iNextAddr) @[Cat.scala 33:92]
     NextAddr <= _NextAddr_T_1 @[SramAddrGen.scala 44:15]
 
   module ReadEngine :
     input aclk : Clock
     input aresetn : UInt<1>
-    input s_axi : { ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}}
+    input s_axi : { ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}}
     input ready : UInt<1>
     output valid : UInt<1>
-    output addr : UInt<16>
+    output addr : UInt<17>
     input data : UInt<64>
 
     node _reset_T = eq(aresetn, UInt<1>("h0")) @[ReadEngine.scala 58:23]
@@ -1011,11 +2523,11 @@ circuit vitra :
       reset => (reset, UInt<8>("h0")) @[ReadEngine.scala 79:30]
     reg success : UInt<1>, aclk with :
       reset => (reset, UInt<1>("h1")) @[ReadEngine.scala 80:30]
-    reg iAddr : UInt<16>, aclk with :
-      reset => (reset, UInt<16>("h0")) @[ReadEngine.scala 84:34]
+    reg iAddr : UInt<17>, aclk with :
+      reset => (reset, UInt<17>("h0")) @[ReadEngine.scala 84:34]
     reg iAddrvalid : UInt<1>, aclk with :
       reset => (reset, UInt<1>("h0")) @[ReadEngine.scala 85:34]
-    wire NextAddr : UInt<16> @[ReadEngine.scala 86:31]
+    wire NextAddr : UInt<17> @[ReadEngine.scala 86:31]
     inst NextAddr_m of SramAddrGen_1 @[SramAddrGen.scala 50:23]
     NextAddr_m.CurAddr <= iAddr @[SramAddrGen.scala 51:21]
     NextAddr_m.Len <= spad_needed_len @[SramAddrGen.scala 52:21]
@@ -1165,8 +2677,8 @@ circuit vitra :
     output wrready : UInt<1>
     input rdvalid : UInt<1>
     output rdready : UInt<1>
-    input wr_cs : UInt<3>
-    input rd_cs : UInt<3>
+    input wr_cs : UInt<4>
+    input rd_cs : UInt<4>
 
     node _T = eq(wr_cs, rd_cs) @[SramArbiter.scala 91:16]
     node _T_1 = eq(wrvalid, UInt<1>("h1")) @[SramArbiter.scala 91:37]
@@ -1184,7 +2696,7 @@ circuit vitra :
   module AXI4Scratchpad :
     input clock : Clock
     input reset : Reset
-    output io : { flip aclk : Clock, flip aresetn : UInt<1>, flip s_axi : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}}, srams : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[4], sram_last : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}}
+    output io : { flip aclk : Clock, flip aresetn : UInt<1>, flip s_axi : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}}, srams : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[8], sram_last : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}}
 
     inst TrueDualPortSRAMAsym of TrueDualPortSRAMAsym @[AxiScratchpad.scala 90:11]
     TrueDualPortSRAMAsym.clock <= clock
@@ -1198,6 +2710,18 @@ circuit vitra :
     inst TrueDualPortSRAMAsym_3 of TrueDualPortSRAMAsym_3 @[AxiScratchpad.scala 90:11]
     TrueDualPortSRAMAsym_3.clock <= clock
     TrueDualPortSRAMAsym_3.reset <= reset
+    inst TrueDualPortSRAMAsym_4 of TrueDualPortSRAMAsym_4 @[AxiScratchpad.scala 90:11]
+    TrueDualPortSRAMAsym_4.clock <= clock
+    TrueDualPortSRAMAsym_4.reset <= reset
+    inst TrueDualPortSRAMAsym_5 of TrueDualPortSRAMAsym_5 @[AxiScratchpad.scala 90:11]
+    TrueDualPortSRAMAsym_5.clock <= clock
+    TrueDualPortSRAMAsym_5.reset <= reset
+    inst TrueDualPortSRAMAsym_6 of TrueDualPortSRAMAsym_6 @[AxiScratchpad.scala 90:11]
+    TrueDualPortSRAMAsym_6.clock <= clock
+    TrueDualPortSRAMAsym_6.reset <= reset
+    inst TrueDualPortSRAMAsym_7 of TrueDualPortSRAMAsym_7 @[AxiScratchpad.scala 90:11]
+    TrueDualPortSRAMAsym_7.clock <= clock
+    TrueDualPortSRAMAsym_7.reset <= reset
     inst TrueDualPortSRAM_64_9 of TrueDualPortSRAM_64_9 @[AxiScratchpad.scala 97:33]
     TrueDualPortSRAM_64_9.clock <= clock
     TrueDualPortSRAM_64_9.reset <= reset
@@ -1221,6 +2745,26 @@ circuit vitra :
     TrueDualPortSRAMAsym_3.io.b.addr <= io.srams[3].addr @[AxiScratchpad.scala 104:16]
     TrueDualPortSRAMAsym_3.io.b.we <= io.srams[3].we @[AxiScratchpad.scala 104:16]
     TrueDualPortSRAMAsym_3.io.b.en <= io.srams[3].en @[AxiScratchpad.scala 104:16]
+    io.srams[4].dout <= TrueDualPortSRAMAsym_4.io.b.dout @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_4.io.b.din <= io.srams[4].din @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_4.io.b.addr <= io.srams[4].addr @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_4.io.b.we <= io.srams[4].we @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_4.io.b.en <= io.srams[4].en @[AxiScratchpad.scala 104:16]
+    io.srams[5].dout <= TrueDualPortSRAMAsym_5.io.b.dout @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_5.io.b.din <= io.srams[5].din @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_5.io.b.addr <= io.srams[5].addr @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_5.io.b.we <= io.srams[5].we @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_5.io.b.en <= io.srams[5].en @[AxiScratchpad.scala 104:16]
+    io.srams[6].dout <= TrueDualPortSRAMAsym_6.io.b.dout @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_6.io.b.din <= io.srams[6].din @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_6.io.b.addr <= io.srams[6].addr @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_6.io.b.we <= io.srams[6].we @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_6.io.b.en <= io.srams[6].en @[AxiScratchpad.scala 104:16]
+    io.srams[7].dout <= TrueDualPortSRAMAsym_7.io.b.dout @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_7.io.b.din <= io.srams[7].din @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_7.io.b.addr <= io.srams[7].addr @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_7.io.b.we <= io.srams[7].we @[AxiScratchpad.scala 104:16]
+    TrueDualPortSRAMAsym_7.io.b.en <= io.srams[7].en @[AxiScratchpad.scala 104:16]
     io.sram_last.dout <= TrueDualPortSRAM_64_9.io.b.dout @[AxiScratchpad.scala 108:23]
     TrueDualPortSRAM_64_9.io.b.din <= io.sram_last.din @[AxiScratchpad.scala 108:23]
     TrueDualPortSRAM_64_9.io.b.addr <= io.sram_last.addr @[AxiScratchpad.scala 108:23]
@@ -1228,21 +2772,21 @@ circuit vitra :
     TrueDualPortSRAM_64_9.io.b.en <= io.sram_last.en @[AxiScratchpad.scala 108:23]
     node _asyncReset_T = eq(io.aresetn, UInt<1>("h0")) @[AxiScratchpad.scala 113:27]
     node asyncReset = asAsyncReset(_asyncReset_T) @[AxiScratchpad.scala 113:40]
-    wire axi4RdView : { ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}} @[AxiScratchpad.scala 118:24]
+    wire axi4RdView : { ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}} @[AxiScratchpad.scala 118:24]
     axi4RdView.ar <= io.s_axi.ar @[AxiScratchpad.scala 119:17]
     io.s_axi.r <= axi4RdView.r @[AxiScratchpad.scala 120:17]
-    wire axi4WrView : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}} @[AxiScratchpad.scala 122:25]
+    wire axi4WrView : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}} @[AxiScratchpad.scala 122:25]
     axi4WrView.aw <= io.s_axi.aw @[AxiScratchpad.scala 123:17]
     axi4WrView.w <= io.s_axi.w @[AxiScratchpad.scala 124:17]
     io.s_axi.b <= axi4WrView.b @[AxiScratchpad.scala 125:17]
-    reg rdBankIdxSyn : UInt<3>, clock with :
-      reset => (reset, UInt<3>("h0")) @[AxiScratchpad.scala 127:29]
+    reg rdBankIdxSyn : UInt<4>, clock with :
+      reset => (reset, UInt<4>("h0")) @[AxiScratchpad.scala 127:29]
     inst wrIE of WriteEngine @[AxiScratchpad.scala 130:25]
     inst rdIE of ReadEngine @[AxiScratchpad.scala 131:25]
     inst arbiter of SramArbiter @[AxiScratchpad.scala 132:25]
-    node wr_csel = bits(wrIE.addr, 15, 13) @[AxiScratchpad.scala 137:34]
+    node wr_csel = bits(wrIE.addr, 16, 13) @[AxiScratchpad.scala 137:34]
     node wr_spad_addr = bits(wrIE.addr, 12, 3) @[AxiScratchpad.scala 138:34]
-    node rd_csel = bits(rdIE.addr, 15, 13) @[AxiScratchpad.scala 139:34]
+    node rd_csel = bits(rdIE.addr, 16, 13) @[AxiScratchpad.scala 139:34]
     node rd_spad_addr = bits(rdIE.addr, 12, 3) @[AxiScratchpad.scala 140:34]
     wrIE.aclk <= io.aclk @[AxiScratchpad.scala 146:21]
     wrIE.aresetn <= io.aresetn @[AxiScratchpad.scala 147:21]
@@ -1266,8 +2810,16 @@ circuit vitra :
     node _rdIE_data_T_6 = eq(UInt<2>("h3"), currentRdBank) @[Mux.scala 81:61]
     node _rdIE_data_T_7 = mux(_rdIE_data_T_6, TrueDualPortSRAMAsym_3.io.a.dout, _rdIE_data_T_5) @[Mux.scala 81:58]
     node _rdIE_data_T_8 = eq(UInt<3>("h4"), currentRdBank) @[Mux.scala 81:61]
-    node _rdIE_data_T_9 = mux(_rdIE_data_T_8, TrueDualPortSRAM_64_9.io.a.dout, _rdIE_data_T_7) @[Mux.scala 81:58]
-    rdIE.data <= _rdIE_data_T_9 @[AxiScratchpad.scala 165:15]
+    node _rdIE_data_T_9 = mux(_rdIE_data_T_8, TrueDualPortSRAMAsym_4.io.a.dout, _rdIE_data_T_7) @[Mux.scala 81:58]
+    node _rdIE_data_T_10 = eq(UInt<3>("h5"), currentRdBank) @[Mux.scala 81:61]
+    node _rdIE_data_T_11 = mux(_rdIE_data_T_10, TrueDualPortSRAMAsym_5.io.a.dout, _rdIE_data_T_9) @[Mux.scala 81:58]
+    node _rdIE_data_T_12 = eq(UInt<3>("h6"), currentRdBank) @[Mux.scala 81:61]
+    node _rdIE_data_T_13 = mux(_rdIE_data_T_12, TrueDualPortSRAMAsym_6.io.a.dout, _rdIE_data_T_11) @[Mux.scala 81:58]
+    node _rdIE_data_T_14 = eq(UInt<3>("h7"), currentRdBank) @[Mux.scala 81:61]
+    node _rdIE_data_T_15 = mux(_rdIE_data_T_14, TrueDualPortSRAMAsym_7.io.a.dout, _rdIE_data_T_13) @[Mux.scala 81:58]
+    node _rdIE_data_T_16 = eq(UInt<4>("h8"), currentRdBank) @[Mux.scala 81:61]
+    node _rdIE_data_T_17 = mux(_rdIE_data_T_16, TrueDualPortSRAM_64_9.io.a.dout, _rdIE_data_T_15) @[Mux.scala 81:58]
+    rdIE.data <= _rdIE_data_T_17 @[AxiScratchpad.scala 165:15]
     arbiter.wrvalid <= wrIE.valid @[AxiScratchpad.scala 169:21]
     arbiter.rdvalid <= rdIE.valid @[AxiScratchpad.scala 170:21]
     node _en_T = eq(wr_csel, UInt<1>("h0")) @[AxiScratchpad.scala 175:25]
@@ -1287,7 +2839,8 @@ circuit vitra :
       node _T_1 = or(we, re) @[AxiScratchpad.scala 180:31]
       TrueDualPortSRAMAsym.io.a.en <= _T_1 @[AxiScratchpad.scala 180:25]
       TrueDualPortSRAMAsym.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
-      TrueDualPortSRAMAsym.io.a.we <= we @[AxiScratchpad.scala 182:25]
+      node _T_2 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym.io.a.we <= _T_2 @[AxiScratchpad.scala 182:25]
     else :
       TrueDualPortSRAMAsym.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
       TrueDualPortSRAMAsym.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
@@ -1305,12 +2858,13 @@ circuit vitra :
     node _re_T_3 = eq(rd_csel, UInt<1>("h1")) @[AxiScratchpad.scala 177:50]
     node re_1 = and(_re_T_2, _re_T_3) @[AxiScratchpad.scala 177:40]
     when en_1 : @[AxiScratchpad.scala 178:15]
-      node _T_2 = mux(we_1, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
-      TrueDualPortSRAMAsym_1.io.a.addr <= _T_2 @[AxiScratchpad.scala 179:25]
-      node _T_3 = or(we_1, re_1) @[AxiScratchpad.scala 180:31]
-      TrueDualPortSRAMAsym_1.io.a.en <= _T_3 @[AxiScratchpad.scala 180:25]
+      node _T_3 = mux(we_1, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_1.io.a.addr <= _T_3 @[AxiScratchpad.scala 179:25]
+      node _T_4 = or(we_1, re_1) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_1.io.a.en <= _T_4 @[AxiScratchpad.scala 180:25]
       TrueDualPortSRAMAsym_1.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
-      TrueDualPortSRAMAsym_1.io.a.we <= we_1 @[AxiScratchpad.scala 182:25]
+      node _T_5 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_1.io.a.we <= _T_5 @[AxiScratchpad.scala 182:25]
     else :
       TrueDualPortSRAMAsym_1.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
       TrueDualPortSRAMAsym_1.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
@@ -1328,12 +2882,13 @@ circuit vitra :
     node _re_T_5 = eq(rd_csel, UInt<2>("h2")) @[AxiScratchpad.scala 177:50]
     node re_2 = and(_re_T_4, _re_T_5) @[AxiScratchpad.scala 177:40]
     when en_2 : @[AxiScratchpad.scala 178:15]
-      node _T_4 = mux(we_2, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
-      TrueDualPortSRAMAsym_2.io.a.addr <= _T_4 @[AxiScratchpad.scala 179:25]
-      node _T_5 = or(we_2, re_2) @[AxiScratchpad.scala 180:31]
-      TrueDualPortSRAMAsym_2.io.a.en <= _T_5 @[AxiScratchpad.scala 180:25]
+      node _T_6 = mux(we_2, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_2.io.a.addr <= _T_6 @[AxiScratchpad.scala 179:25]
+      node _T_7 = or(we_2, re_2) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_2.io.a.en <= _T_7 @[AxiScratchpad.scala 180:25]
       TrueDualPortSRAMAsym_2.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
-      TrueDualPortSRAMAsym_2.io.a.we <= we_2 @[AxiScratchpad.scala 182:25]
+      node _T_8 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_2.io.a.we <= _T_8 @[AxiScratchpad.scala 182:25]
     else :
       TrueDualPortSRAMAsym_2.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
       TrueDualPortSRAMAsym_2.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
@@ -1351,37 +2906,135 @@ circuit vitra :
     node _re_T_7 = eq(rd_csel, UInt<2>("h3")) @[AxiScratchpad.scala 177:50]
     node re_3 = and(_re_T_6, _re_T_7) @[AxiScratchpad.scala 177:40]
     when en_3 : @[AxiScratchpad.scala 178:15]
-      node _T_6 = mux(we_3, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
-      TrueDualPortSRAMAsym_3.io.a.addr <= _T_6 @[AxiScratchpad.scala 179:25]
-      node _T_7 = or(we_3, re_3) @[AxiScratchpad.scala 180:31]
-      TrueDualPortSRAMAsym_3.io.a.en <= _T_7 @[AxiScratchpad.scala 180:25]
+      node _T_9 = mux(we_3, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_3.io.a.addr <= _T_9 @[AxiScratchpad.scala 179:25]
+      node _T_10 = or(we_3, re_3) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_3.io.a.en <= _T_10 @[AxiScratchpad.scala 180:25]
       TrueDualPortSRAMAsym_3.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
-      TrueDualPortSRAMAsym_3.io.a.we <= we_3 @[AxiScratchpad.scala 182:25]
+      node _T_11 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_3.io.a.we <= _T_11 @[AxiScratchpad.scala 182:25]
     else :
       TrueDualPortSRAMAsym_3.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
       TrueDualPortSRAMAsym_3.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
       TrueDualPortSRAMAsym_3.io.a.din is invalid @[AxiScratchpad.scala 187:25]
       TrueDualPortSRAMAsym_3.io.a.we <= UInt<1>("h0") @[AxiScratchpad.scala 188:25]
+    node _en_T_16 = eq(wr_csel, UInt<3>("h4")) @[AxiScratchpad.scala 175:25]
+    node _en_T_17 = and(_en_T_16, wrIE.ready) @[AxiScratchpad.scala 175:33]
+    node _en_T_18 = eq(rd_csel, UInt<3>("h4")) @[AxiScratchpad.scala 175:58]
+    node _en_T_19 = and(_en_T_18, rdIE.ready) @[AxiScratchpad.scala 175:66]
+    node en_4 = or(_en_T_17, _en_T_19) @[AxiScratchpad.scala 175:47]
+    node _we_T_8 = and(wrIE.ready, wrIE.valid) @[AxiScratchpad.scala 176:27]
+    node _we_T_9 = eq(wr_csel, UInt<3>("h4")) @[AxiScratchpad.scala 176:50]
+    node we_4 = and(_we_T_8, _we_T_9) @[AxiScratchpad.scala 176:40]
+    node _re_T_8 = and(rdIE.ready, rdIE.valid) @[AxiScratchpad.scala 177:27]
+    node _re_T_9 = eq(rd_csel, UInt<3>("h4")) @[AxiScratchpad.scala 177:50]
+    node re_4 = and(_re_T_8, _re_T_9) @[AxiScratchpad.scala 177:40]
+    when en_4 : @[AxiScratchpad.scala 178:15]
+      node _T_12 = mux(we_4, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_4.io.a.addr <= _T_12 @[AxiScratchpad.scala 179:25]
+      node _T_13 = or(we_4, re_4) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_4.io.a.en <= _T_13 @[AxiScratchpad.scala 180:25]
+      TrueDualPortSRAMAsym_4.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
+      node _T_14 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_4.io.a.we <= _T_14 @[AxiScratchpad.scala 182:25]
+    else :
+      TrueDualPortSRAMAsym_4.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
+      TrueDualPortSRAMAsym_4.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
+      TrueDualPortSRAMAsym_4.io.a.din is invalid @[AxiScratchpad.scala 187:25]
+      TrueDualPortSRAMAsym_4.io.a.we <= UInt<1>("h0") @[AxiScratchpad.scala 188:25]
+    node _en_T_20 = eq(wr_csel, UInt<3>("h5")) @[AxiScratchpad.scala 175:25]
+    node _en_T_21 = and(_en_T_20, wrIE.ready) @[AxiScratchpad.scala 175:33]
+    node _en_T_22 = eq(rd_csel, UInt<3>("h5")) @[AxiScratchpad.scala 175:58]
+    node _en_T_23 = and(_en_T_22, rdIE.ready) @[AxiScratchpad.scala 175:66]
+    node en_5 = or(_en_T_21, _en_T_23) @[AxiScratchpad.scala 175:47]
+    node _we_T_10 = and(wrIE.ready, wrIE.valid) @[AxiScratchpad.scala 176:27]
+    node _we_T_11 = eq(wr_csel, UInt<3>("h5")) @[AxiScratchpad.scala 176:50]
+    node we_5 = and(_we_T_10, _we_T_11) @[AxiScratchpad.scala 176:40]
+    node _re_T_10 = and(rdIE.ready, rdIE.valid) @[AxiScratchpad.scala 177:27]
+    node _re_T_11 = eq(rd_csel, UInt<3>("h5")) @[AxiScratchpad.scala 177:50]
+    node re_5 = and(_re_T_10, _re_T_11) @[AxiScratchpad.scala 177:40]
+    when en_5 : @[AxiScratchpad.scala 178:15]
+      node _T_15 = mux(we_5, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_5.io.a.addr <= _T_15 @[AxiScratchpad.scala 179:25]
+      node _T_16 = or(we_5, re_5) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_5.io.a.en <= _T_16 @[AxiScratchpad.scala 180:25]
+      TrueDualPortSRAMAsym_5.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
+      node _T_17 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_5.io.a.we <= _T_17 @[AxiScratchpad.scala 182:25]
+    else :
+      TrueDualPortSRAMAsym_5.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
+      TrueDualPortSRAMAsym_5.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
+      TrueDualPortSRAMAsym_5.io.a.din is invalid @[AxiScratchpad.scala 187:25]
+      TrueDualPortSRAMAsym_5.io.a.we <= UInt<1>("h0") @[AxiScratchpad.scala 188:25]
+    node _en_T_24 = eq(wr_csel, UInt<3>("h6")) @[AxiScratchpad.scala 175:25]
+    node _en_T_25 = and(_en_T_24, wrIE.ready) @[AxiScratchpad.scala 175:33]
+    node _en_T_26 = eq(rd_csel, UInt<3>("h6")) @[AxiScratchpad.scala 175:58]
+    node _en_T_27 = and(_en_T_26, rdIE.ready) @[AxiScratchpad.scala 175:66]
+    node en_6 = or(_en_T_25, _en_T_27) @[AxiScratchpad.scala 175:47]
+    node _we_T_12 = and(wrIE.ready, wrIE.valid) @[AxiScratchpad.scala 176:27]
+    node _we_T_13 = eq(wr_csel, UInt<3>("h6")) @[AxiScratchpad.scala 176:50]
+    node we_6 = and(_we_T_12, _we_T_13) @[AxiScratchpad.scala 176:40]
+    node _re_T_12 = and(rdIE.ready, rdIE.valid) @[AxiScratchpad.scala 177:27]
+    node _re_T_13 = eq(rd_csel, UInt<3>("h6")) @[AxiScratchpad.scala 177:50]
+    node re_6 = and(_re_T_12, _re_T_13) @[AxiScratchpad.scala 177:40]
+    when en_6 : @[AxiScratchpad.scala 178:15]
+      node _T_18 = mux(we_6, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_6.io.a.addr <= _T_18 @[AxiScratchpad.scala 179:25]
+      node _T_19 = or(we_6, re_6) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_6.io.a.en <= _T_19 @[AxiScratchpad.scala 180:25]
+      TrueDualPortSRAMAsym_6.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
+      node _T_20 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_6.io.a.we <= _T_20 @[AxiScratchpad.scala 182:25]
+    else :
+      TrueDualPortSRAMAsym_6.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
+      TrueDualPortSRAMAsym_6.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
+      TrueDualPortSRAMAsym_6.io.a.din is invalid @[AxiScratchpad.scala 187:25]
+      TrueDualPortSRAMAsym_6.io.a.we <= UInt<1>("h0") @[AxiScratchpad.scala 188:25]
+    node _en_T_28 = eq(wr_csel, UInt<3>("h7")) @[AxiScratchpad.scala 175:25]
+    node _en_T_29 = and(_en_T_28, wrIE.ready) @[AxiScratchpad.scala 175:33]
+    node _en_T_30 = eq(rd_csel, UInt<3>("h7")) @[AxiScratchpad.scala 175:58]
+    node _en_T_31 = and(_en_T_30, rdIE.ready) @[AxiScratchpad.scala 175:66]
+    node en_7 = or(_en_T_29, _en_T_31) @[AxiScratchpad.scala 175:47]
+    node _we_T_14 = and(wrIE.ready, wrIE.valid) @[AxiScratchpad.scala 176:27]
+    node _we_T_15 = eq(wr_csel, UInt<3>("h7")) @[AxiScratchpad.scala 176:50]
+    node we_7 = and(_we_T_14, _we_T_15) @[AxiScratchpad.scala 176:40]
+    node _re_T_14 = and(rdIE.ready, rdIE.valid) @[AxiScratchpad.scala 177:27]
+    node _re_T_15 = eq(rd_csel, UInt<3>("h7")) @[AxiScratchpad.scala 177:50]
+    node re_7 = and(_re_T_14, _re_T_15) @[AxiScratchpad.scala 177:40]
+    when en_7 : @[AxiScratchpad.scala 178:15]
+      node _T_21 = mux(we_7, wr_spad_addr, rd_spad_addr) @[AxiScratchpad.scala 179:31]
+      TrueDualPortSRAMAsym_7.io.a.addr <= _T_21 @[AxiScratchpad.scala 179:25]
+      node _T_22 = or(we_7, re_7) @[AxiScratchpad.scala 180:31]
+      TrueDualPortSRAMAsym_7.io.a.en <= _T_22 @[AxiScratchpad.scala 180:25]
+      TrueDualPortSRAMAsym_7.io.a.din <= wrIE.data @[AxiScratchpad.scala 181:25]
+      node _T_23 = not(wrIE.strb) @[AxiScratchpad.scala 182:41]
+      TrueDualPortSRAMAsym_7.io.a.we <= _T_23 @[AxiScratchpad.scala 182:25]
+    else :
+      TrueDualPortSRAMAsym_7.io.a.addr is invalid @[AxiScratchpad.scala 185:25]
+      TrueDualPortSRAMAsym_7.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 186:25]
+      TrueDualPortSRAMAsym_7.io.a.din is invalid @[AxiScratchpad.scala 187:25]
+      TrueDualPortSRAMAsym_7.io.a.we <= UInt<1>("h0") @[AxiScratchpad.scala 188:25]
     node wr_last_addr = bits(wrIE.addr, 12, 3) @[AxiScratchpad.scala 195:33]
     node rd_last_addr = bits(rdIE.addr, 12, 3) @[AxiScratchpad.scala 196:33]
-    node _en_last_T = eq(wr_csel, UInt<3>("h4")) @[AxiScratchpad.scala 200:28]
+    node _en_last_T = eq(wr_csel, UInt<4>("h8")) @[AxiScratchpad.scala 200:28]
     node _en_last_T_1 = and(_en_last_T, wrIE.ready) @[AxiScratchpad.scala 200:47]
-    node _en_last_T_2 = eq(rd_csel, UInt<3>("h4")) @[AxiScratchpad.scala 200:72]
+    node _en_last_T_2 = eq(rd_csel, UInt<4>("h8")) @[AxiScratchpad.scala 200:72]
     node _en_last_T_3 = and(_en_last_T_2, rdIE.ready) @[AxiScratchpad.scala 200:91]
     node en_last = or(_en_last_T_1, _en_last_T_3) @[AxiScratchpad.scala 200:61]
     node _we_last_T = and(wrIE.ready, wrIE.valid) @[AxiScratchpad.scala 201:30]
-    node _we_last_T_1 = eq(wr_csel, UInt<3>("h4")) @[AxiScratchpad.scala 201:53]
+    node _we_last_T_1 = eq(wr_csel, UInt<4>("h8")) @[AxiScratchpad.scala 201:53]
     node we_last = and(_we_last_T, _we_last_T_1) @[AxiScratchpad.scala 201:43]
     node _re_last_T = and(rdIE.ready, rdIE.valid) @[AxiScratchpad.scala 202:30]
-    node _re_last_T_1 = eq(wr_csel, UInt<3>("h4")) @[AxiScratchpad.scala 202:53]
+    node _re_last_T_1 = eq(wr_csel, UInt<4>("h8")) @[AxiScratchpad.scala 202:53]
     node re_last = and(_re_last_T, _re_last_T_1) @[AxiScratchpad.scala 202:43]
     when en_last : @[AxiScratchpad.scala 203:18]
-      node _T_8 = mux(we_last, wr_last_addr, rd_last_addr) @[AxiScratchpad.scala 204:40]
-      TrueDualPortSRAM_64_9.io.a.addr <= _T_8 @[AxiScratchpad.scala 204:34]
-      node _T_9 = or(we_last, re_last) @[AxiScratchpad.scala 205:45]
-      TrueDualPortSRAM_64_9.io.a.en <= _T_9 @[AxiScratchpad.scala 205:34]
+      node _T_24 = mux(we_last, wr_last_addr, rd_last_addr) @[AxiScratchpad.scala 204:40]
+      TrueDualPortSRAM_64_9.io.a.addr <= _T_24 @[AxiScratchpad.scala 204:34]
+      node _T_25 = or(we_last, re_last) @[AxiScratchpad.scala 205:45]
+      TrueDualPortSRAM_64_9.io.a.en <= _T_25 @[AxiScratchpad.scala 205:34]
       TrueDualPortSRAM_64_9.io.a.din <= wrIE.data @[AxiScratchpad.scala 206:34]
-      TrueDualPortSRAM_64_9.io.a.we <= we_last @[AxiScratchpad.scala 207:34]
+      node _T_26 = not(wrIE.strb) @[AxiScratchpad.scala 207:50]
+      TrueDualPortSRAM_64_9.io.a.we <= _T_26 @[AxiScratchpad.scala 207:34]
     else :
       TrueDualPortSRAM_64_9.io.a.addr is invalid @[AxiScratchpad.scala 210:34]
       TrueDualPortSRAM_64_9.io.a.en <= UInt<1>("h0") @[AxiScratchpad.scala 211:34]
@@ -2982,7 +4635,7 @@ circuit vitra :
     cfg.clock <= clock
     cfg.reset <= reset
     node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[IOB.scala 153:63]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("hd"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("h9"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
     node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[IOB.scala 153:30]
     cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[IOB.scala 153:17]
     node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[IOB.scala 154:33]
@@ -3518,7 +5171,7 @@ circuit vitra :
     cfg.clock <= clock
     cfg.reset <= reset
     node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[IOB.scala 153:63]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("he"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("ha"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
     node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[IOB.scala 153:30]
     cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[IOB.scala 153:17]
     node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[IOB.scala 154:33]
@@ -29721,6 +31374,2459 @@ circuit vitra :
     node _dmr_io_config_T = bits(cfgOut, 92, 34) @[PE.scala 365:28]
     dmr.io.config <= _dmr_io_config_T @[PE.scala 365:19]
 
+  module GIB :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[0], flip opinNW : UInt<16>[0], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[0], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+
+    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
+    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
+    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
+    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 520:41]
+    io.otrackE[0] <= io.itrackS[0] @[Interconnect.scala 520:41]
+    io.otrackS[0] <= io.itrackE[0] @[Interconnect.scala 520:41]
+
+  module ConfigMem_6 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<5>[1]}
+
+    wire _regs_WIRE : UInt<5>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<5>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<5>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
+    when _T_1 : @[ConfigMem.scala 32:54]
+      node _regs_0_T = bits(io.cfg_data, 4, 0) @[ConfigMem.scala 33:31]
+      regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module Muxn_12 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_13 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_14 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_15 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_16 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module GIB_1 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+
+    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
+    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
+    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
+    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
+    inst cfg of ConfigMem_6 @[Interconnect.scala 490:21]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<3>("h4"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
+    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
+    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
+    io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 514:43]
+    inst mux of Muxn_12 @[Interconnect.scala 500:25]
+    mux.clock <= clock
+    mux.reset <= reset
+    mux.io.in[0] <= io.opinNW[0] @[Interconnect.scala 502:63]
+    mux.io.in[1] <= io.opinSW[0] @[Interconnect.scala 502:63]
+    io.ipinNE[0] <= mux.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
+    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
+    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
+    inst mux_1 of Muxn_13 @[Interconnect.scala 500:25]
+    mux_1.clock <= clock
+    mux_1.reset <= reset
+    mux_1.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
+    mux_1.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
+    io.ipinSW[0] <= mux_1.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
+    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
+    inst mux_2 of Muxn_14 @[Interconnect.scala 500:25]
+    mux_2.clock <= clock
+    mux_2.reset <= reset
+    mux_2.io.in[0] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    mux_2.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
+    reg io_otrackW_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackW_0_REG) @[Interconnect.scala 504:55]
+    io_otrackW_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
+    io.otrackW[0] <= io_otrackW_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
+    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
+    inst mux_3 of Muxn_15 @[Interconnect.scala 500:25]
+    mux_3.clock <= clock
+    mux_3.reset <= reset
+    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_3.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
+    reg io_otrackE_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackE_0_REG) @[Interconnect.scala 504:55]
+    io_otrackE_0_REG <= mux_3.io.out @[Interconnect.scala 504:55]
+    io.otrackE[0] <= io_otrackE_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
+    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
+    inst mux_4 of Muxn_16 @[Interconnect.scala 500:25]
+    mux_4.clock <= clock
+    mux_4.reset <= reset
+    mux_4.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_4.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    reg io_otrackS_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackS_0_REG) @[Interconnect.scala 504:55]
+    io_otrackS_0_REG <= mux_4.io.out @[Interconnect.scala 504:55]
+    io.otrackS[0] <= io_otrackS_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_4 = bits(cfg.io.out[0], 4, 4) @[Interconnect.scala 510:39]
+    mux_4.io.config <= _mux_io_config_T_4 @[Interconnect.scala 510:23]
+
+  module GIB_2 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[0], flip opinNW : UInt<16>[0], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[0], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+
+    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
+    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
+    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
+    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 520:41]
+    io.otrackN[0] <= io.itrackE[0] @[Interconnect.scala 520:41]
+    io.otrackE[0] <= io.itrackN[0] @[Interconnect.scala 520:41]
+
+  module ConfigMem_7 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<5>[1]}
+
+    wire _regs_WIRE : UInt<5>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<5>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<5>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
+    when _T_1 : @[ConfigMem.scala 32:54]
+      node _regs_0_T = bits(io.cfg_data, 4, 0) @[ConfigMem.scala 33:31]
+      regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module Muxn_17 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_18 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_19 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_20 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_21 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module GIB_3 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+
+    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
+    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
+    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
+    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
+    inst cfg of ConfigMem_7 @[Interconnect.scala 490:21]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("h8"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
+    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
+    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
+    io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 514:43]
+    inst mux of Muxn_17 @[Interconnect.scala 500:25]
+    mux.clock <= clock
+    mux.reset <= reset
+    mux.io.in[0] <= io.opinNW[0] @[Interconnect.scala 502:63]
+    mux.io.in[1] <= io.opinSW[0] @[Interconnect.scala 502:63]
+    io.ipinNE[0] <= mux.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
+    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
+    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
+    inst mux_1 of Muxn_18 @[Interconnect.scala 500:25]
+    mux_1.clock <= clock
+    mux_1.reset <= reset
+    mux_1.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
+    mux_1.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
+    io.ipinSW[0] <= mux_1.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
+    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
+    inst mux_2 of Muxn_19 @[Interconnect.scala 500:25]
+    mux_2.clock <= clock
+    mux_2.reset <= reset
+    mux_2.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    mux_2.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    io.otrackW[0] <= mux_2.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
+    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
+    inst mux_3 of Muxn_20 @[Interconnect.scala 500:25]
+    mux_3.clock <= clock
+    mux_3.reset <= reset
+    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_3.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    io.otrackN[0] <= mux_3.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
+    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
+    inst mux_4 of Muxn_21 @[Interconnect.scala 500:25]
+    mux_4.clock <= clock
+    mux_4.reset <= reset
+    mux_4.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_4.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    io.otrackE[0] <= mux_4.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_4 = bits(cfg.io.out[0], 4, 4) @[Interconnect.scala 510:39]
+    mux_4.io.config <= _mux_io_config_T_4 @[Interconnect.scala 510:23]
+
+  module IOController_4 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}, flip start : UInt<1>, done : UInt<1>, flip config : UInt<127>, flip in : UInt<16>[2], out : UInt<16>[1]}
+
+    node baseAddr = bits(io.config, 14, 0) @[IOController.scala 49:27]
+    node _T = bits(io.config, 27, 15) @[IOController.scala 56:24]
+    node stride_0 = asSInt(_T) @[IOController.scala 56:55]
+    node cycles_0 = bits(io.config, 39, 28) @[IOController.scala 59:24]
+    node _T_1 = bits(io.config, 52, 40) @[IOController.scala 56:24]
+    node stride_1 = asSInt(_T_1) @[IOController.scala 56:55]
+    node cycles_1 = bits(io.config, 64, 53) @[IOController.scala 59:24]
+    node _T_2 = bits(io.config, 77, 65) @[IOController.scala 56:24]
+    node stride_2 = asSInt(_T_2) @[IOController.scala 56:55]
+    node cycles_2 = bits(io.config, 89, 78) @[IOController.scala 59:24]
+    node _T_3 = bits(io.config, 102, 90) @[IOController.scala 56:24]
+    node stride_3 = asSInt(_T_3) @[IOController.scala 56:55]
+    node cycles_3 = bits(io.config, 114, 103) @[IOController.scala 59:24]
+    node II = bits(io.config, 118, 115) @[IOController.scala 64:21]
+    node latency = bits(io.config, 124, 119) @[IOController.scala 68:26]
+    node _isStore_T = bits(io.config, 125, 125) @[IOController.scala 72:26]
+    node isStore = bits(_isStore_T, 0, 0) @[IOController.scala 72:35]
+    node _useAddr_T = bits(io.config, 126, 126) @[IOController.scala 79:16]
+    node useAddr = bits(_useAddr_T, 0, 0) @[IOController.scala 79:27]
+    reg state : UInt<2>, clock with :
+      reset => (reset, UInt<2>("h0")) @[IOController.scala 84:22]
+    reg latCnt : UInt<6>, clock with :
+      reset => (reset, UInt<6>("h0")) @[IOController.scala 85:23]
+    reg cycleCnt_0 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_1 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_2 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_3 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg iiCnt : UInt<4>, clock with :
+      reset => (reset, UInt<4>("h0")) @[IOController.scala 87:22]
+    reg done : UInt<1>, clock with :
+      reset => (reset, UInt<1>("h0")) @[IOController.scala 88:21]
+    node _iiEnd_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 89:21]
+    node _iiEnd_T_1 = tail(_iiEnd_T, 1) @[IOController.scala 89:21]
+    node iiEnd = geq(_iiEnd_T_1, II) @[IOController.scala 89:26]
+    node _cycleCntEnd_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_1 = tail(_cycleCntEnd_T, 1) @[IOController.scala 91:36]
+    node cycleCntEnd_0 = geq(_cycleCntEnd_T_1, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_2 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_3 = tail(_cycleCntEnd_T_2, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_4 = geq(_cycleCntEnd_T_3, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_5 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_6 = tail(_cycleCntEnd_T_5, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_7 = geq(_cycleCntEnd_T_6, cycles_1) @[IOController.scala 91:42]
+    node cycleCntEnd_1 = and(_cycleCntEnd_T_4, _cycleCntEnd_T_7) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_8 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_9 = tail(_cycleCntEnd_T_8, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_10 = geq(_cycleCntEnd_T_9, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_11 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_12 = tail(_cycleCntEnd_T_11, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_13 = geq(_cycleCntEnd_T_12, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_14 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_15 = tail(_cycleCntEnd_T_14, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_16 = geq(_cycleCntEnd_T_15, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_17 = and(_cycleCntEnd_T_10, _cycleCntEnd_T_13) @[IOController.scala 91:65]
+    node cycleCntEnd_2 = and(_cycleCntEnd_T_17, _cycleCntEnd_T_16) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_18 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_19 = tail(_cycleCntEnd_T_18, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_20 = geq(_cycleCntEnd_T_19, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_21 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_22 = tail(_cycleCntEnd_T_21, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_23 = geq(_cycleCntEnd_T_22, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_24 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_25 = tail(_cycleCntEnd_T_24, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_26 = geq(_cycleCntEnd_T_25, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_27 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_28 = tail(_cycleCntEnd_T_27, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_29 = geq(_cycleCntEnd_T_28, cycles_3) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_30 = and(_cycleCntEnd_T_20, _cycleCntEnd_T_23) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_31 = and(_cycleCntEnd_T_30, _cycleCntEnd_T_26) @[IOController.scala 91:65]
+    node cntEnd = and(_cycleCntEnd_T_31, _cycleCntEnd_T_29) @[IOController.scala 91:65]
+    io.done <= done @[IOController.scala 95:11]
+    node _T_4 = eq(UInt<2>("h0"), state) @[IOController.scala 96:16]
+    when _T_4 : @[IOController.scala 96:16]
+      latCnt <= UInt<1>("h0") @[IOController.scala 98:14]
+      node _T_5 = eq(latency, UInt<1>("h0")) @[IOController.scala 99:32]
+      node _T_6 = and(io.start, _T_5) @[IOController.scala 99:21]
+      when _T_6 : @[IOController.scala 99:40]
+        state <= UInt<2>("h2") @[IOController.scala 100:15]
+        done <= UInt<1>("h0") @[IOController.scala 101:14]
+      else :
+        node _T_7 = neq(latency, UInt<1>("h0")) @[IOController.scala 102:38]
+        node _T_8 = and(io.start, _T_7) @[IOController.scala 102:27]
+        when _T_8 : @[IOController.scala 102:46]
+          state <= UInt<2>("h1") @[IOController.scala 103:15]
+          done <= UInt<1>("h0") @[IOController.scala 104:14]
+    else :
+      node _T_9 = eq(UInt<2>("h1"), state) @[IOController.scala 96:16]
+      when _T_9 : @[IOController.scala 96:16]
+        node _T_10 = add(latCnt, UInt<1>("h1")) @[IOController.scala 108:19]
+        node _T_11 = tail(_T_10, 1) @[IOController.scala 108:19]
+        node _T_12 = geq(_T_11, latency) @[IOController.scala 108:25]
+        when _T_12 : @[IOController.scala 108:36]
+          state <= UInt<2>("h2") @[IOController.scala 109:15]
+        node _latCnt_T = add(latCnt, UInt<1>("h1")) @[IOController.scala 111:24]
+        node _latCnt_T_1 = tail(_latCnt_T, 1) @[IOController.scala 111:24]
+        latCnt <= _latCnt_T_1 @[IOController.scala 111:14]
+      else :
+        node _T_13 = eq(UInt<2>("h2"), state) @[IOController.scala 96:16]
+        when _T_13 : @[IOController.scala 96:16]
+          node _T_14 = and(cntEnd, iiEnd) @[IOController.scala 114:19]
+          when _T_14 : @[IOController.scala 114:28]
+            state <= UInt<2>("h0") @[IOController.scala 115:15]
+            done <= UInt<1>("h1") @[IOController.scala 116:14]
+    node launch = eq(state, UInt<2>("h2")) @[IOController.scala 121:23]
+    node _T_15 = eq(state, UInt<2>("h0")) @[IOController.scala 122:14]
+    when _T_15 : @[IOController.scala 122:25]
+      iiCnt <= UInt<1>("h0") @[IOController.scala 123:11]
+    else :
+      when launch : @[IOController.scala 124:21]
+        node _iiCnt_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 125:35]
+        node _iiCnt_T_1 = tail(_iiCnt_T, 1) @[IOController.scala 125:35]
+        node _iiCnt_T_2 = mux(iiEnd, UInt<1>("h0"), _iiCnt_T_1) @[IOController.scala 125:17]
+        iiCnt <= _iiCnt_T_2 @[IOController.scala 125:11]
+    node _T_16 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_16 : @[IOController.scala 129:27]
+      cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_17 = eq(cycleCntEnd_0, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_18 = and(iiEnd, _T_17) @[IOController.scala 132:18]
+        when _T_18 : @[IOController.scala 132:37]
+          node _cycleCnt_0_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 133:36]
+          node _cycleCnt_0_T_1 = tail(_cycleCnt_0_T, 1) @[IOController.scala 133:36]
+          cycleCnt_0 <= _cycleCnt_0_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_19 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_19 : @[IOController.scala 129:27]
+      cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_20 = eq(cycleCntEnd_1, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_21 = and(iiEnd, _T_20) @[IOController.scala 132:18]
+        when _T_21 : @[IOController.scala 132:37]
+          node _cycleCnt_1_T = add(cycleCnt_1, cycleCntEnd_0) @[IOController.scala 133:36]
+          node _cycleCnt_1_T_1 = tail(_cycleCnt_1_T, 1) @[IOController.scala 133:36]
+          cycleCnt_1 <= _cycleCnt_1_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_22 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_22 : @[IOController.scala 129:27]
+      cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_23 = eq(cycleCntEnd_2, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_24 = and(iiEnd, _T_23) @[IOController.scala 132:18]
+        when _T_24 : @[IOController.scala 132:37]
+          node _cycleCnt_2_T = add(cycleCnt_2, cycleCntEnd_1) @[IOController.scala 133:36]
+          node _cycleCnt_2_T_1 = tail(_cycleCnt_2_T, 1) @[IOController.scala 133:36]
+          cycleCnt_2 <= _cycleCnt_2_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_25 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_25 : @[IOController.scala 129:27]
+      cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_26 = eq(cntEnd, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_27 = and(iiEnd, _T_26) @[IOController.scala 132:18]
+        when _T_27 : @[IOController.scala 132:37]
+          node _cycleCnt_3_T = add(cycleCnt_3, cycleCntEnd_2) @[IOController.scala 133:36]
+          node _cycleCnt_3_T_1 = tail(_cycleCnt_3_T, 1) @[IOController.scala 133:36]
+          cycleCnt_3 <= _cycleCnt_3_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _wRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_1 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_2 = tail(_wRealValid_T_1, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_3 = geq(_wRealValid_T_2, cycles_0) @[IOController.scala 145:47]
+    node _wRealValid_T_4 = and(_wRealValid_T, _wRealValid_T_3) @[IOController.scala 145:26]
+    node _wRealValid_T_5 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_6 = or(_wRealValid_T_4, _wRealValid_T_5) @[IOController.scala 145:61]
+    node _wRealValid_T_7 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_8 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_9 = tail(_wRealValid_T_8, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_10 = geq(_wRealValid_T_9, cycles_1) @[IOController.scala 145:47]
+    node _wRealValid_T_11 = and(_wRealValid_T_7, _wRealValid_T_10) @[IOController.scala 145:26]
+    node _wRealValid_T_12 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_13 = or(_wRealValid_T_11, _wRealValid_T_12) @[IOController.scala 145:61]
+    node _wRealValid_T_14 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_15 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_16 = tail(_wRealValid_T_15, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_17 = geq(_wRealValid_T_16, cycles_2) @[IOController.scala 145:47]
+    node _wRealValid_T_18 = and(_wRealValid_T_14, _wRealValid_T_17) @[IOController.scala 145:26]
+    node _wRealValid_T_19 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_20 = or(_wRealValid_T_18, _wRealValid_T_19) @[IOController.scala 145:61]
+    node _wRealValid_T_21 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_22 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_23 = tail(_wRealValid_T_22, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_24 = geq(_wRealValid_T_23, cycles_3) @[IOController.scala 145:47]
+    node _wRealValid_T_25 = and(_wRealValid_T_21, _wRealValid_T_24) @[IOController.scala 145:26]
+    node _wRealValid_T_26 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_27 = or(_wRealValid_T_25, _wRealValid_T_26) @[IOController.scala 145:61]
+    node _wRealValid_T_28 = and(_wRealValid_T_6, _wRealValid_T_13) @[IOController.scala 146:13]
+    node _wRealValid_T_29 = and(_wRealValid_T_28, _wRealValid_T_20) @[IOController.scala 146:13]
+    node wRealValid = and(_wRealValid_T_29, _wRealValid_T_27) @[IOController.scala 146:13]
+    node _rRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_1 = eq(cycleCnt_0, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_2 = and(_rRealValid_T, _rRealValid_T_1) @[IOController.scala 150:24]
+    node _rRealValid_T_3 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_4 = or(_rRealValid_T_2, _rRealValid_T_3) @[IOController.scala 150:48]
+    node _rRealValid_T_5 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_6 = eq(cycleCnt_1, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_7 = and(_rRealValid_T_5, _rRealValid_T_6) @[IOController.scala 150:24]
+    node _rRealValid_T_8 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_9 = or(_rRealValid_T_7, _rRealValid_T_8) @[IOController.scala 150:48]
+    node _rRealValid_T_10 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_11 = eq(cycleCnt_2, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_12 = and(_rRealValid_T_10, _rRealValid_T_11) @[IOController.scala 150:24]
+    node _rRealValid_T_13 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_14 = or(_rRealValid_T_12, _rRealValid_T_13) @[IOController.scala 150:48]
+    node _rRealValid_T_15 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_16 = eq(cycleCnt_3, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_17 = and(_rRealValid_T_15, _rRealValid_T_16) @[IOController.scala 150:24]
+    node _rRealValid_T_18 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_19 = or(_rRealValid_T_17, _rRealValid_T_18) @[IOController.scala 150:48]
+    node _rRealValid_T_20 = and(_rRealValid_T_4, _rRealValid_T_9) @[IOController.scala 151:13]
+    node _rRealValid_T_21 = and(_rRealValid_T_20, _rRealValid_T_14) @[IOController.scala 151:13]
+    node rRealValid = and(_rRealValid_T_21, _rRealValid_T_19) @[IOController.scala 151:13]
+    node _wValid_T = and(isStore, launch) @[IOController.scala 154:24]
+    node _wValid_T_1 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 154:44]
+    node wValid = and(_wValid_T, _wValid_T_1) @[IOController.scala 154:34]
+    node _raValid_T = eq(isStore, UInt<1>("h0")) @[IOController.scala 157:17]
+    node _raValid_T_1 = and(_raValid_T, launch) @[IOController.scala 157:26]
+    node _raValid_T_2 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 157:46]
+    node raValid = and(_raValid_T_1, _raValid_T_2) @[IOController.scala 157:36]
+    wire addr : UInt<15> @[IOController.scala 158:18]
+    reg genAddrReg : SInt<16>, clock with :
+      reset => (reset, asSInt(UInt<16>("h0"))) @[IOController.scala 159:27]
+    node _realEn_T = or(wRealValid, useAddr) @[IOController.scala 170:39]
+    node _realEn_T_1 = and(wValid, _realEn_T) @[IOController.scala 170:24]
+    node _realEn_T_2 = or(rRealValid, useAddr) @[IOController.scala 170:79]
+    node _realEn_T_3 = and(raValid, _realEn_T_2) @[IOController.scala 170:64]
+    node realEn = or(_realEn_T_1, _realEn_T_3) @[IOController.scala 170:52]
+    node _T_28 = eq(launch, UInt<1>("h0")) @[IOController.scala 172:8]
+    when _T_28 : @[IOController.scala 172:16]
+      node genAddrReg_hi = asUInt(asSInt(UInt<1>("h0"))) @[Cat.scala 33:92]
+      node _genAddrReg_T = cat(genAddrReg_hi, baseAddr) @[Cat.scala 33:92]
+      node _genAddrReg_T_1 = asSInt(_genAddrReg_T) @[IOController.scala 173:43]
+      genAddrReg <= _genAddrReg_T_1 @[IOController.scala 173:16]
+    else :
+      when iiEnd : @[IOController.scala 174:20]
+        node _genAddrReg_T_2 = mux(cycleCntEnd_0, stride_1, stride_0) @[Mux.scala 47:70]
+        node _genAddrReg_T_3 = mux(cycleCntEnd_1, stride_2, _genAddrReg_T_2) @[Mux.scala 47:70]
+        node _genAddrReg_T_4 = mux(cycleCntEnd_2, stride_3, _genAddrReg_T_3) @[Mux.scala 47:70]
+        node _genAddrReg_T_5 = add(genAddrReg, _genAddrReg_T_4) @[IOController.scala 175:30]
+        node _genAddrReg_T_6 = tail(_genAddrReg_T_5, 1) @[IOController.scala 175:30]
+        node _genAddrReg_T_7 = asSInt(_genAddrReg_T_6) @[IOController.scala 175:30]
+        genAddrReg <= _genAddrReg_T_7 @[IOController.scala 175:16]
+    node _T_29 = and(useAddr, isStore) @[IOController.scala 182:18]
+    when _T_29 : @[IOController.scala 182:28]
+      node _addr_T = bits(io.in[1], 15, 1) @[IOController.scala 183:35]
+      node _addr_T_1 = add(baseAddr, _addr_T) @[IOController.scala 183:25]
+      node _addr_T_2 = tail(_addr_T_1, 1) @[IOController.scala 183:25]
+      addr <= _addr_T_2 @[IOController.scala 183:12]
+    else :
+      node _T_30 = eq(isStore, UInt<1>("h0")) @[IOController.scala 184:26]
+      node _T_31 = and(useAddr, _T_30) @[IOController.scala 184:24]
+      when _T_31 : @[IOController.scala 184:35]
+        node _addr_T_3 = bits(io.in[0], 15, 1) @[IOController.scala 185:35]
+        node _addr_T_4 = add(baseAddr, _addr_T_3) @[IOController.scala 185:25]
+        node _addr_T_5 = tail(_addr_T_4, 1) @[IOController.scala 185:25]
+        addr <= _addr_T_5 @[IOController.scala 185:12]
+      else :
+        node _addr_T_6 = asUInt(genAddrReg) @[IOController.scala 187:26]
+        addr <= _addr_T_6 @[IOController.scala 187:12]
+    reg addrReg : UInt<15>, clock with :
+      reset => (reset, UInt<15>("h0")) @[IOController.scala 192:26]
+    node _T_32 = or(wValid, raValid) @[IOController.scala 193:17]
+    when _T_32 : @[IOController.scala 193:28]
+      addrReg <= addr @[IOController.scala 194:15]
+    reg wDataReg : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 196:27]
+    when wValid : @[IOController.scala 197:17]
+      wDataReg <= io.in[0] @[IOController.scala 198:16]
+    reg io_sram_en_REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), io_sram_en_REG) @[IOController.scala 200:26]
+    io_sram_en_REG <= realEn @[IOController.scala 200:26]
+    io.sram.en <= io_sram_en_REG @[IOController.scala 200:16]
+    node _io_sram_we_T = mux(wValid, UInt<2>("h3"), UInt<1>("h0")) @[IOController.scala 201:30]
+    reg io_sram_we_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_sram_we_REG) @[IOController.scala 201:26]
+    io_sram_we_REG <= _io_sram_we_T @[IOController.scala 201:26]
+    io.sram.we <= io_sram_we_REG @[IOController.scala 201:16]
+    io.sram.addr <= addrReg @[IOController.scala 202:18]
+    io.sram.din <= wDataReg @[IOController.scala 203:17]
+    reg dout : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 212:23]
+    node _T_33 = eq(io.sram.we, UInt<1>("h0")) @[IOController.scala 213:44]
+    node _T_34 = and(io.sram.en, _T_33) @[IOController.scala 213:29]
+    reg REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), REG) @[IOController.scala 213:17]
+    REG <= _T_34 @[IOController.scala 213:17]
+    when REG : @[IOController.scala 213:54]
+      dout <= io.sram.dout @[IOController.scala 214:12]
+    io.out[0] <= dout @[IOController.scala 216:15]
+
+  module SharedDelayPipe_6 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip en : UInt<1>, flip config : UInt<8>, flip in : UInt<16>[2], out : UInt<16>[2]}
+
+    wire _regs_WIRE : UInt<16>[12] @[DelayPipe.scala 142:29]
+    _regs_WIRE[0] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[1] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[2] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[3] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[4] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[5] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[6] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[7] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[8] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[9] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[10] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[11] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    reg regs : UInt<16>[12], clock with :
+      reset => (reset, _regs_WIRE) @[DelayPipe.scala 142:21]
+    wire _wptr_WIRE : UInt<4>[2] @[DelayPipe.scala 143:29]
+    _wptr_WIRE[0] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    _wptr_WIRE[1] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    reg wptr : UInt<4>[2], clock with :
+      reset => (reset, _wptr_WIRE) @[DelayPipe.scala 143:21]
+    wire rptr : UInt<4>[2] @[DelayPipe.scala 145:18]
+    wire config : UInt<4>[2] @[DelayPipe.scala 146:20]
+    node _config_0_T = bits(io.config, 3, 0) @[DelayPipe.scala 148:27]
+    config[0] <= _config_0_T @[DelayPipe.scala 148:15]
+    node _config_1_T = bits(io.config, 7, 4) @[DelayPipe.scala 148:27]
+    config[1] <= _config_1_T @[DelayPipe.scala 148:15]
+    wire offset : UInt<4>[1] @[DelayPipe.scala 150:20]
+    node _offset_0_T = add(config[1], UInt<1>("h1")) @[DelayPipe.scala 153:32]
+    node _offset_0_T_1 = tail(_offset_0_T, 1) @[DelayPipe.scala 153:32]
+    offset[0] <= _offset_0_T_1 @[DelayPipe.scala 153:17]
+    node _T = lt(wptr[0], UInt<4>("hb")) @[DelayPipe.scala 161:30]
+    node _T_1 = and(io.en, _T) @[DelayPipe.scala 161:18]
+    when _T_1 : @[DelayPipe.scala 161:46]
+      node _wptr_0_T = add(wptr[0], UInt<1>("h1")) @[DelayPipe.scala 162:28]
+      node _wptr_0_T_1 = tail(_wptr_0_T, 1) @[DelayPipe.scala 162:28]
+      wptr[0] <= _wptr_0_T_1 @[DelayPipe.scala 162:17]
+    else :
+      wptr[0] <= UInt<1>("h0") @[DelayPipe.scala 164:17]
+    node _T_2 = geq(wptr[0], config[0]) @[DelayPipe.scala 178:18]
+    when _T_2 : @[DelayPipe.scala 178:31]
+      node _rptr_0_T = sub(wptr[0], config[0]) @[DelayPipe.scala 179:26]
+      node _rptr_0_T_1 = tail(_rptr_0_T, 1) @[DelayPipe.scala 179:26]
+      rptr[0] <= _rptr_0_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_0_T_2 = add(UInt<4>("hc"), wptr[0]) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_3 = tail(_rptr_0_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_4 = sub(_rptr_0_T_3, config[0]) @[DelayPipe.scala 181:37]
+      node _rptr_0_T_5 = tail(_rptr_0_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[0] <= _rptr_0_T_5 @[DelayPipe.scala 181:15]
+    node _T_3 = eq(UInt<1>("h0"), config[0]) @[DelayPipe.scala 189:24]
+    node _T_4 = and(io.en, _T_3) @[DelayPipe.scala 189:16]
+    when _T_4 : @[DelayPipe.scala 189:39]
+      io.out[0] <= io.in[0] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[0] <= regs[rptr[0]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[0] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 167:19]
+      node _T_5 = lt(wptr[1], UInt<4>("hb")) @[DelayPipe.scala 168:22]
+      when _T_5 : @[DelayPipe.scala 168:40]
+        node _wptr_1_T = add(wptr[1], UInt<1>("h1")) @[DelayPipe.scala 169:30]
+        node _wptr_1_T_1 = tail(_wptr_1_T, 1) @[DelayPipe.scala 169:30]
+        wptr[1] <= _wptr_1_T_1 @[DelayPipe.scala 169:19]
+      else :
+        wptr[1] <= UInt<1>("h0") @[DelayPipe.scala 171:19]
+    else :
+      wptr[1] <= offset[0] @[DelayPipe.scala 174:17]
+    node _T_6 = geq(wptr[1], config[1]) @[DelayPipe.scala 178:18]
+    when _T_6 : @[DelayPipe.scala 178:31]
+      node _rptr_1_T = sub(wptr[1], config[1]) @[DelayPipe.scala 179:26]
+      node _rptr_1_T_1 = tail(_rptr_1_T, 1) @[DelayPipe.scala 179:26]
+      rptr[1] <= _rptr_1_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_1_T_2 = add(UInt<4>("hc"), wptr[1]) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_3 = tail(_rptr_1_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_4 = sub(_rptr_1_T_3, config[1]) @[DelayPipe.scala 181:37]
+      node _rptr_1_T_5 = tail(_rptr_1_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[1] <= _rptr_1_T_5 @[DelayPipe.scala 181:15]
+    node _T_7 = eq(UInt<1>("h0"), config[1]) @[DelayPipe.scala 189:24]
+    node _T_8 = and(io.en, _T_7) @[DelayPipe.scala 189:16]
+    when _T_8 : @[DelayPipe.scala 189:39]
+      io.out[1] <= io.in[1] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[1] <= regs[rptr[1]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[1] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 199:14]
+      regs[wptr[0]] <= io.in[0] @[DelayPipe.scala 201:21]
+      regs[wptr[1]] <= io.in[1] @[DelayPipe.scala 201:21]
+    else :
+      regs[0] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[1] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[2] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[3] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[4] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[5] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[6] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[7] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[8] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[9] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[10] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[11] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+
+
+  module Muxn_22 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_23 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module ConfigMem_8 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<3>, flip cfg_data : UInt<32>, out : UInt<137>[1]}
+
+    wire _regs_WIRE : UInt<137>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<137>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<137>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 39:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 39:22]
+    when _T_1 : @[ConfigMem.scala 39:47]
+      node _regs_0_T = bits(regs[0], 136, 32) @[ConfigMem.scala 41:33]
+      node _regs_0_T_1 = cat(_regs_0_T, io.cfg_data) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_1 @[ConfigMem.scala 41:19]
+    node _T_2 = eq(io.cfg_addr, UInt<1>("h1")) @[ConfigMem.scala 39:38]
+    node _T_3 = and(io.cfg_en, _T_2) @[ConfigMem.scala 39:22]
+    when _T_3 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_2 = bits(regs[0], 136, 64) @[ConfigMem.scala 45:33]
+      node _regs_0_T_3 = bits(regs[0], 31, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi = cat(_regs_0_T_2, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_4 = cat(regs_0_hi, _regs_0_T_3) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_4 @[ConfigMem.scala 45:19]
+    node _T_4 = eq(io.cfg_addr, UInt<2>("h2")) @[ConfigMem.scala 39:38]
+    node _T_5 = and(io.cfg_en, _T_4) @[ConfigMem.scala 39:22]
+    when _T_5 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_5 = bits(regs[0], 136, 96) @[ConfigMem.scala 45:33]
+      node _regs_0_T_6 = bits(regs[0], 63, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_1 = cat(_regs_0_T_5, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_7 = cat(regs_0_hi_1, _regs_0_T_6) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_7 @[ConfigMem.scala 45:19]
+    node _T_6 = eq(io.cfg_addr, UInt<2>("h3")) @[ConfigMem.scala 39:38]
+    node _T_7 = and(io.cfg_en, _T_6) @[ConfigMem.scala 39:22]
+    when _T_7 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_8 = bits(regs[0], 136, 128) @[ConfigMem.scala 45:33]
+      node _regs_0_T_9 = bits(regs[0], 95, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_2 = cat(_regs_0_T_8, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_10 = cat(regs_0_hi_2, _regs_0_T_9) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_10 @[ConfigMem.scala 45:19]
+    node _T_8 = eq(io.cfg_addr, UInt<3>("h4")) @[ConfigMem.scala 39:38]
+    node _T_9 = and(io.cfg_en, _T_8) @[ConfigMem.scala 39:22]
+    when _T_9 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_11 = bits(regs[0], 127, 0) @[ConfigMem.scala 43:46]
+      node _regs_0_T_12 = cat(io.cfg_data, _regs_0_T_11) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_12 @[ConfigMem.scala 43:19]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module IOB_4 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, flip start : UInt<1>, done : UInt<1>, flip en : UInt<1>, flip in : UInt<16>[4], out : UInt<16>[1], flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst ioCtrl of IOController_4 @[IOB.scala 67:22]
+    ioCtrl.clock <= clock
+    ioCtrl.reset <= reset
+    inst delay_pipe of SharedDelayPipe_6 @[IOB.scala 68:66]
+    delay_pipe.clock <= clock
+    delay_pipe.reset <= reset
+    inst Muxn of Muxn_22 @[IOB.scala 70:43]
+    Muxn.clock <= clock
+    Muxn.reset <= reset
+    inst Muxn_1 of Muxn_23 @[IOB.scala 70:43]
+    Muxn_1.clock <= clock
+    Muxn_1.reset <= reset
+    ioCtrl.io.sram <= io.sram @[IOB.scala 119:18]
+    ioCtrl.io.start <= io.start @[IOB.scala 120:19]
+    io.done <= ioCtrl.io.done @[IOB.scala 121:11]
+    io.out[0] <= ioCtrl.io.out[0] @[IOB.scala 122:13]
+    Muxn.io.in[0] <= io.in[0] @[IOB.scala 128:10]
+    Muxn.io.in[1] <= io.in[1] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[0] <= Muxn.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[0] <= delay_pipe.io.out[0] @[IOB.scala 134:23]
+    Muxn_1.io.in[0] <= io.in[2] @[IOB.scala 128:10]
+    Muxn_1.io.in[1] <= io.in[3] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[1] <= Muxn_1.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[1] <= delay_pipe.io.out[1] @[IOB.scala 134:23]
+    inst cfg of ConfigMem_8 @[IOB.scala 152:19]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[IOB.scala 153:63]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("hb"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[IOB.scala 153:30]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[IOB.scala 153:17]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[IOB.scala 154:33]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[IOB.scala 154:19]
+    cfg.io.cfg_data <= io.cfg_data @[IOB.scala 155:19]
+    node _ioCtrl_io_config_T = bits(cfg.io.out[0], 126, 0) @[IOB.scala 169:29]
+    ioCtrl.io.config <= _ioCtrl_io_config_T @[IOB.scala 169:20]
+    node _delay_pipe_io_config_T = bits(cfg.io.out[0], 134, 127) @[IOB.scala 180:35]
+    delay_pipe.io.config <= _delay_pipe_io_config_T @[IOB.scala 180:26]
+    node _T = bits(cfg.io.out[0], 135, 135) @[IOB.scala 186:32]
+    Muxn.io.config <= _T @[IOB.scala 186:23]
+    node _T_1 = bits(cfg.io.out[0], 136, 136) @[IOB.scala 186:32]
+    Muxn_1.io.config <= _T_1 @[IOB.scala 186:23]
+
+  module IOController_5 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}, flip start : UInt<1>, done : UInt<1>, flip config : UInt<127>, flip in : UInt<16>[2], out : UInt<16>[1]}
+
+    node baseAddr = bits(io.config, 14, 0) @[IOController.scala 49:27]
+    node _T = bits(io.config, 27, 15) @[IOController.scala 56:24]
+    node stride_0 = asSInt(_T) @[IOController.scala 56:55]
+    node cycles_0 = bits(io.config, 39, 28) @[IOController.scala 59:24]
+    node _T_1 = bits(io.config, 52, 40) @[IOController.scala 56:24]
+    node stride_1 = asSInt(_T_1) @[IOController.scala 56:55]
+    node cycles_1 = bits(io.config, 64, 53) @[IOController.scala 59:24]
+    node _T_2 = bits(io.config, 77, 65) @[IOController.scala 56:24]
+    node stride_2 = asSInt(_T_2) @[IOController.scala 56:55]
+    node cycles_2 = bits(io.config, 89, 78) @[IOController.scala 59:24]
+    node _T_3 = bits(io.config, 102, 90) @[IOController.scala 56:24]
+    node stride_3 = asSInt(_T_3) @[IOController.scala 56:55]
+    node cycles_3 = bits(io.config, 114, 103) @[IOController.scala 59:24]
+    node II = bits(io.config, 118, 115) @[IOController.scala 64:21]
+    node latency = bits(io.config, 124, 119) @[IOController.scala 68:26]
+    node _isStore_T = bits(io.config, 125, 125) @[IOController.scala 72:26]
+    node isStore = bits(_isStore_T, 0, 0) @[IOController.scala 72:35]
+    node _useAddr_T = bits(io.config, 126, 126) @[IOController.scala 79:16]
+    node useAddr = bits(_useAddr_T, 0, 0) @[IOController.scala 79:27]
+    reg state : UInt<2>, clock with :
+      reset => (reset, UInt<2>("h0")) @[IOController.scala 84:22]
+    reg latCnt : UInt<6>, clock with :
+      reset => (reset, UInt<6>("h0")) @[IOController.scala 85:23]
+    reg cycleCnt_0 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_1 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_2 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_3 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg iiCnt : UInt<4>, clock with :
+      reset => (reset, UInt<4>("h0")) @[IOController.scala 87:22]
+    reg done : UInt<1>, clock with :
+      reset => (reset, UInt<1>("h0")) @[IOController.scala 88:21]
+    node _iiEnd_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 89:21]
+    node _iiEnd_T_1 = tail(_iiEnd_T, 1) @[IOController.scala 89:21]
+    node iiEnd = geq(_iiEnd_T_1, II) @[IOController.scala 89:26]
+    node _cycleCntEnd_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_1 = tail(_cycleCntEnd_T, 1) @[IOController.scala 91:36]
+    node cycleCntEnd_0 = geq(_cycleCntEnd_T_1, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_2 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_3 = tail(_cycleCntEnd_T_2, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_4 = geq(_cycleCntEnd_T_3, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_5 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_6 = tail(_cycleCntEnd_T_5, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_7 = geq(_cycleCntEnd_T_6, cycles_1) @[IOController.scala 91:42]
+    node cycleCntEnd_1 = and(_cycleCntEnd_T_4, _cycleCntEnd_T_7) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_8 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_9 = tail(_cycleCntEnd_T_8, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_10 = geq(_cycleCntEnd_T_9, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_11 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_12 = tail(_cycleCntEnd_T_11, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_13 = geq(_cycleCntEnd_T_12, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_14 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_15 = tail(_cycleCntEnd_T_14, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_16 = geq(_cycleCntEnd_T_15, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_17 = and(_cycleCntEnd_T_10, _cycleCntEnd_T_13) @[IOController.scala 91:65]
+    node cycleCntEnd_2 = and(_cycleCntEnd_T_17, _cycleCntEnd_T_16) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_18 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_19 = tail(_cycleCntEnd_T_18, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_20 = geq(_cycleCntEnd_T_19, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_21 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_22 = tail(_cycleCntEnd_T_21, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_23 = geq(_cycleCntEnd_T_22, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_24 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_25 = tail(_cycleCntEnd_T_24, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_26 = geq(_cycleCntEnd_T_25, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_27 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_28 = tail(_cycleCntEnd_T_27, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_29 = geq(_cycleCntEnd_T_28, cycles_3) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_30 = and(_cycleCntEnd_T_20, _cycleCntEnd_T_23) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_31 = and(_cycleCntEnd_T_30, _cycleCntEnd_T_26) @[IOController.scala 91:65]
+    node cntEnd = and(_cycleCntEnd_T_31, _cycleCntEnd_T_29) @[IOController.scala 91:65]
+    io.done <= done @[IOController.scala 95:11]
+    node _T_4 = eq(UInt<2>("h0"), state) @[IOController.scala 96:16]
+    when _T_4 : @[IOController.scala 96:16]
+      latCnt <= UInt<1>("h0") @[IOController.scala 98:14]
+      node _T_5 = eq(latency, UInt<1>("h0")) @[IOController.scala 99:32]
+      node _T_6 = and(io.start, _T_5) @[IOController.scala 99:21]
+      when _T_6 : @[IOController.scala 99:40]
+        state <= UInt<2>("h2") @[IOController.scala 100:15]
+        done <= UInt<1>("h0") @[IOController.scala 101:14]
+      else :
+        node _T_7 = neq(latency, UInt<1>("h0")) @[IOController.scala 102:38]
+        node _T_8 = and(io.start, _T_7) @[IOController.scala 102:27]
+        when _T_8 : @[IOController.scala 102:46]
+          state <= UInt<2>("h1") @[IOController.scala 103:15]
+          done <= UInt<1>("h0") @[IOController.scala 104:14]
+    else :
+      node _T_9 = eq(UInt<2>("h1"), state) @[IOController.scala 96:16]
+      when _T_9 : @[IOController.scala 96:16]
+        node _T_10 = add(latCnt, UInt<1>("h1")) @[IOController.scala 108:19]
+        node _T_11 = tail(_T_10, 1) @[IOController.scala 108:19]
+        node _T_12 = geq(_T_11, latency) @[IOController.scala 108:25]
+        when _T_12 : @[IOController.scala 108:36]
+          state <= UInt<2>("h2") @[IOController.scala 109:15]
+        node _latCnt_T = add(latCnt, UInt<1>("h1")) @[IOController.scala 111:24]
+        node _latCnt_T_1 = tail(_latCnt_T, 1) @[IOController.scala 111:24]
+        latCnt <= _latCnt_T_1 @[IOController.scala 111:14]
+      else :
+        node _T_13 = eq(UInt<2>("h2"), state) @[IOController.scala 96:16]
+        when _T_13 : @[IOController.scala 96:16]
+          node _T_14 = and(cntEnd, iiEnd) @[IOController.scala 114:19]
+          when _T_14 : @[IOController.scala 114:28]
+            state <= UInt<2>("h0") @[IOController.scala 115:15]
+            done <= UInt<1>("h1") @[IOController.scala 116:14]
+    node launch = eq(state, UInt<2>("h2")) @[IOController.scala 121:23]
+    node _T_15 = eq(state, UInt<2>("h0")) @[IOController.scala 122:14]
+    when _T_15 : @[IOController.scala 122:25]
+      iiCnt <= UInt<1>("h0") @[IOController.scala 123:11]
+    else :
+      when launch : @[IOController.scala 124:21]
+        node _iiCnt_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 125:35]
+        node _iiCnt_T_1 = tail(_iiCnt_T, 1) @[IOController.scala 125:35]
+        node _iiCnt_T_2 = mux(iiEnd, UInt<1>("h0"), _iiCnt_T_1) @[IOController.scala 125:17]
+        iiCnt <= _iiCnt_T_2 @[IOController.scala 125:11]
+    node _T_16 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_16 : @[IOController.scala 129:27]
+      cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_17 = eq(cycleCntEnd_0, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_18 = and(iiEnd, _T_17) @[IOController.scala 132:18]
+        when _T_18 : @[IOController.scala 132:37]
+          node _cycleCnt_0_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 133:36]
+          node _cycleCnt_0_T_1 = tail(_cycleCnt_0_T, 1) @[IOController.scala 133:36]
+          cycleCnt_0 <= _cycleCnt_0_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_19 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_19 : @[IOController.scala 129:27]
+      cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_20 = eq(cycleCntEnd_1, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_21 = and(iiEnd, _T_20) @[IOController.scala 132:18]
+        when _T_21 : @[IOController.scala 132:37]
+          node _cycleCnt_1_T = add(cycleCnt_1, cycleCntEnd_0) @[IOController.scala 133:36]
+          node _cycleCnt_1_T_1 = tail(_cycleCnt_1_T, 1) @[IOController.scala 133:36]
+          cycleCnt_1 <= _cycleCnt_1_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_22 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_22 : @[IOController.scala 129:27]
+      cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_23 = eq(cycleCntEnd_2, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_24 = and(iiEnd, _T_23) @[IOController.scala 132:18]
+        when _T_24 : @[IOController.scala 132:37]
+          node _cycleCnt_2_T = add(cycleCnt_2, cycleCntEnd_1) @[IOController.scala 133:36]
+          node _cycleCnt_2_T_1 = tail(_cycleCnt_2_T, 1) @[IOController.scala 133:36]
+          cycleCnt_2 <= _cycleCnt_2_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_25 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_25 : @[IOController.scala 129:27]
+      cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_26 = eq(cntEnd, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_27 = and(iiEnd, _T_26) @[IOController.scala 132:18]
+        when _T_27 : @[IOController.scala 132:37]
+          node _cycleCnt_3_T = add(cycleCnt_3, cycleCntEnd_2) @[IOController.scala 133:36]
+          node _cycleCnt_3_T_1 = tail(_cycleCnt_3_T, 1) @[IOController.scala 133:36]
+          cycleCnt_3 <= _cycleCnt_3_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _wRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_1 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_2 = tail(_wRealValid_T_1, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_3 = geq(_wRealValid_T_2, cycles_0) @[IOController.scala 145:47]
+    node _wRealValid_T_4 = and(_wRealValid_T, _wRealValid_T_3) @[IOController.scala 145:26]
+    node _wRealValid_T_5 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_6 = or(_wRealValid_T_4, _wRealValid_T_5) @[IOController.scala 145:61]
+    node _wRealValid_T_7 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_8 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_9 = tail(_wRealValid_T_8, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_10 = geq(_wRealValid_T_9, cycles_1) @[IOController.scala 145:47]
+    node _wRealValid_T_11 = and(_wRealValid_T_7, _wRealValid_T_10) @[IOController.scala 145:26]
+    node _wRealValid_T_12 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_13 = or(_wRealValid_T_11, _wRealValid_T_12) @[IOController.scala 145:61]
+    node _wRealValid_T_14 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_15 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_16 = tail(_wRealValid_T_15, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_17 = geq(_wRealValid_T_16, cycles_2) @[IOController.scala 145:47]
+    node _wRealValid_T_18 = and(_wRealValid_T_14, _wRealValid_T_17) @[IOController.scala 145:26]
+    node _wRealValid_T_19 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_20 = or(_wRealValid_T_18, _wRealValid_T_19) @[IOController.scala 145:61]
+    node _wRealValid_T_21 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_22 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_23 = tail(_wRealValid_T_22, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_24 = geq(_wRealValid_T_23, cycles_3) @[IOController.scala 145:47]
+    node _wRealValid_T_25 = and(_wRealValid_T_21, _wRealValid_T_24) @[IOController.scala 145:26]
+    node _wRealValid_T_26 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_27 = or(_wRealValid_T_25, _wRealValid_T_26) @[IOController.scala 145:61]
+    node _wRealValid_T_28 = and(_wRealValid_T_6, _wRealValid_T_13) @[IOController.scala 146:13]
+    node _wRealValid_T_29 = and(_wRealValid_T_28, _wRealValid_T_20) @[IOController.scala 146:13]
+    node wRealValid = and(_wRealValid_T_29, _wRealValid_T_27) @[IOController.scala 146:13]
+    node _rRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_1 = eq(cycleCnt_0, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_2 = and(_rRealValid_T, _rRealValid_T_1) @[IOController.scala 150:24]
+    node _rRealValid_T_3 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_4 = or(_rRealValid_T_2, _rRealValid_T_3) @[IOController.scala 150:48]
+    node _rRealValid_T_5 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_6 = eq(cycleCnt_1, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_7 = and(_rRealValid_T_5, _rRealValid_T_6) @[IOController.scala 150:24]
+    node _rRealValid_T_8 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_9 = or(_rRealValid_T_7, _rRealValid_T_8) @[IOController.scala 150:48]
+    node _rRealValid_T_10 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_11 = eq(cycleCnt_2, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_12 = and(_rRealValid_T_10, _rRealValid_T_11) @[IOController.scala 150:24]
+    node _rRealValid_T_13 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_14 = or(_rRealValid_T_12, _rRealValid_T_13) @[IOController.scala 150:48]
+    node _rRealValid_T_15 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_16 = eq(cycleCnt_3, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_17 = and(_rRealValid_T_15, _rRealValid_T_16) @[IOController.scala 150:24]
+    node _rRealValid_T_18 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_19 = or(_rRealValid_T_17, _rRealValid_T_18) @[IOController.scala 150:48]
+    node _rRealValid_T_20 = and(_rRealValid_T_4, _rRealValid_T_9) @[IOController.scala 151:13]
+    node _rRealValid_T_21 = and(_rRealValid_T_20, _rRealValid_T_14) @[IOController.scala 151:13]
+    node rRealValid = and(_rRealValid_T_21, _rRealValid_T_19) @[IOController.scala 151:13]
+    node _wValid_T = and(isStore, launch) @[IOController.scala 154:24]
+    node _wValid_T_1 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 154:44]
+    node wValid = and(_wValid_T, _wValid_T_1) @[IOController.scala 154:34]
+    node _raValid_T = eq(isStore, UInt<1>("h0")) @[IOController.scala 157:17]
+    node _raValid_T_1 = and(_raValid_T, launch) @[IOController.scala 157:26]
+    node _raValid_T_2 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 157:46]
+    node raValid = and(_raValid_T_1, _raValid_T_2) @[IOController.scala 157:36]
+    wire addr : UInt<15> @[IOController.scala 158:18]
+    reg genAddrReg : SInt<16>, clock with :
+      reset => (reset, asSInt(UInt<16>("h0"))) @[IOController.scala 159:27]
+    node _realEn_T = or(wRealValid, useAddr) @[IOController.scala 170:39]
+    node _realEn_T_1 = and(wValid, _realEn_T) @[IOController.scala 170:24]
+    node _realEn_T_2 = or(rRealValid, useAddr) @[IOController.scala 170:79]
+    node _realEn_T_3 = and(raValid, _realEn_T_2) @[IOController.scala 170:64]
+    node realEn = or(_realEn_T_1, _realEn_T_3) @[IOController.scala 170:52]
+    node _T_28 = eq(launch, UInt<1>("h0")) @[IOController.scala 172:8]
+    when _T_28 : @[IOController.scala 172:16]
+      node genAddrReg_hi = asUInt(asSInt(UInt<1>("h0"))) @[Cat.scala 33:92]
+      node _genAddrReg_T = cat(genAddrReg_hi, baseAddr) @[Cat.scala 33:92]
+      node _genAddrReg_T_1 = asSInt(_genAddrReg_T) @[IOController.scala 173:43]
+      genAddrReg <= _genAddrReg_T_1 @[IOController.scala 173:16]
+    else :
+      when iiEnd : @[IOController.scala 174:20]
+        node _genAddrReg_T_2 = mux(cycleCntEnd_0, stride_1, stride_0) @[Mux.scala 47:70]
+        node _genAddrReg_T_3 = mux(cycleCntEnd_1, stride_2, _genAddrReg_T_2) @[Mux.scala 47:70]
+        node _genAddrReg_T_4 = mux(cycleCntEnd_2, stride_3, _genAddrReg_T_3) @[Mux.scala 47:70]
+        node _genAddrReg_T_5 = add(genAddrReg, _genAddrReg_T_4) @[IOController.scala 175:30]
+        node _genAddrReg_T_6 = tail(_genAddrReg_T_5, 1) @[IOController.scala 175:30]
+        node _genAddrReg_T_7 = asSInt(_genAddrReg_T_6) @[IOController.scala 175:30]
+        genAddrReg <= _genAddrReg_T_7 @[IOController.scala 175:16]
+    node _T_29 = and(useAddr, isStore) @[IOController.scala 182:18]
+    when _T_29 : @[IOController.scala 182:28]
+      node _addr_T = bits(io.in[1], 15, 1) @[IOController.scala 183:35]
+      node _addr_T_1 = add(baseAddr, _addr_T) @[IOController.scala 183:25]
+      node _addr_T_2 = tail(_addr_T_1, 1) @[IOController.scala 183:25]
+      addr <= _addr_T_2 @[IOController.scala 183:12]
+    else :
+      node _T_30 = eq(isStore, UInt<1>("h0")) @[IOController.scala 184:26]
+      node _T_31 = and(useAddr, _T_30) @[IOController.scala 184:24]
+      when _T_31 : @[IOController.scala 184:35]
+        node _addr_T_3 = bits(io.in[0], 15, 1) @[IOController.scala 185:35]
+        node _addr_T_4 = add(baseAddr, _addr_T_3) @[IOController.scala 185:25]
+        node _addr_T_5 = tail(_addr_T_4, 1) @[IOController.scala 185:25]
+        addr <= _addr_T_5 @[IOController.scala 185:12]
+      else :
+        node _addr_T_6 = asUInt(genAddrReg) @[IOController.scala 187:26]
+        addr <= _addr_T_6 @[IOController.scala 187:12]
+    reg addrReg : UInt<15>, clock with :
+      reset => (reset, UInt<15>("h0")) @[IOController.scala 192:26]
+    node _T_32 = or(wValid, raValid) @[IOController.scala 193:17]
+    when _T_32 : @[IOController.scala 193:28]
+      addrReg <= addr @[IOController.scala 194:15]
+    reg wDataReg : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 196:27]
+    when wValid : @[IOController.scala 197:17]
+      wDataReg <= io.in[0] @[IOController.scala 198:16]
+    reg io_sram_en_REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), io_sram_en_REG) @[IOController.scala 200:26]
+    io_sram_en_REG <= realEn @[IOController.scala 200:26]
+    io.sram.en <= io_sram_en_REG @[IOController.scala 200:16]
+    node _io_sram_we_T = mux(wValid, UInt<2>("h3"), UInt<1>("h0")) @[IOController.scala 201:30]
+    reg io_sram_we_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_sram_we_REG) @[IOController.scala 201:26]
+    io_sram_we_REG <= _io_sram_we_T @[IOController.scala 201:26]
+    io.sram.we <= io_sram_we_REG @[IOController.scala 201:16]
+    io.sram.addr <= addrReg @[IOController.scala 202:18]
+    io.sram.din <= wDataReg @[IOController.scala 203:17]
+    reg dout : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 212:23]
+    node _T_33 = eq(io.sram.we, UInt<1>("h0")) @[IOController.scala 213:44]
+    node _T_34 = and(io.sram.en, _T_33) @[IOController.scala 213:29]
+    reg REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), REG) @[IOController.scala 213:17]
+    REG <= _T_34 @[IOController.scala 213:17]
+    when REG : @[IOController.scala 213:54]
+      dout <= io.sram.dout @[IOController.scala 214:12]
+    io.out[0] <= dout @[IOController.scala 216:15]
+
+  module SharedDelayPipe_7 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip en : UInt<1>, flip config : UInt<8>, flip in : UInt<16>[2], out : UInt<16>[2]}
+
+    wire _regs_WIRE : UInt<16>[12] @[DelayPipe.scala 142:29]
+    _regs_WIRE[0] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[1] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[2] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[3] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[4] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[5] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[6] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[7] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[8] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[9] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[10] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[11] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    reg regs : UInt<16>[12], clock with :
+      reset => (reset, _regs_WIRE) @[DelayPipe.scala 142:21]
+    wire _wptr_WIRE : UInt<4>[2] @[DelayPipe.scala 143:29]
+    _wptr_WIRE[0] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    _wptr_WIRE[1] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    reg wptr : UInt<4>[2], clock with :
+      reset => (reset, _wptr_WIRE) @[DelayPipe.scala 143:21]
+    wire rptr : UInt<4>[2] @[DelayPipe.scala 145:18]
+    wire config : UInt<4>[2] @[DelayPipe.scala 146:20]
+    node _config_0_T = bits(io.config, 3, 0) @[DelayPipe.scala 148:27]
+    config[0] <= _config_0_T @[DelayPipe.scala 148:15]
+    node _config_1_T = bits(io.config, 7, 4) @[DelayPipe.scala 148:27]
+    config[1] <= _config_1_T @[DelayPipe.scala 148:15]
+    wire offset : UInt<4>[1] @[DelayPipe.scala 150:20]
+    node _offset_0_T = add(config[1], UInt<1>("h1")) @[DelayPipe.scala 153:32]
+    node _offset_0_T_1 = tail(_offset_0_T, 1) @[DelayPipe.scala 153:32]
+    offset[0] <= _offset_0_T_1 @[DelayPipe.scala 153:17]
+    node _T = lt(wptr[0], UInt<4>("hb")) @[DelayPipe.scala 161:30]
+    node _T_1 = and(io.en, _T) @[DelayPipe.scala 161:18]
+    when _T_1 : @[DelayPipe.scala 161:46]
+      node _wptr_0_T = add(wptr[0], UInt<1>("h1")) @[DelayPipe.scala 162:28]
+      node _wptr_0_T_1 = tail(_wptr_0_T, 1) @[DelayPipe.scala 162:28]
+      wptr[0] <= _wptr_0_T_1 @[DelayPipe.scala 162:17]
+    else :
+      wptr[0] <= UInt<1>("h0") @[DelayPipe.scala 164:17]
+    node _T_2 = geq(wptr[0], config[0]) @[DelayPipe.scala 178:18]
+    when _T_2 : @[DelayPipe.scala 178:31]
+      node _rptr_0_T = sub(wptr[0], config[0]) @[DelayPipe.scala 179:26]
+      node _rptr_0_T_1 = tail(_rptr_0_T, 1) @[DelayPipe.scala 179:26]
+      rptr[0] <= _rptr_0_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_0_T_2 = add(UInt<4>("hc"), wptr[0]) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_3 = tail(_rptr_0_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_4 = sub(_rptr_0_T_3, config[0]) @[DelayPipe.scala 181:37]
+      node _rptr_0_T_5 = tail(_rptr_0_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[0] <= _rptr_0_T_5 @[DelayPipe.scala 181:15]
+    node _T_3 = eq(UInt<1>("h0"), config[0]) @[DelayPipe.scala 189:24]
+    node _T_4 = and(io.en, _T_3) @[DelayPipe.scala 189:16]
+    when _T_4 : @[DelayPipe.scala 189:39]
+      io.out[0] <= io.in[0] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[0] <= regs[rptr[0]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[0] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 167:19]
+      node _T_5 = lt(wptr[1], UInt<4>("hb")) @[DelayPipe.scala 168:22]
+      when _T_5 : @[DelayPipe.scala 168:40]
+        node _wptr_1_T = add(wptr[1], UInt<1>("h1")) @[DelayPipe.scala 169:30]
+        node _wptr_1_T_1 = tail(_wptr_1_T, 1) @[DelayPipe.scala 169:30]
+        wptr[1] <= _wptr_1_T_1 @[DelayPipe.scala 169:19]
+      else :
+        wptr[1] <= UInt<1>("h0") @[DelayPipe.scala 171:19]
+    else :
+      wptr[1] <= offset[0] @[DelayPipe.scala 174:17]
+    node _T_6 = geq(wptr[1], config[1]) @[DelayPipe.scala 178:18]
+    when _T_6 : @[DelayPipe.scala 178:31]
+      node _rptr_1_T = sub(wptr[1], config[1]) @[DelayPipe.scala 179:26]
+      node _rptr_1_T_1 = tail(_rptr_1_T, 1) @[DelayPipe.scala 179:26]
+      rptr[1] <= _rptr_1_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_1_T_2 = add(UInt<4>("hc"), wptr[1]) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_3 = tail(_rptr_1_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_4 = sub(_rptr_1_T_3, config[1]) @[DelayPipe.scala 181:37]
+      node _rptr_1_T_5 = tail(_rptr_1_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[1] <= _rptr_1_T_5 @[DelayPipe.scala 181:15]
+    node _T_7 = eq(UInt<1>("h0"), config[1]) @[DelayPipe.scala 189:24]
+    node _T_8 = and(io.en, _T_7) @[DelayPipe.scala 189:16]
+    when _T_8 : @[DelayPipe.scala 189:39]
+      io.out[1] <= io.in[1] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[1] <= regs[rptr[1]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[1] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 199:14]
+      regs[wptr[0]] <= io.in[0] @[DelayPipe.scala 201:21]
+      regs[wptr[1]] <= io.in[1] @[DelayPipe.scala 201:21]
+    else :
+      regs[0] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[1] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[2] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[3] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[4] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[5] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[6] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[7] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[8] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[9] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[10] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[11] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+
+
+  module Muxn_24 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_25 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module ConfigMem_9 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<3>, flip cfg_data : UInt<32>, out : UInt<137>[1]}
+
+    wire _regs_WIRE : UInt<137>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<137>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<137>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 39:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 39:22]
+    when _T_1 : @[ConfigMem.scala 39:47]
+      node _regs_0_T = bits(regs[0], 136, 32) @[ConfigMem.scala 41:33]
+      node _regs_0_T_1 = cat(_regs_0_T, io.cfg_data) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_1 @[ConfigMem.scala 41:19]
+    node _T_2 = eq(io.cfg_addr, UInt<1>("h1")) @[ConfigMem.scala 39:38]
+    node _T_3 = and(io.cfg_en, _T_2) @[ConfigMem.scala 39:22]
+    when _T_3 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_2 = bits(regs[0], 136, 64) @[ConfigMem.scala 45:33]
+      node _regs_0_T_3 = bits(regs[0], 31, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi = cat(_regs_0_T_2, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_4 = cat(regs_0_hi, _regs_0_T_3) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_4 @[ConfigMem.scala 45:19]
+    node _T_4 = eq(io.cfg_addr, UInt<2>("h2")) @[ConfigMem.scala 39:38]
+    node _T_5 = and(io.cfg_en, _T_4) @[ConfigMem.scala 39:22]
+    when _T_5 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_5 = bits(regs[0], 136, 96) @[ConfigMem.scala 45:33]
+      node _regs_0_T_6 = bits(regs[0], 63, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_1 = cat(_regs_0_T_5, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_7 = cat(regs_0_hi_1, _regs_0_T_6) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_7 @[ConfigMem.scala 45:19]
+    node _T_6 = eq(io.cfg_addr, UInt<2>("h3")) @[ConfigMem.scala 39:38]
+    node _T_7 = and(io.cfg_en, _T_6) @[ConfigMem.scala 39:22]
+    when _T_7 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_8 = bits(regs[0], 136, 128) @[ConfigMem.scala 45:33]
+      node _regs_0_T_9 = bits(regs[0], 95, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_2 = cat(_regs_0_T_8, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_10 = cat(regs_0_hi_2, _regs_0_T_9) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_10 @[ConfigMem.scala 45:19]
+    node _T_8 = eq(io.cfg_addr, UInt<3>("h4")) @[ConfigMem.scala 39:38]
+    node _T_9 = and(io.cfg_en, _T_8) @[ConfigMem.scala 39:22]
+    when _T_9 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_11 = bits(regs[0], 127, 0) @[ConfigMem.scala 43:46]
+      node _regs_0_T_12 = cat(io.cfg_data, _regs_0_T_11) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_12 @[ConfigMem.scala 43:19]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module IOB_5 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, flip start : UInt<1>, done : UInt<1>, flip en : UInt<1>, flip in : UInt<16>[4], out : UInt<16>[1], flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst ioCtrl of IOController_5 @[IOB.scala 67:22]
+    ioCtrl.clock <= clock
+    ioCtrl.reset <= reset
+    inst delay_pipe of SharedDelayPipe_7 @[IOB.scala 68:66]
+    delay_pipe.clock <= clock
+    delay_pipe.reset <= reset
+    inst Muxn of Muxn_24 @[IOB.scala 70:43]
+    Muxn.clock <= clock
+    Muxn.reset <= reset
+    inst Muxn_1 of Muxn_25 @[IOB.scala 70:43]
+    Muxn_1.clock <= clock
+    Muxn_1.reset <= reset
+    ioCtrl.io.sram <= io.sram @[IOB.scala 119:18]
+    ioCtrl.io.start <= io.start @[IOB.scala 120:19]
+    io.done <= ioCtrl.io.done @[IOB.scala 121:11]
+    io.out[0] <= ioCtrl.io.out[0] @[IOB.scala 122:13]
+    Muxn.io.in[0] <= io.in[0] @[IOB.scala 128:10]
+    Muxn.io.in[1] <= io.in[1] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[0] <= Muxn.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[0] <= delay_pipe.io.out[0] @[IOB.scala 134:23]
+    Muxn_1.io.in[0] <= io.in[2] @[IOB.scala 128:10]
+    Muxn_1.io.in[1] <= io.in[3] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[1] <= Muxn_1.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[1] <= delay_pipe.io.out[1] @[IOB.scala 134:23]
+    inst cfg of ConfigMem_9 @[IOB.scala 152:19]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[IOB.scala 153:63]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("hc"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[IOB.scala 153:30]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[IOB.scala 153:17]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[IOB.scala 154:33]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[IOB.scala 154:19]
+    cfg.io.cfg_data <= io.cfg_data @[IOB.scala 155:19]
+    node _ioCtrl_io_config_T = bits(cfg.io.out[0], 126, 0) @[IOB.scala 169:29]
+    ioCtrl.io.config <= _ioCtrl_io_config_T @[IOB.scala 169:20]
+    node _delay_pipe_io_config_T = bits(cfg.io.out[0], 134, 127) @[IOB.scala 180:35]
+    delay_pipe.io.config <= _delay_pipe_io_config_T @[IOB.scala 180:26]
+    node _T = bits(cfg.io.out[0], 135, 135) @[IOB.scala 186:32]
+    Muxn.io.config <= _T @[IOB.scala 186:23]
+    node _T_1 = bits(cfg.io.out[0], 136, 136) @[IOB.scala 186:32]
+    Muxn_1.io.config <= _T_1 @[IOB.scala 186:23]
+
+  module IOController_6 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}, flip start : UInt<1>, done : UInt<1>, flip config : UInt<127>, flip in : UInt<16>[2], out : UInt<16>[1]}
+
+    node baseAddr = bits(io.config, 14, 0) @[IOController.scala 49:27]
+    node _T = bits(io.config, 27, 15) @[IOController.scala 56:24]
+    node stride_0 = asSInt(_T) @[IOController.scala 56:55]
+    node cycles_0 = bits(io.config, 39, 28) @[IOController.scala 59:24]
+    node _T_1 = bits(io.config, 52, 40) @[IOController.scala 56:24]
+    node stride_1 = asSInt(_T_1) @[IOController.scala 56:55]
+    node cycles_1 = bits(io.config, 64, 53) @[IOController.scala 59:24]
+    node _T_2 = bits(io.config, 77, 65) @[IOController.scala 56:24]
+    node stride_2 = asSInt(_T_2) @[IOController.scala 56:55]
+    node cycles_2 = bits(io.config, 89, 78) @[IOController.scala 59:24]
+    node _T_3 = bits(io.config, 102, 90) @[IOController.scala 56:24]
+    node stride_3 = asSInt(_T_3) @[IOController.scala 56:55]
+    node cycles_3 = bits(io.config, 114, 103) @[IOController.scala 59:24]
+    node II = bits(io.config, 118, 115) @[IOController.scala 64:21]
+    node latency = bits(io.config, 124, 119) @[IOController.scala 68:26]
+    node _isStore_T = bits(io.config, 125, 125) @[IOController.scala 72:26]
+    node isStore = bits(_isStore_T, 0, 0) @[IOController.scala 72:35]
+    node _useAddr_T = bits(io.config, 126, 126) @[IOController.scala 79:16]
+    node useAddr = bits(_useAddr_T, 0, 0) @[IOController.scala 79:27]
+    reg state : UInt<2>, clock with :
+      reset => (reset, UInt<2>("h0")) @[IOController.scala 84:22]
+    reg latCnt : UInt<6>, clock with :
+      reset => (reset, UInt<6>("h0")) @[IOController.scala 85:23]
+    reg cycleCnt_0 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_1 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_2 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_3 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg iiCnt : UInt<4>, clock with :
+      reset => (reset, UInt<4>("h0")) @[IOController.scala 87:22]
+    reg done : UInt<1>, clock with :
+      reset => (reset, UInt<1>("h0")) @[IOController.scala 88:21]
+    node _iiEnd_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 89:21]
+    node _iiEnd_T_1 = tail(_iiEnd_T, 1) @[IOController.scala 89:21]
+    node iiEnd = geq(_iiEnd_T_1, II) @[IOController.scala 89:26]
+    node _cycleCntEnd_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_1 = tail(_cycleCntEnd_T, 1) @[IOController.scala 91:36]
+    node cycleCntEnd_0 = geq(_cycleCntEnd_T_1, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_2 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_3 = tail(_cycleCntEnd_T_2, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_4 = geq(_cycleCntEnd_T_3, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_5 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_6 = tail(_cycleCntEnd_T_5, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_7 = geq(_cycleCntEnd_T_6, cycles_1) @[IOController.scala 91:42]
+    node cycleCntEnd_1 = and(_cycleCntEnd_T_4, _cycleCntEnd_T_7) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_8 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_9 = tail(_cycleCntEnd_T_8, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_10 = geq(_cycleCntEnd_T_9, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_11 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_12 = tail(_cycleCntEnd_T_11, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_13 = geq(_cycleCntEnd_T_12, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_14 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_15 = tail(_cycleCntEnd_T_14, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_16 = geq(_cycleCntEnd_T_15, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_17 = and(_cycleCntEnd_T_10, _cycleCntEnd_T_13) @[IOController.scala 91:65]
+    node cycleCntEnd_2 = and(_cycleCntEnd_T_17, _cycleCntEnd_T_16) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_18 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_19 = tail(_cycleCntEnd_T_18, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_20 = geq(_cycleCntEnd_T_19, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_21 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_22 = tail(_cycleCntEnd_T_21, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_23 = geq(_cycleCntEnd_T_22, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_24 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_25 = tail(_cycleCntEnd_T_24, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_26 = geq(_cycleCntEnd_T_25, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_27 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_28 = tail(_cycleCntEnd_T_27, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_29 = geq(_cycleCntEnd_T_28, cycles_3) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_30 = and(_cycleCntEnd_T_20, _cycleCntEnd_T_23) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_31 = and(_cycleCntEnd_T_30, _cycleCntEnd_T_26) @[IOController.scala 91:65]
+    node cntEnd = and(_cycleCntEnd_T_31, _cycleCntEnd_T_29) @[IOController.scala 91:65]
+    io.done <= done @[IOController.scala 95:11]
+    node _T_4 = eq(UInt<2>("h0"), state) @[IOController.scala 96:16]
+    when _T_4 : @[IOController.scala 96:16]
+      latCnt <= UInt<1>("h0") @[IOController.scala 98:14]
+      node _T_5 = eq(latency, UInt<1>("h0")) @[IOController.scala 99:32]
+      node _T_6 = and(io.start, _T_5) @[IOController.scala 99:21]
+      when _T_6 : @[IOController.scala 99:40]
+        state <= UInt<2>("h2") @[IOController.scala 100:15]
+        done <= UInt<1>("h0") @[IOController.scala 101:14]
+      else :
+        node _T_7 = neq(latency, UInt<1>("h0")) @[IOController.scala 102:38]
+        node _T_8 = and(io.start, _T_7) @[IOController.scala 102:27]
+        when _T_8 : @[IOController.scala 102:46]
+          state <= UInt<2>("h1") @[IOController.scala 103:15]
+          done <= UInt<1>("h0") @[IOController.scala 104:14]
+    else :
+      node _T_9 = eq(UInt<2>("h1"), state) @[IOController.scala 96:16]
+      when _T_9 : @[IOController.scala 96:16]
+        node _T_10 = add(latCnt, UInt<1>("h1")) @[IOController.scala 108:19]
+        node _T_11 = tail(_T_10, 1) @[IOController.scala 108:19]
+        node _T_12 = geq(_T_11, latency) @[IOController.scala 108:25]
+        when _T_12 : @[IOController.scala 108:36]
+          state <= UInt<2>("h2") @[IOController.scala 109:15]
+        node _latCnt_T = add(latCnt, UInt<1>("h1")) @[IOController.scala 111:24]
+        node _latCnt_T_1 = tail(_latCnt_T, 1) @[IOController.scala 111:24]
+        latCnt <= _latCnt_T_1 @[IOController.scala 111:14]
+      else :
+        node _T_13 = eq(UInt<2>("h2"), state) @[IOController.scala 96:16]
+        when _T_13 : @[IOController.scala 96:16]
+          node _T_14 = and(cntEnd, iiEnd) @[IOController.scala 114:19]
+          when _T_14 : @[IOController.scala 114:28]
+            state <= UInt<2>("h0") @[IOController.scala 115:15]
+            done <= UInt<1>("h1") @[IOController.scala 116:14]
+    node launch = eq(state, UInt<2>("h2")) @[IOController.scala 121:23]
+    node _T_15 = eq(state, UInt<2>("h0")) @[IOController.scala 122:14]
+    when _T_15 : @[IOController.scala 122:25]
+      iiCnt <= UInt<1>("h0") @[IOController.scala 123:11]
+    else :
+      when launch : @[IOController.scala 124:21]
+        node _iiCnt_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 125:35]
+        node _iiCnt_T_1 = tail(_iiCnt_T, 1) @[IOController.scala 125:35]
+        node _iiCnt_T_2 = mux(iiEnd, UInt<1>("h0"), _iiCnt_T_1) @[IOController.scala 125:17]
+        iiCnt <= _iiCnt_T_2 @[IOController.scala 125:11]
+    node _T_16 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_16 : @[IOController.scala 129:27]
+      cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_17 = eq(cycleCntEnd_0, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_18 = and(iiEnd, _T_17) @[IOController.scala 132:18]
+        when _T_18 : @[IOController.scala 132:37]
+          node _cycleCnt_0_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 133:36]
+          node _cycleCnt_0_T_1 = tail(_cycleCnt_0_T, 1) @[IOController.scala 133:36]
+          cycleCnt_0 <= _cycleCnt_0_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_19 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_19 : @[IOController.scala 129:27]
+      cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_20 = eq(cycleCntEnd_1, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_21 = and(iiEnd, _T_20) @[IOController.scala 132:18]
+        when _T_21 : @[IOController.scala 132:37]
+          node _cycleCnt_1_T = add(cycleCnt_1, cycleCntEnd_0) @[IOController.scala 133:36]
+          node _cycleCnt_1_T_1 = tail(_cycleCnt_1_T, 1) @[IOController.scala 133:36]
+          cycleCnt_1 <= _cycleCnt_1_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_22 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_22 : @[IOController.scala 129:27]
+      cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_23 = eq(cycleCntEnd_2, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_24 = and(iiEnd, _T_23) @[IOController.scala 132:18]
+        when _T_24 : @[IOController.scala 132:37]
+          node _cycleCnt_2_T = add(cycleCnt_2, cycleCntEnd_1) @[IOController.scala 133:36]
+          node _cycleCnt_2_T_1 = tail(_cycleCnt_2_T, 1) @[IOController.scala 133:36]
+          cycleCnt_2 <= _cycleCnt_2_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_25 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_25 : @[IOController.scala 129:27]
+      cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_26 = eq(cntEnd, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_27 = and(iiEnd, _T_26) @[IOController.scala 132:18]
+        when _T_27 : @[IOController.scala 132:37]
+          node _cycleCnt_3_T = add(cycleCnt_3, cycleCntEnd_2) @[IOController.scala 133:36]
+          node _cycleCnt_3_T_1 = tail(_cycleCnt_3_T, 1) @[IOController.scala 133:36]
+          cycleCnt_3 <= _cycleCnt_3_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _wRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_1 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_2 = tail(_wRealValid_T_1, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_3 = geq(_wRealValid_T_2, cycles_0) @[IOController.scala 145:47]
+    node _wRealValid_T_4 = and(_wRealValid_T, _wRealValid_T_3) @[IOController.scala 145:26]
+    node _wRealValid_T_5 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_6 = or(_wRealValid_T_4, _wRealValid_T_5) @[IOController.scala 145:61]
+    node _wRealValid_T_7 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_8 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_9 = tail(_wRealValid_T_8, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_10 = geq(_wRealValid_T_9, cycles_1) @[IOController.scala 145:47]
+    node _wRealValid_T_11 = and(_wRealValid_T_7, _wRealValid_T_10) @[IOController.scala 145:26]
+    node _wRealValid_T_12 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_13 = or(_wRealValid_T_11, _wRealValid_T_12) @[IOController.scala 145:61]
+    node _wRealValid_T_14 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_15 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_16 = tail(_wRealValid_T_15, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_17 = geq(_wRealValid_T_16, cycles_2) @[IOController.scala 145:47]
+    node _wRealValid_T_18 = and(_wRealValid_T_14, _wRealValid_T_17) @[IOController.scala 145:26]
+    node _wRealValid_T_19 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_20 = or(_wRealValid_T_18, _wRealValid_T_19) @[IOController.scala 145:61]
+    node _wRealValid_T_21 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_22 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_23 = tail(_wRealValid_T_22, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_24 = geq(_wRealValid_T_23, cycles_3) @[IOController.scala 145:47]
+    node _wRealValid_T_25 = and(_wRealValid_T_21, _wRealValid_T_24) @[IOController.scala 145:26]
+    node _wRealValid_T_26 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_27 = or(_wRealValid_T_25, _wRealValid_T_26) @[IOController.scala 145:61]
+    node _wRealValid_T_28 = and(_wRealValid_T_6, _wRealValid_T_13) @[IOController.scala 146:13]
+    node _wRealValid_T_29 = and(_wRealValid_T_28, _wRealValid_T_20) @[IOController.scala 146:13]
+    node wRealValid = and(_wRealValid_T_29, _wRealValid_T_27) @[IOController.scala 146:13]
+    node _rRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_1 = eq(cycleCnt_0, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_2 = and(_rRealValid_T, _rRealValid_T_1) @[IOController.scala 150:24]
+    node _rRealValid_T_3 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_4 = or(_rRealValid_T_2, _rRealValid_T_3) @[IOController.scala 150:48]
+    node _rRealValid_T_5 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_6 = eq(cycleCnt_1, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_7 = and(_rRealValid_T_5, _rRealValid_T_6) @[IOController.scala 150:24]
+    node _rRealValid_T_8 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_9 = or(_rRealValid_T_7, _rRealValid_T_8) @[IOController.scala 150:48]
+    node _rRealValid_T_10 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_11 = eq(cycleCnt_2, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_12 = and(_rRealValid_T_10, _rRealValid_T_11) @[IOController.scala 150:24]
+    node _rRealValid_T_13 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_14 = or(_rRealValid_T_12, _rRealValid_T_13) @[IOController.scala 150:48]
+    node _rRealValid_T_15 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_16 = eq(cycleCnt_3, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_17 = and(_rRealValid_T_15, _rRealValid_T_16) @[IOController.scala 150:24]
+    node _rRealValid_T_18 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_19 = or(_rRealValid_T_17, _rRealValid_T_18) @[IOController.scala 150:48]
+    node _rRealValid_T_20 = and(_rRealValid_T_4, _rRealValid_T_9) @[IOController.scala 151:13]
+    node _rRealValid_T_21 = and(_rRealValid_T_20, _rRealValid_T_14) @[IOController.scala 151:13]
+    node rRealValid = and(_rRealValid_T_21, _rRealValid_T_19) @[IOController.scala 151:13]
+    node _wValid_T = and(isStore, launch) @[IOController.scala 154:24]
+    node _wValid_T_1 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 154:44]
+    node wValid = and(_wValid_T, _wValid_T_1) @[IOController.scala 154:34]
+    node _raValid_T = eq(isStore, UInt<1>("h0")) @[IOController.scala 157:17]
+    node _raValid_T_1 = and(_raValid_T, launch) @[IOController.scala 157:26]
+    node _raValid_T_2 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 157:46]
+    node raValid = and(_raValid_T_1, _raValid_T_2) @[IOController.scala 157:36]
+    wire addr : UInt<15> @[IOController.scala 158:18]
+    reg genAddrReg : SInt<16>, clock with :
+      reset => (reset, asSInt(UInt<16>("h0"))) @[IOController.scala 159:27]
+    node _realEn_T = or(wRealValid, useAddr) @[IOController.scala 170:39]
+    node _realEn_T_1 = and(wValid, _realEn_T) @[IOController.scala 170:24]
+    node _realEn_T_2 = or(rRealValid, useAddr) @[IOController.scala 170:79]
+    node _realEn_T_3 = and(raValid, _realEn_T_2) @[IOController.scala 170:64]
+    node realEn = or(_realEn_T_1, _realEn_T_3) @[IOController.scala 170:52]
+    node _T_28 = eq(launch, UInt<1>("h0")) @[IOController.scala 172:8]
+    when _T_28 : @[IOController.scala 172:16]
+      node genAddrReg_hi = asUInt(asSInt(UInt<1>("h0"))) @[Cat.scala 33:92]
+      node _genAddrReg_T = cat(genAddrReg_hi, baseAddr) @[Cat.scala 33:92]
+      node _genAddrReg_T_1 = asSInt(_genAddrReg_T) @[IOController.scala 173:43]
+      genAddrReg <= _genAddrReg_T_1 @[IOController.scala 173:16]
+    else :
+      when iiEnd : @[IOController.scala 174:20]
+        node _genAddrReg_T_2 = mux(cycleCntEnd_0, stride_1, stride_0) @[Mux.scala 47:70]
+        node _genAddrReg_T_3 = mux(cycleCntEnd_1, stride_2, _genAddrReg_T_2) @[Mux.scala 47:70]
+        node _genAddrReg_T_4 = mux(cycleCntEnd_2, stride_3, _genAddrReg_T_3) @[Mux.scala 47:70]
+        node _genAddrReg_T_5 = add(genAddrReg, _genAddrReg_T_4) @[IOController.scala 175:30]
+        node _genAddrReg_T_6 = tail(_genAddrReg_T_5, 1) @[IOController.scala 175:30]
+        node _genAddrReg_T_7 = asSInt(_genAddrReg_T_6) @[IOController.scala 175:30]
+        genAddrReg <= _genAddrReg_T_7 @[IOController.scala 175:16]
+    node _T_29 = and(useAddr, isStore) @[IOController.scala 182:18]
+    when _T_29 : @[IOController.scala 182:28]
+      node _addr_T = bits(io.in[1], 15, 1) @[IOController.scala 183:35]
+      node _addr_T_1 = add(baseAddr, _addr_T) @[IOController.scala 183:25]
+      node _addr_T_2 = tail(_addr_T_1, 1) @[IOController.scala 183:25]
+      addr <= _addr_T_2 @[IOController.scala 183:12]
+    else :
+      node _T_30 = eq(isStore, UInt<1>("h0")) @[IOController.scala 184:26]
+      node _T_31 = and(useAddr, _T_30) @[IOController.scala 184:24]
+      when _T_31 : @[IOController.scala 184:35]
+        node _addr_T_3 = bits(io.in[0], 15, 1) @[IOController.scala 185:35]
+        node _addr_T_4 = add(baseAddr, _addr_T_3) @[IOController.scala 185:25]
+        node _addr_T_5 = tail(_addr_T_4, 1) @[IOController.scala 185:25]
+        addr <= _addr_T_5 @[IOController.scala 185:12]
+      else :
+        node _addr_T_6 = asUInt(genAddrReg) @[IOController.scala 187:26]
+        addr <= _addr_T_6 @[IOController.scala 187:12]
+    reg addrReg : UInt<15>, clock with :
+      reset => (reset, UInt<15>("h0")) @[IOController.scala 192:26]
+    node _T_32 = or(wValid, raValid) @[IOController.scala 193:17]
+    when _T_32 : @[IOController.scala 193:28]
+      addrReg <= addr @[IOController.scala 194:15]
+    reg wDataReg : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 196:27]
+    when wValid : @[IOController.scala 197:17]
+      wDataReg <= io.in[0] @[IOController.scala 198:16]
+    reg io_sram_en_REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), io_sram_en_REG) @[IOController.scala 200:26]
+    io_sram_en_REG <= realEn @[IOController.scala 200:26]
+    io.sram.en <= io_sram_en_REG @[IOController.scala 200:16]
+    node _io_sram_we_T = mux(wValid, UInt<2>("h3"), UInt<1>("h0")) @[IOController.scala 201:30]
+    reg io_sram_we_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_sram_we_REG) @[IOController.scala 201:26]
+    io_sram_we_REG <= _io_sram_we_T @[IOController.scala 201:26]
+    io.sram.we <= io_sram_we_REG @[IOController.scala 201:16]
+    io.sram.addr <= addrReg @[IOController.scala 202:18]
+    io.sram.din <= wDataReg @[IOController.scala 203:17]
+    reg dout : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 212:23]
+    node _T_33 = eq(io.sram.we, UInt<1>("h0")) @[IOController.scala 213:44]
+    node _T_34 = and(io.sram.en, _T_33) @[IOController.scala 213:29]
+    reg REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), REG) @[IOController.scala 213:17]
+    REG <= _T_34 @[IOController.scala 213:17]
+    when REG : @[IOController.scala 213:54]
+      dout <= io.sram.dout @[IOController.scala 214:12]
+    io.out[0] <= dout @[IOController.scala 216:15]
+
+  module SharedDelayPipe_8 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip en : UInt<1>, flip config : UInt<8>, flip in : UInt<16>[2], out : UInt<16>[2]}
+
+    wire _regs_WIRE : UInt<16>[12] @[DelayPipe.scala 142:29]
+    _regs_WIRE[0] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[1] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[2] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[3] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[4] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[5] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[6] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[7] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[8] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[9] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[10] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[11] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    reg regs : UInt<16>[12], clock with :
+      reset => (reset, _regs_WIRE) @[DelayPipe.scala 142:21]
+    wire _wptr_WIRE : UInt<4>[2] @[DelayPipe.scala 143:29]
+    _wptr_WIRE[0] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    _wptr_WIRE[1] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    reg wptr : UInt<4>[2], clock with :
+      reset => (reset, _wptr_WIRE) @[DelayPipe.scala 143:21]
+    wire rptr : UInt<4>[2] @[DelayPipe.scala 145:18]
+    wire config : UInt<4>[2] @[DelayPipe.scala 146:20]
+    node _config_0_T = bits(io.config, 3, 0) @[DelayPipe.scala 148:27]
+    config[0] <= _config_0_T @[DelayPipe.scala 148:15]
+    node _config_1_T = bits(io.config, 7, 4) @[DelayPipe.scala 148:27]
+    config[1] <= _config_1_T @[DelayPipe.scala 148:15]
+    wire offset : UInt<4>[1] @[DelayPipe.scala 150:20]
+    node _offset_0_T = add(config[1], UInt<1>("h1")) @[DelayPipe.scala 153:32]
+    node _offset_0_T_1 = tail(_offset_0_T, 1) @[DelayPipe.scala 153:32]
+    offset[0] <= _offset_0_T_1 @[DelayPipe.scala 153:17]
+    node _T = lt(wptr[0], UInt<4>("hb")) @[DelayPipe.scala 161:30]
+    node _T_1 = and(io.en, _T) @[DelayPipe.scala 161:18]
+    when _T_1 : @[DelayPipe.scala 161:46]
+      node _wptr_0_T = add(wptr[0], UInt<1>("h1")) @[DelayPipe.scala 162:28]
+      node _wptr_0_T_1 = tail(_wptr_0_T, 1) @[DelayPipe.scala 162:28]
+      wptr[0] <= _wptr_0_T_1 @[DelayPipe.scala 162:17]
+    else :
+      wptr[0] <= UInt<1>("h0") @[DelayPipe.scala 164:17]
+    node _T_2 = geq(wptr[0], config[0]) @[DelayPipe.scala 178:18]
+    when _T_2 : @[DelayPipe.scala 178:31]
+      node _rptr_0_T = sub(wptr[0], config[0]) @[DelayPipe.scala 179:26]
+      node _rptr_0_T_1 = tail(_rptr_0_T, 1) @[DelayPipe.scala 179:26]
+      rptr[0] <= _rptr_0_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_0_T_2 = add(UInt<4>("hc"), wptr[0]) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_3 = tail(_rptr_0_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_4 = sub(_rptr_0_T_3, config[0]) @[DelayPipe.scala 181:37]
+      node _rptr_0_T_5 = tail(_rptr_0_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[0] <= _rptr_0_T_5 @[DelayPipe.scala 181:15]
+    node _T_3 = eq(UInt<1>("h0"), config[0]) @[DelayPipe.scala 189:24]
+    node _T_4 = and(io.en, _T_3) @[DelayPipe.scala 189:16]
+    when _T_4 : @[DelayPipe.scala 189:39]
+      io.out[0] <= io.in[0] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[0] <= regs[rptr[0]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[0] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 167:19]
+      node _T_5 = lt(wptr[1], UInt<4>("hb")) @[DelayPipe.scala 168:22]
+      when _T_5 : @[DelayPipe.scala 168:40]
+        node _wptr_1_T = add(wptr[1], UInt<1>("h1")) @[DelayPipe.scala 169:30]
+        node _wptr_1_T_1 = tail(_wptr_1_T, 1) @[DelayPipe.scala 169:30]
+        wptr[1] <= _wptr_1_T_1 @[DelayPipe.scala 169:19]
+      else :
+        wptr[1] <= UInt<1>("h0") @[DelayPipe.scala 171:19]
+    else :
+      wptr[1] <= offset[0] @[DelayPipe.scala 174:17]
+    node _T_6 = geq(wptr[1], config[1]) @[DelayPipe.scala 178:18]
+    when _T_6 : @[DelayPipe.scala 178:31]
+      node _rptr_1_T = sub(wptr[1], config[1]) @[DelayPipe.scala 179:26]
+      node _rptr_1_T_1 = tail(_rptr_1_T, 1) @[DelayPipe.scala 179:26]
+      rptr[1] <= _rptr_1_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_1_T_2 = add(UInt<4>("hc"), wptr[1]) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_3 = tail(_rptr_1_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_4 = sub(_rptr_1_T_3, config[1]) @[DelayPipe.scala 181:37]
+      node _rptr_1_T_5 = tail(_rptr_1_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[1] <= _rptr_1_T_5 @[DelayPipe.scala 181:15]
+    node _T_7 = eq(UInt<1>("h0"), config[1]) @[DelayPipe.scala 189:24]
+    node _T_8 = and(io.en, _T_7) @[DelayPipe.scala 189:16]
+    when _T_8 : @[DelayPipe.scala 189:39]
+      io.out[1] <= io.in[1] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[1] <= regs[rptr[1]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[1] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 199:14]
+      regs[wptr[0]] <= io.in[0] @[DelayPipe.scala 201:21]
+      regs[wptr[1]] <= io.in[1] @[DelayPipe.scala 201:21]
+    else :
+      regs[0] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[1] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[2] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[3] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[4] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[5] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[6] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[7] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[8] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[9] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[10] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[11] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+
+
+  module Muxn_26 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_27 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module ConfigMem_10 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<3>, flip cfg_data : UInt<32>, out : UInt<137>[1]}
+
+    wire _regs_WIRE : UInt<137>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<137>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<137>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 39:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 39:22]
+    when _T_1 : @[ConfigMem.scala 39:47]
+      node _regs_0_T = bits(regs[0], 136, 32) @[ConfigMem.scala 41:33]
+      node _regs_0_T_1 = cat(_regs_0_T, io.cfg_data) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_1 @[ConfigMem.scala 41:19]
+    node _T_2 = eq(io.cfg_addr, UInt<1>("h1")) @[ConfigMem.scala 39:38]
+    node _T_3 = and(io.cfg_en, _T_2) @[ConfigMem.scala 39:22]
+    when _T_3 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_2 = bits(regs[0], 136, 64) @[ConfigMem.scala 45:33]
+      node _regs_0_T_3 = bits(regs[0], 31, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi = cat(_regs_0_T_2, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_4 = cat(regs_0_hi, _regs_0_T_3) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_4 @[ConfigMem.scala 45:19]
+    node _T_4 = eq(io.cfg_addr, UInt<2>("h2")) @[ConfigMem.scala 39:38]
+    node _T_5 = and(io.cfg_en, _T_4) @[ConfigMem.scala 39:22]
+    when _T_5 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_5 = bits(regs[0], 136, 96) @[ConfigMem.scala 45:33]
+      node _regs_0_T_6 = bits(regs[0], 63, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_1 = cat(_regs_0_T_5, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_7 = cat(regs_0_hi_1, _regs_0_T_6) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_7 @[ConfigMem.scala 45:19]
+    node _T_6 = eq(io.cfg_addr, UInt<2>("h3")) @[ConfigMem.scala 39:38]
+    node _T_7 = and(io.cfg_en, _T_6) @[ConfigMem.scala 39:22]
+    when _T_7 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_8 = bits(regs[0], 136, 128) @[ConfigMem.scala 45:33]
+      node _regs_0_T_9 = bits(regs[0], 95, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_2 = cat(_regs_0_T_8, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_10 = cat(regs_0_hi_2, _regs_0_T_9) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_10 @[ConfigMem.scala 45:19]
+    node _T_8 = eq(io.cfg_addr, UInt<3>("h4")) @[ConfigMem.scala 39:38]
+    node _T_9 = and(io.cfg_en, _T_8) @[ConfigMem.scala 39:22]
+    when _T_9 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_11 = bits(regs[0], 127, 0) @[ConfigMem.scala 43:46]
+      node _regs_0_T_12 = cat(io.cfg_data, _regs_0_T_11) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_12 @[ConfigMem.scala 43:19]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module IOB_6 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, flip start : UInt<1>, done : UInt<1>, flip en : UInt<1>, flip in : UInt<16>[4], out : UInt<16>[1], flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst ioCtrl of IOController_6 @[IOB.scala 67:22]
+    ioCtrl.clock <= clock
+    ioCtrl.reset <= reset
+    inst delay_pipe of SharedDelayPipe_8 @[IOB.scala 68:66]
+    delay_pipe.clock <= clock
+    delay_pipe.reset <= reset
+    inst Muxn of Muxn_26 @[IOB.scala 70:43]
+    Muxn.clock <= clock
+    Muxn.reset <= reset
+    inst Muxn_1 of Muxn_27 @[IOB.scala 70:43]
+    Muxn_1.clock <= clock
+    Muxn_1.reset <= reset
+    ioCtrl.io.sram <= io.sram @[IOB.scala 119:18]
+    ioCtrl.io.start <= io.start @[IOB.scala 120:19]
+    io.done <= ioCtrl.io.done @[IOB.scala 121:11]
+    io.out[0] <= ioCtrl.io.out[0] @[IOB.scala 122:13]
+    Muxn.io.in[0] <= io.in[0] @[IOB.scala 128:10]
+    Muxn.io.in[1] <= io.in[1] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[0] <= Muxn.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[0] <= delay_pipe.io.out[0] @[IOB.scala 134:23]
+    Muxn_1.io.in[0] <= io.in[2] @[IOB.scala 128:10]
+    Muxn_1.io.in[1] <= io.in[3] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[1] <= Muxn_1.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[1] <= delay_pipe.io.out[1] @[IOB.scala 134:23]
+    inst cfg of ConfigMem_10 @[IOB.scala 152:19]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[IOB.scala 153:63]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<5>("h13"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[IOB.scala 153:30]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[IOB.scala 153:17]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[IOB.scala 154:33]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[IOB.scala 154:19]
+    cfg.io.cfg_data <= io.cfg_data @[IOB.scala 155:19]
+    node _ioCtrl_io_config_T = bits(cfg.io.out[0], 126, 0) @[IOB.scala 169:29]
+    ioCtrl.io.config <= _ioCtrl_io_config_T @[IOB.scala 169:20]
+    node _delay_pipe_io_config_T = bits(cfg.io.out[0], 134, 127) @[IOB.scala 180:35]
+    delay_pipe.io.config <= _delay_pipe_io_config_T @[IOB.scala 180:26]
+    node _T = bits(cfg.io.out[0], 135, 135) @[IOB.scala 186:32]
+    Muxn.io.config <= _T @[IOB.scala 186:23]
+    node _T_1 = bits(cfg.io.out[0], 136, 136) @[IOB.scala 186:32]
+    Muxn_1.io.config <= _T_1 @[IOB.scala 186:23]
+
+  module IOController_7 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}, flip start : UInt<1>, done : UInt<1>, flip config : UInt<127>, flip in : UInt<16>[2], out : UInt<16>[1]}
+
+    node baseAddr = bits(io.config, 14, 0) @[IOController.scala 49:27]
+    node _T = bits(io.config, 27, 15) @[IOController.scala 56:24]
+    node stride_0 = asSInt(_T) @[IOController.scala 56:55]
+    node cycles_0 = bits(io.config, 39, 28) @[IOController.scala 59:24]
+    node _T_1 = bits(io.config, 52, 40) @[IOController.scala 56:24]
+    node stride_1 = asSInt(_T_1) @[IOController.scala 56:55]
+    node cycles_1 = bits(io.config, 64, 53) @[IOController.scala 59:24]
+    node _T_2 = bits(io.config, 77, 65) @[IOController.scala 56:24]
+    node stride_2 = asSInt(_T_2) @[IOController.scala 56:55]
+    node cycles_2 = bits(io.config, 89, 78) @[IOController.scala 59:24]
+    node _T_3 = bits(io.config, 102, 90) @[IOController.scala 56:24]
+    node stride_3 = asSInt(_T_3) @[IOController.scala 56:55]
+    node cycles_3 = bits(io.config, 114, 103) @[IOController.scala 59:24]
+    node II = bits(io.config, 118, 115) @[IOController.scala 64:21]
+    node latency = bits(io.config, 124, 119) @[IOController.scala 68:26]
+    node _isStore_T = bits(io.config, 125, 125) @[IOController.scala 72:26]
+    node isStore = bits(_isStore_T, 0, 0) @[IOController.scala 72:35]
+    node _useAddr_T = bits(io.config, 126, 126) @[IOController.scala 79:16]
+    node useAddr = bits(_useAddr_T, 0, 0) @[IOController.scala 79:27]
+    reg state : UInt<2>, clock with :
+      reset => (reset, UInt<2>("h0")) @[IOController.scala 84:22]
+    reg latCnt : UInt<6>, clock with :
+      reset => (reset, UInt<6>("h0")) @[IOController.scala 85:23]
+    reg cycleCnt_0 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_1 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_2 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg cycleCnt_3 : UInt<12>, clock with :
+      reset => (reset, UInt<12>("h0")) @[IOController.scala 86:48]
+    reg iiCnt : UInt<4>, clock with :
+      reset => (reset, UInt<4>("h0")) @[IOController.scala 87:22]
+    reg done : UInt<1>, clock with :
+      reset => (reset, UInt<1>("h0")) @[IOController.scala 88:21]
+    node _iiEnd_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 89:21]
+    node _iiEnd_T_1 = tail(_iiEnd_T, 1) @[IOController.scala 89:21]
+    node iiEnd = geq(_iiEnd_T_1, II) @[IOController.scala 89:26]
+    node _cycleCntEnd_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_1 = tail(_cycleCntEnd_T, 1) @[IOController.scala 91:36]
+    node cycleCntEnd_0 = geq(_cycleCntEnd_T_1, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_2 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_3 = tail(_cycleCntEnd_T_2, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_4 = geq(_cycleCntEnd_T_3, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_5 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_6 = tail(_cycleCntEnd_T_5, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_7 = geq(_cycleCntEnd_T_6, cycles_1) @[IOController.scala 91:42]
+    node cycleCntEnd_1 = and(_cycleCntEnd_T_4, _cycleCntEnd_T_7) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_8 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_9 = tail(_cycleCntEnd_T_8, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_10 = geq(_cycleCntEnd_T_9, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_11 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_12 = tail(_cycleCntEnd_T_11, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_13 = geq(_cycleCntEnd_T_12, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_14 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_15 = tail(_cycleCntEnd_T_14, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_16 = geq(_cycleCntEnd_T_15, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_17 = and(_cycleCntEnd_T_10, _cycleCntEnd_T_13) @[IOController.scala 91:65]
+    node cycleCntEnd_2 = and(_cycleCntEnd_T_17, _cycleCntEnd_T_16) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_18 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_19 = tail(_cycleCntEnd_T_18, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_20 = geq(_cycleCntEnd_T_19, cycles_0) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_21 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_22 = tail(_cycleCntEnd_T_21, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_23 = geq(_cycleCntEnd_T_22, cycles_1) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_24 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_25 = tail(_cycleCntEnd_T_24, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_26 = geq(_cycleCntEnd_T_25, cycles_2) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_27 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_28 = tail(_cycleCntEnd_T_27, 1) @[IOController.scala 91:36]
+    node _cycleCntEnd_T_29 = geq(_cycleCntEnd_T_28, cycles_3) @[IOController.scala 91:42]
+    node _cycleCntEnd_T_30 = and(_cycleCntEnd_T_20, _cycleCntEnd_T_23) @[IOController.scala 91:65]
+    node _cycleCntEnd_T_31 = and(_cycleCntEnd_T_30, _cycleCntEnd_T_26) @[IOController.scala 91:65]
+    node cntEnd = and(_cycleCntEnd_T_31, _cycleCntEnd_T_29) @[IOController.scala 91:65]
+    io.done <= done @[IOController.scala 95:11]
+    node _T_4 = eq(UInt<2>("h0"), state) @[IOController.scala 96:16]
+    when _T_4 : @[IOController.scala 96:16]
+      latCnt <= UInt<1>("h0") @[IOController.scala 98:14]
+      node _T_5 = eq(latency, UInt<1>("h0")) @[IOController.scala 99:32]
+      node _T_6 = and(io.start, _T_5) @[IOController.scala 99:21]
+      when _T_6 : @[IOController.scala 99:40]
+        state <= UInt<2>("h2") @[IOController.scala 100:15]
+        done <= UInt<1>("h0") @[IOController.scala 101:14]
+      else :
+        node _T_7 = neq(latency, UInt<1>("h0")) @[IOController.scala 102:38]
+        node _T_8 = and(io.start, _T_7) @[IOController.scala 102:27]
+        when _T_8 : @[IOController.scala 102:46]
+          state <= UInt<2>("h1") @[IOController.scala 103:15]
+          done <= UInt<1>("h0") @[IOController.scala 104:14]
+    else :
+      node _T_9 = eq(UInt<2>("h1"), state) @[IOController.scala 96:16]
+      when _T_9 : @[IOController.scala 96:16]
+        node _T_10 = add(latCnt, UInt<1>("h1")) @[IOController.scala 108:19]
+        node _T_11 = tail(_T_10, 1) @[IOController.scala 108:19]
+        node _T_12 = geq(_T_11, latency) @[IOController.scala 108:25]
+        when _T_12 : @[IOController.scala 108:36]
+          state <= UInt<2>("h2") @[IOController.scala 109:15]
+        node _latCnt_T = add(latCnt, UInt<1>("h1")) @[IOController.scala 111:24]
+        node _latCnt_T_1 = tail(_latCnt_T, 1) @[IOController.scala 111:24]
+        latCnt <= _latCnt_T_1 @[IOController.scala 111:14]
+      else :
+        node _T_13 = eq(UInt<2>("h2"), state) @[IOController.scala 96:16]
+        when _T_13 : @[IOController.scala 96:16]
+          node _T_14 = and(cntEnd, iiEnd) @[IOController.scala 114:19]
+          when _T_14 : @[IOController.scala 114:28]
+            state <= UInt<2>("h0") @[IOController.scala 115:15]
+            done <= UInt<1>("h1") @[IOController.scala 116:14]
+    node launch = eq(state, UInt<2>("h2")) @[IOController.scala 121:23]
+    node _T_15 = eq(state, UInt<2>("h0")) @[IOController.scala 122:14]
+    when _T_15 : @[IOController.scala 122:25]
+      iiCnt <= UInt<1>("h0") @[IOController.scala 123:11]
+    else :
+      when launch : @[IOController.scala 124:21]
+        node _iiCnt_T = add(iiCnt, UInt<1>("h1")) @[IOController.scala 125:35]
+        node _iiCnt_T_1 = tail(_iiCnt_T, 1) @[IOController.scala 125:35]
+        node _iiCnt_T_2 = mux(iiEnd, UInt<1>("h0"), _iiCnt_T_1) @[IOController.scala 125:17]
+        iiCnt <= _iiCnt_T_2 @[IOController.scala 125:11]
+    node _T_16 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_16 : @[IOController.scala 129:27]
+      cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_17 = eq(cycleCntEnd_0, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_18 = and(iiEnd, _T_17) @[IOController.scala 132:18]
+        when _T_18 : @[IOController.scala 132:37]
+          node _cycleCnt_0_T = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 133:36]
+          node _cycleCnt_0_T_1 = tail(_cycleCnt_0_T, 1) @[IOController.scala 133:36]
+          cycleCnt_0 <= _cycleCnt_0_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_0 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_19 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_19 : @[IOController.scala 129:27]
+      cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_20 = eq(cycleCntEnd_1, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_21 = and(iiEnd, _T_20) @[IOController.scala 132:18]
+        when _T_21 : @[IOController.scala 132:37]
+          node _cycleCnt_1_T = add(cycleCnt_1, cycleCntEnd_0) @[IOController.scala 133:36]
+          node _cycleCnt_1_T_1 = tail(_cycleCnt_1_T, 1) @[IOController.scala 133:36]
+          cycleCnt_1 <= _cycleCnt_1_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_1 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_22 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_22 : @[IOController.scala 129:27]
+      cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_23 = eq(cycleCntEnd_2, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_24 = and(iiEnd, _T_23) @[IOController.scala 132:18]
+        when _T_24 : @[IOController.scala 132:37]
+          node _cycleCnt_2_T = add(cycleCnt_2, cycleCntEnd_1) @[IOController.scala 133:36]
+          node _cycleCnt_2_T_1 = tail(_cycleCnt_2_T, 1) @[IOController.scala 133:36]
+          cycleCnt_2 <= _cycleCnt_2_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_2 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _T_25 = eq(state, UInt<2>("h0")) @[IOController.scala 129:16]
+    when _T_25 : @[IOController.scala 129:27]
+      cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 130:19]
+    else :
+      when launch : @[IOController.scala 131:23]
+        node _T_26 = eq(cntEnd, UInt<1>("h0")) @[IOController.scala 132:21]
+        node _T_27 = and(iiEnd, _T_26) @[IOController.scala 132:18]
+        when _T_27 : @[IOController.scala 132:37]
+          node _cycleCnt_3_T = add(cycleCnt_3, cycleCntEnd_2) @[IOController.scala 133:36]
+          node _cycleCnt_3_T_1 = tail(_cycleCnt_3_T, 1) @[IOController.scala 133:36]
+          cycleCnt_3 <= _cycleCnt_3_T_1 @[IOController.scala 133:21]
+        else :
+          when iiEnd : @[IOController.scala 137:24]
+            cycleCnt_3 <= UInt<1>("h0") @[IOController.scala 138:21]
+    node _wRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_1 = add(cycleCnt_0, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_2 = tail(_wRealValid_T_1, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_3 = geq(_wRealValid_T_2, cycles_0) @[IOController.scala 145:47]
+    node _wRealValid_T_4 = and(_wRealValid_T, _wRealValid_T_3) @[IOController.scala 145:26]
+    node _wRealValid_T_5 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_6 = or(_wRealValid_T_4, _wRealValid_T_5) @[IOController.scala 145:61]
+    node _wRealValid_T_7 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_8 = add(cycleCnt_1, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_9 = tail(_wRealValid_T_8, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_10 = geq(_wRealValid_T_9, cycles_1) @[IOController.scala 145:47]
+    node _wRealValid_T_11 = and(_wRealValid_T_7, _wRealValid_T_10) @[IOController.scala 145:26]
+    node _wRealValid_T_12 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_13 = or(_wRealValid_T_11, _wRealValid_T_12) @[IOController.scala 145:61]
+    node _wRealValid_T_14 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_15 = add(cycleCnt_2, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_16 = tail(_wRealValid_T_15, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_17 = geq(_wRealValid_T_16, cycles_2) @[IOController.scala 145:47]
+    node _wRealValid_T_18 = and(_wRealValid_T_14, _wRealValid_T_17) @[IOController.scala 145:26]
+    node _wRealValid_T_19 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_20 = or(_wRealValid_T_18, _wRealValid_T_19) @[IOController.scala 145:61]
+    node _wRealValid_T_21 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:18]
+    node _wRealValid_T_22 = add(cycleCnt_3, UInt<1>("h1")) @[IOController.scala 145:41]
+    node _wRealValid_T_23 = tail(_wRealValid_T_22, 1) @[IOController.scala 145:41]
+    node _wRealValid_T_24 = geq(_wRealValid_T_23, cycles_3) @[IOController.scala 145:47]
+    node _wRealValid_T_25 = and(_wRealValid_T_21, _wRealValid_T_24) @[IOController.scala 145:26]
+    node _wRealValid_T_26 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 145:74]
+    node _wRealValid_T_27 = or(_wRealValid_T_25, _wRealValid_T_26) @[IOController.scala 145:61]
+    node _wRealValid_T_28 = and(_wRealValid_T_6, _wRealValid_T_13) @[IOController.scala 146:13]
+    node _wRealValid_T_29 = and(_wRealValid_T_28, _wRealValid_T_20) @[IOController.scala 146:13]
+    node wRealValid = and(_wRealValid_T_29, _wRealValid_T_27) @[IOController.scala 146:13]
+    node _rRealValid_T = eq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_1 = eq(cycleCnt_0, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_2 = and(_rRealValid_T, _rRealValid_T_1) @[IOController.scala 150:24]
+    node _rRealValid_T_3 = neq(stride_0, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_4 = or(_rRealValid_T_2, _rRealValid_T_3) @[IOController.scala 150:48]
+    node _rRealValid_T_5 = eq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_6 = eq(cycleCnt_1, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_7 = and(_rRealValid_T_5, _rRealValid_T_6) @[IOController.scala 150:24]
+    node _rRealValid_T_8 = neq(stride_1, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_9 = or(_rRealValid_T_7, _rRealValid_T_8) @[IOController.scala 150:48]
+    node _rRealValid_T_10 = eq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_11 = eq(cycleCnt_2, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_12 = and(_rRealValid_T_10, _rRealValid_T_11) @[IOController.scala 150:24]
+    node _rRealValid_T_13 = neq(stride_2, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_14 = or(_rRealValid_T_12, _rRealValid_T_13) @[IOController.scala 150:48]
+    node _rRealValid_T_15 = eq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:16]
+    node _rRealValid_T_16 = eq(cycleCnt_3, UInt<1>("h0")) @[IOController.scala 150:39]
+    node _rRealValid_T_17 = and(_rRealValid_T_15, _rRealValid_T_16) @[IOController.scala 150:24]
+    node _rRealValid_T_18 = neq(stride_3, asSInt(UInt<1>("h0"))) @[IOController.scala 150:61]
+    node _rRealValid_T_19 = or(_rRealValid_T_17, _rRealValid_T_18) @[IOController.scala 150:48]
+    node _rRealValid_T_20 = and(_rRealValid_T_4, _rRealValid_T_9) @[IOController.scala 151:13]
+    node _rRealValid_T_21 = and(_rRealValid_T_20, _rRealValid_T_14) @[IOController.scala 151:13]
+    node rRealValid = and(_rRealValid_T_21, _rRealValid_T_19) @[IOController.scala 151:13]
+    node _wValid_T = and(isStore, launch) @[IOController.scala 154:24]
+    node _wValid_T_1 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 154:44]
+    node wValid = and(_wValid_T, _wValid_T_1) @[IOController.scala 154:34]
+    node _raValid_T = eq(isStore, UInt<1>("h0")) @[IOController.scala 157:17]
+    node _raValid_T_1 = and(_raValid_T, launch) @[IOController.scala 157:26]
+    node _raValid_T_2 = eq(iiCnt, UInt<1>("h0")) @[IOController.scala 157:46]
+    node raValid = and(_raValid_T_1, _raValid_T_2) @[IOController.scala 157:36]
+    wire addr : UInt<15> @[IOController.scala 158:18]
+    reg genAddrReg : SInt<16>, clock with :
+      reset => (reset, asSInt(UInt<16>("h0"))) @[IOController.scala 159:27]
+    node _realEn_T = or(wRealValid, useAddr) @[IOController.scala 170:39]
+    node _realEn_T_1 = and(wValid, _realEn_T) @[IOController.scala 170:24]
+    node _realEn_T_2 = or(rRealValid, useAddr) @[IOController.scala 170:79]
+    node _realEn_T_3 = and(raValid, _realEn_T_2) @[IOController.scala 170:64]
+    node realEn = or(_realEn_T_1, _realEn_T_3) @[IOController.scala 170:52]
+    node _T_28 = eq(launch, UInt<1>("h0")) @[IOController.scala 172:8]
+    when _T_28 : @[IOController.scala 172:16]
+      node genAddrReg_hi = asUInt(asSInt(UInt<1>("h0"))) @[Cat.scala 33:92]
+      node _genAddrReg_T = cat(genAddrReg_hi, baseAddr) @[Cat.scala 33:92]
+      node _genAddrReg_T_1 = asSInt(_genAddrReg_T) @[IOController.scala 173:43]
+      genAddrReg <= _genAddrReg_T_1 @[IOController.scala 173:16]
+    else :
+      when iiEnd : @[IOController.scala 174:20]
+        node _genAddrReg_T_2 = mux(cycleCntEnd_0, stride_1, stride_0) @[Mux.scala 47:70]
+        node _genAddrReg_T_3 = mux(cycleCntEnd_1, stride_2, _genAddrReg_T_2) @[Mux.scala 47:70]
+        node _genAddrReg_T_4 = mux(cycleCntEnd_2, stride_3, _genAddrReg_T_3) @[Mux.scala 47:70]
+        node _genAddrReg_T_5 = add(genAddrReg, _genAddrReg_T_4) @[IOController.scala 175:30]
+        node _genAddrReg_T_6 = tail(_genAddrReg_T_5, 1) @[IOController.scala 175:30]
+        node _genAddrReg_T_7 = asSInt(_genAddrReg_T_6) @[IOController.scala 175:30]
+        genAddrReg <= _genAddrReg_T_7 @[IOController.scala 175:16]
+    node _T_29 = and(useAddr, isStore) @[IOController.scala 182:18]
+    when _T_29 : @[IOController.scala 182:28]
+      node _addr_T = bits(io.in[1], 15, 1) @[IOController.scala 183:35]
+      node _addr_T_1 = add(baseAddr, _addr_T) @[IOController.scala 183:25]
+      node _addr_T_2 = tail(_addr_T_1, 1) @[IOController.scala 183:25]
+      addr <= _addr_T_2 @[IOController.scala 183:12]
+    else :
+      node _T_30 = eq(isStore, UInt<1>("h0")) @[IOController.scala 184:26]
+      node _T_31 = and(useAddr, _T_30) @[IOController.scala 184:24]
+      when _T_31 : @[IOController.scala 184:35]
+        node _addr_T_3 = bits(io.in[0], 15, 1) @[IOController.scala 185:35]
+        node _addr_T_4 = add(baseAddr, _addr_T_3) @[IOController.scala 185:25]
+        node _addr_T_5 = tail(_addr_T_4, 1) @[IOController.scala 185:25]
+        addr <= _addr_T_5 @[IOController.scala 185:12]
+      else :
+        node _addr_T_6 = asUInt(genAddrReg) @[IOController.scala 187:26]
+        addr <= _addr_T_6 @[IOController.scala 187:12]
+    reg addrReg : UInt<15>, clock with :
+      reset => (reset, UInt<15>("h0")) @[IOController.scala 192:26]
+    node _T_32 = or(wValid, raValid) @[IOController.scala 193:17]
+    when _T_32 : @[IOController.scala 193:28]
+      addrReg <= addr @[IOController.scala 194:15]
+    reg wDataReg : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 196:27]
+    when wValid : @[IOController.scala 197:17]
+      wDataReg <= io.in[0] @[IOController.scala 198:16]
+    reg io_sram_en_REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), io_sram_en_REG) @[IOController.scala 200:26]
+    io_sram_en_REG <= realEn @[IOController.scala 200:26]
+    io.sram.en <= io_sram_en_REG @[IOController.scala 200:16]
+    node _io_sram_we_T = mux(wValid, UInt<2>("h3"), UInt<1>("h0")) @[IOController.scala 201:30]
+    reg io_sram_we_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_sram_we_REG) @[IOController.scala 201:26]
+    io_sram_we_REG <= _io_sram_we_T @[IOController.scala 201:26]
+    io.sram.we <= io_sram_we_REG @[IOController.scala 201:16]
+    io.sram.addr <= addrReg @[IOController.scala 202:18]
+    io.sram.din <= wDataReg @[IOController.scala 203:17]
+    reg dout : UInt<16>, clock with :
+      reset => (reset, UInt<16>("h0")) @[IOController.scala 212:23]
+    node _T_33 = eq(io.sram.we, UInt<1>("h0")) @[IOController.scala 213:44]
+    node _T_34 = and(io.sram.en, _T_33) @[IOController.scala 213:29]
+    reg REG : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), REG) @[IOController.scala 213:17]
+    REG <= _T_34 @[IOController.scala 213:17]
+    when REG : @[IOController.scala 213:54]
+      dout <= io.sram.dout @[IOController.scala 214:12]
+    io.out[0] <= dout @[IOController.scala 216:15]
+
+  module SharedDelayPipe_9 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip en : UInt<1>, flip config : UInt<8>, flip in : UInt<16>[2], out : UInt<16>[2]}
+
+    wire _regs_WIRE : UInt<16>[12] @[DelayPipe.scala 142:29]
+    _regs_WIRE[0] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[1] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[2] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[3] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[4] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[5] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[6] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[7] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[8] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[9] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[10] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    _regs_WIRE[11] <= UInt<16>("h0") @[DelayPipe.scala 142:29]
+    reg regs : UInt<16>[12], clock with :
+      reset => (reset, _regs_WIRE) @[DelayPipe.scala 142:21]
+    wire _wptr_WIRE : UInt<4>[2] @[DelayPipe.scala 143:29]
+    _wptr_WIRE[0] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    _wptr_WIRE[1] <= UInt<4>("h0") @[DelayPipe.scala 143:29]
+    reg wptr : UInt<4>[2], clock with :
+      reset => (reset, _wptr_WIRE) @[DelayPipe.scala 143:21]
+    wire rptr : UInt<4>[2] @[DelayPipe.scala 145:18]
+    wire config : UInt<4>[2] @[DelayPipe.scala 146:20]
+    node _config_0_T = bits(io.config, 3, 0) @[DelayPipe.scala 148:27]
+    config[0] <= _config_0_T @[DelayPipe.scala 148:15]
+    node _config_1_T = bits(io.config, 7, 4) @[DelayPipe.scala 148:27]
+    config[1] <= _config_1_T @[DelayPipe.scala 148:15]
+    wire offset : UInt<4>[1] @[DelayPipe.scala 150:20]
+    node _offset_0_T = add(config[1], UInt<1>("h1")) @[DelayPipe.scala 153:32]
+    node _offset_0_T_1 = tail(_offset_0_T, 1) @[DelayPipe.scala 153:32]
+    offset[0] <= _offset_0_T_1 @[DelayPipe.scala 153:17]
+    node _T = lt(wptr[0], UInt<4>("hb")) @[DelayPipe.scala 161:30]
+    node _T_1 = and(io.en, _T) @[DelayPipe.scala 161:18]
+    when _T_1 : @[DelayPipe.scala 161:46]
+      node _wptr_0_T = add(wptr[0], UInt<1>("h1")) @[DelayPipe.scala 162:28]
+      node _wptr_0_T_1 = tail(_wptr_0_T, 1) @[DelayPipe.scala 162:28]
+      wptr[0] <= _wptr_0_T_1 @[DelayPipe.scala 162:17]
+    else :
+      wptr[0] <= UInt<1>("h0") @[DelayPipe.scala 164:17]
+    node _T_2 = geq(wptr[0], config[0]) @[DelayPipe.scala 178:18]
+    when _T_2 : @[DelayPipe.scala 178:31]
+      node _rptr_0_T = sub(wptr[0], config[0]) @[DelayPipe.scala 179:26]
+      node _rptr_0_T_1 = tail(_rptr_0_T, 1) @[DelayPipe.scala 179:26]
+      rptr[0] <= _rptr_0_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_0_T_2 = add(UInt<4>("hc"), wptr[0]) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_3 = tail(_rptr_0_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_0_T_4 = sub(_rptr_0_T_3, config[0]) @[DelayPipe.scala 181:37]
+      node _rptr_0_T_5 = tail(_rptr_0_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[0] <= _rptr_0_T_5 @[DelayPipe.scala 181:15]
+    node _T_3 = eq(UInt<1>("h0"), config[0]) @[DelayPipe.scala 189:24]
+    node _T_4 = and(io.en, _T_3) @[DelayPipe.scala 189:16]
+    when _T_4 : @[DelayPipe.scala 189:39]
+      io.out[0] <= io.in[0] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[0] <= regs[rptr[0]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[0] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 167:19]
+      node _T_5 = lt(wptr[1], UInt<4>("hb")) @[DelayPipe.scala 168:22]
+      when _T_5 : @[DelayPipe.scala 168:40]
+        node _wptr_1_T = add(wptr[1], UInt<1>("h1")) @[DelayPipe.scala 169:30]
+        node _wptr_1_T_1 = tail(_wptr_1_T, 1) @[DelayPipe.scala 169:30]
+        wptr[1] <= _wptr_1_T_1 @[DelayPipe.scala 169:19]
+      else :
+        wptr[1] <= UInt<1>("h0") @[DelayPipe.scala 171:19]
+    else :
+      wptr[1] <= offset[0] @[DelayPipe.scala 174:17]
+    node _T_6 = geq(wptr[1], config[1]) @[DelayPipe.scala 178:18]
+    when _T_6 : @[DelayPipe.scala 178:31]
+      node _rptr_1_T = sub(wptr[1], config[1]) @[DelayPipe.scala 179:26]
+      node _rptr_1_T_1 = tail(_rptr_1_T, 1) @[DelayPipe.scala 179:26]
+      rptr[1] <= _rptr_1_T_1 @[DelayPipe.scala 179:15]
+    else :
+      node _rptr_1_T_2 = add(UInt<4>("hc"), wptr[1]) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_3 = tail(_rptr_1_T_2, 1) @[DelayPipe.scala 181:27]
+      node _rptr_1_T_4 = sub(_rptr_1_T_3, config[1]) @[DelayPipe.scala 181:37]
+      node _rptr_1_T_5 = tail(_rptr_1_T_4, 1) @[DelayPipe.scala 181:37]
+      rptr[1] <= _rptr_1_T_5 @[DelayPipe.scala 181:15]
+    node _T_7 = eq(UInt<1>("h0"), config[1]) @[DelayPipe.scala 189:24]
+    node _T_8 = and(io.en, _T_7) @[DelayPipe.scala 189:16]
+    when _T_8 : @[DelayPipe.scala 189:39]
+      io.out[1] <= io.in[1] @[DelayPipe.scala 190:17]
+    else :
+      when io.en : @[DelayPipe.scala 191:22]
+        io.out[1] <= regs[rptr[1]] @[DelayPipe.scala 192:17]
+      else :
+        io.out[1] <= UInt<1>("h0") @[DelayPipe.scala 194:17]
+    when io.en : @[DelayPipe.scala 199:14]
+      regs[wptr[0]] <= io.in[0] @[DelayPipe.scala 201:21]
+      regs[wptr[1]] <= io.in[1] @[DelayPipe.scala 201:21]
+    else :
+      regs[0] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[1] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[2] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[3] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[4] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[5] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[6] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[7] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[8] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[9] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[10] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+      regs[11] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
+
+
+  module Muxn_28 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_29 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module ConfigMem_11 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<3>, flip cfg_data : UInt<32>, out : UInt<137>[1]}
+
+    wire _regs_WIRE : UInt<137>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<137>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<137>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 39:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 39:22]
+    when _T_1 : @[ConfigMem.scala 39:47]
+      node _regs_0_T = bits(regs[0], 136, 32) @[ConfigMem.scala 41:33]
+      node _regs_0_T_1 = cat(_regs_0_T, io.cfg_data) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_1 @[ConfigMem.scala 41:19]
+    node _T_2 = eq(io.cfg_addr, UInt<1>("h1")) @[ConfigMem.scala 39:38]
+    node _T_3 = and(io.cfg_en, _T_2) @[ConfigMem.scala 39:22]
+    when _T_3 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_2 = bits(regs[0], 136, 64) @[ConfigMem.scala 45:33]
+      node _regs_0_T_3 = bits(regs[0], 31, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi = cat(_regs_0_T_2, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_4 = cat(regs_0_hi, _regs_0_T_3) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_4 @[ConfigMem.scala 45:19]
+    node _T_4 = eq(io.cfg_addr, UInt<2>("h2")) @[ConfigMem.scala 39:38]
+    node _T_5 = and(io.cfg_en, _T_4) @[ConfigMem.scala 39:22]
+    when _T_5 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_5 = bits(regs[0], 136, 96) @[ConfigMem.scala 45:33]
+      node _regs_0_T_6 = bits(regs[0], 63, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_1 = cat(_regs_0_T_5, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_7 = cat(regs_0_hi_1, _regs_0_T_6) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_7 @[ConfigMem.scala 45:19]
+    node _T_6 = eq(io.cfg_addr, UInt<2>("h3")) @[ConfigMem.scala 39:38]
+    node _T_7 = and(io.cfg_en, _T_6) @[ConfigMem.scala 39:22]
+    when _T_7 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_8 = bits(regs[0], 136, 128) @[ConfigMem.scala 45:33]
+      node _regs_0_T_9 = bits(regs[0], 95, 0) @[ConfigMem.scala 45:87]
+      node regs_0_hi_2 = cat(_regs_0_T_8, io.cfg_data) @[Cat.scala 33:92]
+      node _regs_0_T_10 = cat(regs_0_hi_2, _regs_0_T_9) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_10 @[ConfigMem.scala 45:19]
+    node _T_8 = eq(io.cfg_addr, UInt<3>("h4")) @[ConfigMem.scala 39:38]
+    node _T_9 = and(io.cfg_en, _T_8) @[ConfigMem.scala 39:22]
+    when _T_9 : @[ConfigMem.scala 39:47]
+      node _regs_0_T_11 = bits(regs[0], 127, 0) @[ConfigMem.scala 43:46]
+      node _regs_0_T_12 = cat(io.cfg_data, _regs_0_T_11) @[Cat.scala 33:92]
+      regs[0] <= _regs_0_T_12 @[ConfigMem.scala 43:19]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module IOB_7 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, flip start : UInt<1>, done : UInt<1>, flip en : UInt<1>, flip in : UInt<16>[4], out : UInt<16>[1], flip sram : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}}
+
+    inst ioCtrl of IOController_7 @[IOB.scala 67:22]
+    ioCtrl.clock <= clock
+    ioCtrl.reset <= reset
+    inst delay_pipe of SharedDelayPipe_9 @[IOB.scala 68:66]
+    delay_pipe.clock <= clock
+    delay_pipe.reset <= reset
+    inst Muxn of Muxn_28 @[IOB.scala 70:43]
+    Muxn.clock <= clock
+    Muxn.reset <= reset
+    inst Muxn_1 of Muxn_29 @[IOB.scala 70:43]
+    Muxn_1.clock <= clock
+    Muxn_1.reset <= reset
+    ioCtrl.io.sram <= io.sram @[IOB.scala 119:18]
+    ioCtrl.io.start <= io.start @[IOB.scala 120:19]
+    io.done <= ioCtrl.io.done @[IOB.scala 121:11]
+    io.out[0] <= ioCtrl.io.out[0] @[IOB.scala 122:13]
+    Muxn.io.in[0] <= io.in[0] @[IOB.scala 128:10]
+    Muxn.io.in[1] <= io.in[1] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[0] <= Muxn.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[0] <= delay_pipe.io.out[0] @[IOB.scala 134:23]
+    Muxn_1.io.in[0] <= io.in[2] @[IOB.scala 128:10]
+    Muxn_1.io.in[1] <= io.in[3] @[IOB.scala 128:10]
+    delay_pipe.io.en <= io.en @[IOB.scala 132:24]
+    delay_pipe.io.in[1] <= Muxn_1.io.out @[IOB.scala 133:27]
+    ioCtrl.io.in[1] <= delay_pipe.io.out[1] @[IOB.scala 134:23]
+    inst cfg of ConfigMem_11 @[IOB.scala 152:19]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[IOB.scala 153:63]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<5>("h14"), _cfg_io_cfg_en_T) @[IOB.scala 153:48]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[IOB.scala 153:30]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[IOB.scala 153:17]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[IOB.scala 154:33]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[IOB.scala 154:19]
+    cfg.io.cfg_data <= io.cfg_data @[IOB.scala 155:19]
+    node _ioCtrl_io_config_T = bits(cfg.io.out[0], 126, 0) @[IOB.scala 169:29]
+    ioCtrl.io.config <= _ioCtrl_io_config_T @[IOB.scala 169:20]
+    node _delay_pipe_io_config_T = bits(cfg.io.out[0], 134, 127) @[IOB.scala 180:35]
+    delay_pipe.io.config <= _delay_pipe_io_config_T @[IOB.scala 180:26]
+    node _T = bits(cfg.io.out[0], 135, 135) @[IOB.scala 186:32]
+    Muxn.io.config <= _T @[IOB.scala 186:23]
+    node _T_1 = bits(cfg.io.out[0], 136, 136) @[IOB.scala 186:32]
+    Muxn_1.io.config <= _T_1 @[IOB.scala 186:23]
+
   module Div_4 :
     input clock : Clock
     input reset : Reset
@@ -42547,7 +46653,7 @@ circuit vitra :
     io.launch <= acr.io.launch @[AffineCtrlReg.scala 284:15]
     io.out <= acr.io.out @[AffineCtrlReg.scala 285:12]
 
-  module SharedDelayPipe_6 :
+  module SharedDelayPipe_10 :
     input clock : Clock
     input reset : Reset
     output io : { flip en : UInt<1>, flip config : UInt<8>, flip in : UInt<16>[2], out : UInt<16>[2]}
@@ -42658,7 +46764,7 @@ circuit vitra :
       regs[11] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
 
 
-  module Muxn_12 :
+  module Muxn_30 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<3>, flip in : UInt<16>[5], out : UInt<16>}
@@ -42675,7 +46781,7 @@ circuit vitra :
     node _io_out_T_9 = mux(_io_out_T_8, io.in[4], _io_out_T_7) @[Mux.scala 81:58]
     io.out <= _io_out_T_9 @[Multiplexer.scala 20:10]
 
-  module Muxn_13 :
+  module Muxn_31 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<3>, flip in : UInt<16>[5], out : UInt<16>}
@@ -42692,7 +46798,7 @@ circuit vitra :
     node _io_out_T_9 = mux(_io_out_T_8, io.in[4], _io_out_T_7) @[Mux.scala 81:58]
     io.out <= _io_out_T_9 @[Multiplexer.scala 20:10]
 
-  module ConfigMem_6 :
+  module ConfigMem_12 :
     input clock : Clock
     input reset : Reset
     output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<2>, flip cfg_data : UInt<32>, out : UInt<93>[1]}
@@ -42734,14 +46840,14 @@ circuit vitra :
     inst dmr of DualModeReg_2 @[PE.scala 93:19]
     dmr.clock <= clock
     dmr.reset <= reset
-    inst delay_pipe of SharedDelayPipe_6 @[PE.scala 94:26]
+    inst delay_pipe of SharedDelayPipe_10 @[PE.scala 94:26]
     delay_pipe.clock <= clock
     delay_pipe.reset <= reset
     wire const : UInt<16> @[PE.scala 96:19]
-    inst Muxn of Muxn_12 @[PE.scala 105:49]
+    inst Muxn of Muxn_30 @[PE.scala 105:49]
     Muxn.clock <= clock
     Muxn.reset <= reset
-    inst Muxn_1 of Muxn_13 @[PE.scala 105:49]
+    inst Muxn_1 of Muxn_31 @[PE.scala 105:49]
     Muxn_1.clock <= clock
     Muxn_1.reset <= reset
     wire opc : UInt<4> @[PE.scala 107:17]
@@ -42788,11 +46894,11 @@ circuit vitra :
       else :
         alu.io.in[0] <= dmr.io.out[1] @[PE.scala 246:20]
         alu.io.in[1] <= delay_pipe.io.out[0] @[PE.scala 247:20]
-    inst cfg of ConfigMem_6 @[PE.scala 281:19]
+    inst cfg of ConfigMem_12 @[PE.scala 281:19]
     cfg.clock <= clock
     cfg.reset <= reset
     node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[PE.scala 282:63]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("h9"), _cfg_io_cfg_en_T) @[PE.scala 282:48]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("hf"), _cfg_io_cfg_en_T) @[PE.scala 282:48]
     node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[PE.scala 282:30]
     cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[PE.scala 282:17]
     node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[PE.scala 283:33]
@@ -55641,7 +59747,7 @@ circuit vitra :
     io.launch <= acr.io.launch @[AffineCtrlReg.scala 284:15]
     io.out <= acr.io.out @[AffineCtrlReg.scala 285:12]
 
-  module SharedDelayPipe_7 :
+  module SharedDelayPipe_11 :
     input clock : Clock
     input reset : Reset
     output io : { flip en : UInt<1>, flip config : UInt<8>, flip in : UInt<16>[2], out : UInt<16>[2]}
@@ -55752,7 +59858,7 @@ circuit vitra :
       regs[11] <= UInt<1>("h0") @[DelayPipe.scala 205:15]
 
 
-  module Muxn_14 :
+  module Muxn_32 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<3>, flip in : UInt<16>[5], out : UInt<16>}
@@ -55769,7 +59875,7 @@ circuit vitra :
     node _io_out_T_9 = mux(_io_out_T_8, io.in[4], _io_out_T_7) @[Mux.scala 81:58]
     io.out <= _io_out_T_9 @[Multiplexer.scala 20:10]
 
-  module Muxn_15 :
+  module Muxn_33 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<3>, flip in : UInt<16>[5], out : UInt<16>}
@@ -55786,7 +59892,7 @@ circuit vitra :
     node _io_out_T_9 = mux(_io_out_T_8, io.in[4], _io_out_T_7) @[Mux.scala 81:58]
     io.out <= _io_out_T_9 @[Multiplexer.scala 20:10]
 
-  module ConfigMem_7 :
+  module ConfigMem_13 :
     input clock : Clock
     input reset : Reset
     output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<2>, flip cfg_data : UInt<32>, out : UInt<93>[1]}
@@ -55828,14 +59934,14 @@ circuit vitra :
     inst dmr of DualModeReg_3 @[PE.scala 93:19]
     dmr.clock <= clock
     dmr.reset <= reset
-    inst delay_pipe of SharedDelayPipe_7 @[PE.scala 94:26]
+    inst delay_pipe of SharedDelayPipe_11 @[PE.scala 94:26]
     delay_pipe.clock <= clock
     delay_pipe.reset <= reset
     wire const : UInt<16> @[PE.scala 96:19]
-    inst Muxn of Muxn_14 @[PE.scala 105:49]
+    inst Muxn of Muxn_32 @[PE.scala 105:49]
     Muxn.clock <= clock
     Muxn.reset <= reset
-    inst Muxn_1 of Muxn_15 @[PE.scala 105:49]
+    inst Muxn_1 of Muxn_33 @[PE.scala 105:49]
     Muxn_1.clock <= clock
     Muxn_1.reset <= reset
     wire opc : UInt<4> @[PE.scala 107:17]
@@ -55882,11 +59988,11 @@ circuit vitra :
       else :
         alu.io.in[0] <= dmr.io.out[1] @[PE.scala 246:20]
         alu.io.in[1] <= delay_pipe.io.out[0] @[PE.scala 247:20]
-    inst cfg of ConfigMem_7 @[PE.scala 281:19]
+    inst cfg of ConfigMem_13 @[PE.scala 281:19]
     cfg.clock <= clock
     cfg.reset <= reset
     node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[PE.scala 282:63]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("ha"), _cfg_io_cfg_en_T) @[PE.scala 282:48]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<5>("h10"), _cfg_io_cfg_en_T) @[PE.scala 282:48]
     node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[PE.scala 282:30]
     cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[PE.scala 282:17]
     node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[PE.scala 283:33]
@@ -55909,40 +60015,23 @@ circuit vitra :
     node _dmr_io_config_T = bits(cfgOut, 92, 34) @[PE.scala 365:28]
     dmr.io.config <= _dmr_io_config_T @[PE.scala 365:19]
 
-  module GIB :
+  module ConfigMem_14 :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[0], flip opinNW : UInt<16>[0], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[0], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<5>[1]}
 
-    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
-    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
-    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
-    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 520:41]
-    io.otrackE[0] <= io.itrackS[0] @[Interconnect.scala 520:41]
-    io.otrackS[0] <= io.itrackE[0] @[Interconnect.scala 520:41]
-
-  module ConfigMem_8 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<4>[1]}
-
-    wire _regs_WIRE : UInt<4>[1] @[ConfigMem.scala 27:29]
-    _regs_WIRE[0] <= UInt<4>("h0") @[ConfigMem.scala 27:29]
-    reg regs : UInt<4>[1], clock with :
+    wire _regs_WIRE : UInt<5>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<5>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<5>[1], clock with :
       reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
     node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
     node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
     when _T_1 : @[ConfigMem.scala 32:54]
-      node _regs_0_T = bits(io.cfg_data, 3, 0) @[ConfigMem.scala 33:31]
+      node _regs_0_T = bits(io.cfg_data, 4, 0) @[ConfigMem.scala 33:31]
       regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
     io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
 
-  module Muxn_16 :
+  module Muxn_34 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -55951,7 +60040,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_17 :
+  module Muxn_35 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -55960,7 +60049,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_18 :
+  module Muxn_36 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -55969,7 +60058,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_19 :
+  module Muxn_37 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -55978,96 +60067,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module GIB_1 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
-
-    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
-    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
-    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
-    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
-    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
-    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
-    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
-    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    inst cfg of ConfigMem_8 @[Interconnect.scala 490:21]
-    cfg.clock <= clock
-    cfg.reset <= reset
-    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<3>("h4"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
-    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
-    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
-    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
-    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
-    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
-    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
-    io.ipinNE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
-    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
-    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
-    inst mux of Muxn_16 @[Interconnect.scala 500:25]
-    mux.clock <= clock
-    mux.reset <= reset
-    mux.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
-    mux.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
-    io.ipinSW[0] <= mux.io.out @[Interconnect.scala 506:45]
-    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
-    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
-    inst mux_1 of Muxn_17 @[Interconnect.scala 500:25]
-    mux_1.clock <= clock
-    mux_1.reset <= reset
-    mux_1.io.in[0] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    mux_1.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    reg io_otrackW_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackW_0_REG) @[Interconnect.scala 504:55]
-    io_otrackW_0_REG <= mux_1.io.out @[Interconnect.scala 504:55]
-    io.otrackW[0] <= io_otrackW_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
-    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
-    inst mux_2 of Muxn_18 @[Interconnect.scala 500:25]
-    mux_2.clock <= clock
-    mux_2.reset <= reset
-    mux_2.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_2.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    reg io_otrackE_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackE_0_REG) @[Interconnect.scala 504:55]
-    io_otrackE_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
-    io.otrackE[0] <= io_otrackE_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
-    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
-    inst mux_3 of Muxn_19 @[Interconnect.scala 500:25]
-    mux_3.clock <= clock
-    mux_3.reset <= reset
-    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_3.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    reg io_otrackS_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackS_0_REG) @[Interconnect.scala 504:55]
-    io_otrackS_0_REG <= mux_3.io.out @[Interconnect.scala 504:55]
-    io.otrackS[0] <= io_otrackS_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
-    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
-
-  module ConfigMem_9 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<3>[1]}
-
-    wire _regs_WIRE : UInt<3>[1] @[ConfigMem.scala 27:29]
-    _regs_WIRE[0] <= UInt<3>("h0") @[ConfigMem.scala 27:29]
-    reg regs : UInt<3>[1], clock with :
-      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
-    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
-    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
-    when _T_1 : @[ConfigMem.scala 32:54]
-      node _regs_0_T = bits(io.cfg_data, 2, 0) @[ConfigMem.scala 33:31]
-      regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
-    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
-
-  module Muxn_20 :
+  module Muxn_38 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56075,251 +60075,96 @@ circuit vitra :
     node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
-
-  module Muxn_21 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
-
-    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
-    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
-
-  module Muxn_22 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
-
-    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
-    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
-
-  module GIB_2 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[0], flip opinNW : UInt<16>[0], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[0], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
-
-    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
-    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
-    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
-    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    inst cfg of ConfigMem_9 @[Interconnect.scala 490:21]
-    cfg.clock <= clock
-    cfg.reset <= reset
-    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<3>("h7"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
-    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
-    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
-    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
-    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
-    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
-    inst mux of Muxn_20 @[Interconnect.scala 500:25]
-    mux.clock <= clock
-    mux.reset <= reset
-    mux.io.in[0] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    mux.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    reg io_otrackN_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackN_0_REG) @[Interconnect.scala 504:55]
-    io_otrackN_0_REG <= mux.io.out @[Interconnect.scala 504:55]
-    io.otrackN[0] <= io_otrackN_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
-    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
-    inst mux_1 of Muxn_21 @[Interconnect.scala 500:25]
-    mux_1.clock <= clock
-    mux_1.reset <= reset
-    mux_1.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux_1.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    reg io_otrackE_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackE_0_REG) @[Interconnect.scala 504:55]
-    io_otrackE_0_REG <= mux_1.io.out @[Interconnect.scala 504:55]
-    io.otrackE[0] <= io_otrackE_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
-    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
-    inst mux_2 of Muxn_22 @[Interconnect.scala 500:25]
-    mux_2.clock <= clock
-    mux_2.reset <= reset
-    mux_2.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux_2.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    reg io_otrackS_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackS_0_REG) @[Interconnect.scala 504:55]
-    io_otrackS_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
-    io.otrackS[0] <= io_otrackS_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
-    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
-
-  module ConfigMem_10 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<8>[1]}
-
-    wire _regs_WIRE : UInt<8>[1] @[ConfigMem.scala 27:29]
-    _regs_WIRE[0] <= UInt<8>("h0") @[ConfigMem.scala 27:29]
-    reg regs : UInt<8>[1], clock with :
-      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
-    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
-    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
-    when _T_1 : @[ConfigMem.scala 32:54]
-      node _regs_0_T = bits(io.cfg_data, 7, 0) @[ConfigMem.scala 33:31]
-      regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
-    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
-
-  module Muxn_23 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip config : UInt<2>, flip in : UInt<16>[3], out : UInt<16>}
-
-    node _io_out_T = eq(UInt<1>("h0"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_1 = mux(_io_out_T, io.in[0], io.in[0]) @[Mux.scala 81:58]
-    node _io_out_T_2 = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_3 = mux(_io_out_T_2, io.in[1], _io_out_T_1) @[Mux.scala 81:58]
-    node _io_out_T_4 = eq(UInt<2>("h2"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_5 = mux(_io_out_T_4, io.in[2], _io_out_T_3) @[Mux.scala 81:58]
-    io.out <= _io_out_T_5 @[Multiplexer.scala 20:10]
-
-  module Muxn_24 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip config : UInt<2>, flip in : UInt<16>[3], out : UInt<16>}
-
-    node _io_out_T = eq(UInt<1>("h0"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_1 = mux(_io_out_T, io.in[0], io.in[0]) @[Mux.scala 81:58]
-    node _io_out_T_2 = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_3 = mux(_io_out_T_2, io.in[1], _io_out_T_1) @[Mux.scala 81:58]
-    node _io_out_T_4 = eq(UInt<2>("h2"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_5 = mux(_io_out_T_4, io.in[2], _io_out_T_3) @[Mux.scala 81:58]
-    io.out <= _io_out_T_5 @[Multiplexer.scala 20:10]
-
-  module Muxn_25 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip config : UInt<2>, flip in : UInt<16>[3], out : UInt<16>}
-
-    node _io_out_T = eq(UInt<1>("h0"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_1 = mux(_io_out_T, io.in[0], io.in[0]) @[Mux.scala 81:58]
-    node _io_out_T_2 = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_3 = mux(_io_out_T_2, io.in[1], _io_out_T_1) @[Mux.scala 81:58]
-    node _io_out_T_4 = eq(UInt<2>("h2"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_5 = mux(_io_out_T_4, io.in[2], _io_out_T_3) @[Mux.scala 81:58]
-    io.out <= _io_out_T_5 @[Multiplexer.scala 20:10]
-
-  module Muxn_26 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip config : UInt<2>, flip in : UInt<16>[3], out : UInt<16>}
-
-    node _io_out_T = eq(UInt<1>("h0"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_1 = mux(_io_out_T, io.in[0], io.in[0]) @[Mux.scala 81:58]
-    node _io_out_T_2 = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_3 = mux(_io_out_T_2, io.in[1], _io_out_T_1) @[Mux.scala 81:58]
-    node _io_out_T_4 = eq(UInt<2>("h2"), io.config) @[Mux.scala 81:61]
-    node _io_out_T_5 = mux(_io_out_T_4, io.in[2], _io_out_T_3) @[Mux.scala 81:58]
-    io.out <= _io_out_T_5 @[Multiplexer.scala 20:10]
-
-  module GIB_3 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
-
-    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
-    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
-    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
-    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
-    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
-    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
-    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
-    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
-    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
-    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    inst cfg of ConfigMem_10 @[Interconnect.scala 490:21]
-    cfg.clock <= clock
-    cfg.reset <= reset
-    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("h8"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
-    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
-    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
-    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
-    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
-    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
-    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
-    io.ipinNE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
-    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
-    io.ipinSW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
-    inst mux of Muxn_23 @[Interconnect.scala 500:25]
-    mux.clock <= clock
-    mux.reset <= reset
-    mux.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    mux.io.in[2] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    io.otrackW[0] <= mux.io.out @[Interconnect.scala 506:45]
-    node _mux_io_config_T = bits(cfg.io.out[0], 1, 0) @[Interconnect.scala 510:39]
-    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
-    inst mux_1 of Muxn_24 @[Interconnect.scala 500:25]
-    mux_1.clock <= clock
-    mux_1.reset <= reset
-    mux_1.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_1.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    mux_1.io.in[2] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    io.otrackN[0] <= mux_1.io.out @[Interconnect.scala 506:45]
-    node _mux_io_config_T_1 = bits(cfg.io.out[0], 3, 2) @[Interconnect.scala 510:39]
-    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
-    inst mux_2 of Muxn_25 @[Interconnect.scala 500:25]
-    mux_2.clock <= clock
-    mux_2.reset <= reset
-    mux_2.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_2.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux_2.io.in[2] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    io.otrackE[0] <= mux_2.io.out @[Interconnect.scala 506:45]
-    node _mux_io_config_T_2 = bits(cfg.io.out[0], 5, 4) @[Interconnect.scala 510:39]
-    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
-    inst mux_3 of Muxn_26 @[Interconnect.scala 500:25]
-    mux_3.clock <= clock
-    mux_3.reset <= reset
-    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_3.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux_3.io.in[2] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    io.otrackS[0] <= mux_3.io.out @[Interconnect.scala 506:45]
-    node _mux_io_config_T_3 = bits(cfg.io.out[0], 7, 6) @[Interconnect.scala 510:39]
-    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
 
   module GIB_4 :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[0], flip opinNW : UInt<16>[0], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[0], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
 
+    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
     io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
     io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
     io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
     io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
     io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
     io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
     io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
     io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    io.otrackN[0] <= io.itrackE[0] @[Interconnect.scala 520:41]
-    io.otrackE[0] <= io.itrackN[0] @[Interconnect.scala 520:41]
+    inst cfg of ConfigMem_14 @[Interconnect.scala 490:21]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("hd"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
+    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
+    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
+    io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 514:43]
+    inst mux of Muxn_34 @[Interconnect.scala 500:25]
+    mux.clock <= clock
+    mux.reset <= reset
+    mux.io.in[0] <= io.opinNW[0] @[Interconnect.scala 502:63]
+    mux.io.in[1] <= io.opinSW[0] @[Interconnect.scala 502:63]
+    io.ipinNE[0] <= mux.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
+    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
+    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
+    inst mux_1 of Muxn_35 @[Interconnect.scala 500:25]
+    mux_1.clock <= clock
+    mux_1.reset <= reset
+    mux_1.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
+    mux_1.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
+    io.ipinSW[0] <= mux_1.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
+    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
+    inst mux_2 of Muxn_36 @[Interconnect.scala 500:25]
+    mux_2.clock <= clock
+    mux_2.reset <= reset
+    mux_2.io.in[0] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    mux_2.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
+    io.otrackW[0] <= mux_2.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
+    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
+    inst mux_3 of Muxn_37 @[Interconnect.scala 500:25]
+    mux_3.clock <= clock
+    mux_3.reset <= reset
+    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_3.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
+    io.otrackE[0] <= mux_3.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
+    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
+    inst mux_4 of Muxn_38 @[Interconnect.scala 500:25]
+    mux_4.clock <= clock
+    mux_4.reset <= reset
+    mux_4.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_4.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    io.otrackS[0] <= mux_4.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_4 = bits(cfg.io.out[0], 4, 4) @[Interconnect.scala 510:39]
+    mux_4.io.config <= _mux_io_config_T_4 @[Interconnect.scala 510:23]
 
-  module ConfigMem_11 :
+  module ConfigMem_15 :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<4>[1]}
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<5>[1]}
 
-    wire _regs_WIRE : UInt<4>[1] @[ConfigMem.scala 27:29]
-    _regs_WIRE[0] <= UInt<4>("h0") @[ConfigMem.scala 27:29]
-    reg regs : UInt<4>[1], clock with :
+    wire _regs_WIRE : UInt<5>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<5>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<5>[1], clock with :
       reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
     node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
     node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
     when _T_1 : @[ConfigMem.scala 32:54]
-      node _regs_0_T = bits(io.cfg_data, 3, 0) @[ConfigMem.scala 33:31]
+      node _regs_0_T = bits(io.cfg_data, 4, 0) @[ConfigMem.scala 33:31]
       regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
     io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
 
-  module Muxn_27 :
+  module Muxn_39 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56328,7 +60173,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_28 :
+  module Muxn_40 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56337,7 +60182,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_29 :
+  module Muxn_41 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56346,7 +60191,16 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_30 :
+  module Muxn_42 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_43 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56358,7 +60212,7 @@ circuit vitra :
   module GIB_5 :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
 
     io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
     io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
@@ -56372,11 +60226,11 @@ circuit vitra :
     io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
     io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
     io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    inst cfg of ConfigMem_11 @[Interconnect.scala 490:21]
+    inst cfg of ConfigMem_15 @[Interconnect.scala 490:21]
     cfg.clock <= clock
     cfg.reset <= reset
     node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("hc"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<4>("he"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
     node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
     cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
     node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
@@ -56384,7 +60238,7 @@ circuit vitra :
     cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
     io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
     io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 514:43]
-    inst mux of Muxn_27 @[Interconnect.scala 500:25]
+    inst mux of Muxn_39 @[Interconnect.scala 500:25]
     mux.clock <= clock
     mux.reset <= reset
     mux.io.in[0] <= io.opinNW[0] @[Interconnect.scala 502:63]
@@ -56393,74 +60247,66 @@ circuit vitra :
     node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
     mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
     io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
-    io.ipinSW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
-    inst mux_1 of Muxn_28 @[Interconnect.scala 500:25]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
+    inst mux_1 of Muxn_40 @[Interconnect.scala 500:25]
     mux_1.clock <= clock
     mux_1.reset <= reset
-    mux_1.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux_1.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    reg io_otrackW_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackW_0_REG) @[Interconnect.scala 504:55]
-    io_otrackW_0_REG <= mux_1.io.out @[Interconnect.scala 504:55]
-    io.otrackW[0] <= io_otrackW_0_REG @[Interconnect.scala 504:45]
+    mux_1.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
+    mux_1.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
+    io.ipinSW[0] <= mux_1.io.out @[Interconnect.scala 506:45]
     node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
     mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
-    inst mux_2 of Muxn_29 @[Interconnect.scala 500:25]
+    inst mux_2 of Muxn_41 @[Interconnect.scala 500:25]
     mux_2.clock <= clock
     mux_2.reset <= reset
-    mux_2.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_2.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
-    reg io_otrackN_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackN_0_REG) @[Interconnect.scala 504:55]
-    io_otrackN_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
-    io.otrackN[0] <= io_otrackN_0_REG @[Interconnect.scala 504:45]
+    mux_2.io.in[0] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    mux_2.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
+    reg io_otrackW_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackW_0_REG) @[Interconnect.scala 504:55]
+    io_otrackW_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
+    io.otrackW[0] <= io_otrackW_0_REG @[Interconnect.scala 504:45]
     node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
     mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
-    inst mux_3 of Muxn_30 @[Interconnect.scala 500:25]
+    inst mux_3 of Muxn_42 @[Interconnect.scala 500:25]
     mux_3.clock <= clock
     mux_3.reset <= reset
     mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_3.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    mux_3.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
     reg io_otrackE_0_REG : UInt, clock with :
       reset => (UInt<1>("h0"), io_otrackE_0_REG) @[Interconnect.scala 504:55]
     io_otrackE_0_REG <= mux_3.io.out @[Interconnect.scala 504:55]
     io.otrackE[0] <= io_otrackE_0_REG @[Interconnect.scala 504:45]
     node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
     mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
+    inst mux_4 of Muxn_43 @[Interconnect.scala 500:25]
+    mux_4.clock <= clock
+    mux_4.reset <= reset
+    mux_4.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_4.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    reg io_otrackS_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackS_0_REG) @[Interconnect.scala 504:55]
+    io_otrackS_0_REG <= mux_4.io.out @[Interconnect.scala 504:55]
+    io.otrackS[0] <= io_otrackS_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_4 = bits(cfg.io.out[0], 4, 4) @[Interconnect.scala 510:39]
+    mux_4.io.config <= _mux_io_config_T_4 @[Interconnect.scala 510:23]
 
-  module GIB_6 :
+  module ConfigMem_16 :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[0], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[0], flip opinSE : UInt<16>[0], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<5>[1]}
 
-    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
-    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
-    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
-    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
-    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
-    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
-    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
-    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    io.otrackW[0] <= io.itrackS[0] @[Interconnect.scala 520:41]
-    io.otrackS[0] <= io.itrackW[0] @[Interconnect.scala 520:41]
-
-  module ConfigMem_12 :
-    input clock : Clock
-    input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<3>[1]}
-
-    wire _regs_WIRE : UInt<3>[1] @[ConfigMem.scala 27:29]
-    _regs_WIRE[0] <= UInt<3>("h0") @[ConfigMem.scala 27:29]
-    reg regs : UInt<3>[1], clock with :
+    wire _regs_WIRE : UInt<5>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<5>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<5>[1], clock with :
       reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
     node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
     node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
     when _T_1 : @[ConfigMem.scala 32:54]
-      node _regs_0_T = bits(io.cfg_data, 2, 0) @[ConfigMem.scala 33:31]
+      node _regs_0_T = bits(io.cfg_data, 4, 0) @[ConfigMem.scala 33:31]
       regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
     io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
 
-  module Muxn_31 :
+  module Muxn_44 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56469,7 +60315,7 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_32 :
+  module Muxn_45 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56478,7 +60324,167 @@ circuit vitra :
     node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
     io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
 
-  module Muxn_33 :
+  module Muxn_46 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_47 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_48 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module GIB_6 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+
+    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
+    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
+    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
+    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
+    inst cfg of ConfigMem_16 @[Interconnect.scala 490:21]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<5>("h11"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
+    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
+    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
+    io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 514:43]
+    inst mux of Muxn_44 @[Interconnect.scala 500:25]
+    mux.clock <= clock
+    mux.reset <= reset
+    mux.io.in[0] <= io.opinNW[0] @[Interconnect.scala 502:63]
+    mux.io.in[1] <= io.opinSW[0] @[Interconnect.scala 502:63]
+    io.ipinNE[0] <= mux.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
+    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
+    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
+    inst mux_1 of Muxn_45 @[Interconnect.scala 500:25]
+    mux_1.clock <= clock
+    mux_1.reset <= reset
+    mux_1.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
+    mux_1.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
+    io.ipinSW[0] <= mux_1.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
+    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
+    inst mux_2 of Muxn_46 @[Interconnect.scala 500:25]
+    mux_2.clock <= clock
+    mux_2.reset <= reset
+    mux_2.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    mux_2.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    reg io_otrackW_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackW_0_REG) @[Interconnect.scala 504:55]
+    io_otrackW_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
+    io.otrackW[0] <= io_otrackW_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
+    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
+    inst mux_3 of Muxn_47 @[Interconnect.scala 500:25]
+    mux_3.clock <= clock
+    mux_3.reset <= reset
+    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_3.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    reg io_otrackN_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackN_0_REG) @[Interconnect.scala 504:55]
+    io_otrackN_0_REG <= mux_3.io.out @[Interconnect.scala 504:55]
+    io.otrackN[0] <= io_otrackN_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
+    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
+    inst mux_4 of Muxn_48 @[Interconnect.scala 500:25]
+    mux_4.clock <= clock
+    mux_4.reset <= reset
+    mux_4.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_4.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    reg io_otrackE_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_otrackE_0_REG) @[Interconnect.scala 504:55]
+    io_otrackE_0_REG <= mux_4.io.out @[Interconnect.scala 504:55]
+    io.otrackE[0] <= io_otrackE_0_REG @[Interconnect.scala 504:45]
+    node _mux_io_config_T_4 = bits(cfg.io.out[0], 4, 4) @[Interconnect.scala 510:39]
+    mux_4.io.config <= _mux_io_config_T_4 @[Interconnect.scala 510:23]
+
+  module ConfigMem_17 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<0>, flip cfg_data : UInt<32>, out : UInt<5>[1]}
+
+    wire _regs_WIRE : UInt<5>[1] @[ConfigMem.scala 27:29]
+    _regs_WIRE[0] <= UInt<5>("h0") @[ConfigMem.scala 27:29]
+    reg regs : UInt<5>[1], clock with :
+      reset => (reset, _regs_WIRE) @[ConfigMem.scala 27:21]
+    node _T = eq(io.cfg_addr, UInt<1>("h0")) @[ConfigMem.scala 32:38]
+    node _T_1 = and(io.cfg_en, _T) @[ConfigMem.scala 32:22]
+    when _T_1 : @[ConfigMem.scala 32:54]
+      node _regs_0_T = bits(io.cfg_data, 4, 0) @[ConfigMem.scala 33:31]
+      regs[0] <= _regs_0_T @[ConfigMem.scala 33:17]
+    io.out[0] <= regs[0] @[ConfigMem.scala 52:45]
+
+  module Muxn_49 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_50 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_51 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_52 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
+
+    node _io_out_T = eq(UInt<1>("h1"), io.config) @[Mux.scala 81:61]
+    node _io_out_T_1 = mux(_io_out_T, io.in[1], io.in[0]) @[Mux.scala 81:58]
+    io.out <= _io_out_T_1 @[Multiplexer.scala 20:10]
+
+  module Muxn_53 :
     input clock : Clock
     input reset : Reset
     output io : { flip config : UInt<1>, flip in : UInt<16>[2], out : UInt<16>}
@@ -56490,7 +60496,79 @@ circuit vitra :
   module GIB_7 :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[0], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[0], flip opinSE : UInt<16>[0], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[0], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[2], flip opinNE : UInt<16>[1], ipinSE : UInt<16>[2], flip opinSE : UInt<16>[1], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
+
+    io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
+    io.ipinNE[0] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinNE[1] <= UInt<1>("h0") @[Interconnect.scala 454:20]
+    io.ipinSW[0] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSW[1] <= UInt<1>("h0") @[Interconnect.scala 455:20]
+    io.ipinSE[0] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.ipinSE[1] <= UInt<1>("h0") @[Interconnect.scala 456:20]
+    io.otrackW[0] <= UInt<1>("h0") @[Interconnect.scala 457:21]
+    io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
+    io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
+    io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
+    inst cfg of ConfigMem_17 @[Interconnect.scala 490:21]
+    cfg.clock <= clock
+    cfg.reset <= reset
+    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
+    node _cfg_io_cfg_en_T_1 = eq(UInt<5>("h12"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
+    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
+    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
+    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
+    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
+    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
+    io.ipinNW[0] <= io.opinSE[0] @[Interconnect.scala 514:43]
+    io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 514:43]
+    inst mux of Muxn_49 @[Interconnect.scala 500:25]
+    mux.clock <= clock
+    mux.reset <= reset
+    mux.io.in[0] <= io.opinNW[0] @[Interconnect.scala 502:63]
+    mux.io.in[1] <= io.opinSW[0] @[Interconnect.scala 502:63]
+    io.ipinNE[0] <= mux.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
+    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
+    io.ipinSE[0] <= io.opinNW[0] @[Interconnect.scala 514:43]
+    io.ipinSE[1] <= io.opinNE[0] @[Interconnect.scala 514:43]
+    inst mux_1 of Muxn_50 @[Interconnect.scala 500:25]
+    mux_1.clock <= clock
+    mux_1.reset <= reset
+    mux_1.io.in[0] <= io.opinNE[0] @[Interconnect.scala 502:63]
+    mux_1.io.in[1] <= io.opinSE[0] @[Interconnect.scala 502:63]
+    io.ipinSW[0] <= mux_1.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
+    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
+    inst mux_2 of Muxn_51 @[Interconnect.scala 500:25]
+    mux_2.clock <= clock
+    mux_2.reset <= reset
+    mux_2.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    mux_2.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    io.otrackW[0] <= mux_2.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
+    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
+    inst mux_3 of Muxn_52 @[Interconnect.scala 500:25]
+    mux_3.clock <= clock
+    mux_3.reset <= reset
+    mux_3.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_3.io.in[1] <= io.itrackE[0] @[Interconnect.scala 502:63]
+    io.otrackN[0] <= mux_3.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_3 = bits(cfg.io.out[0], 3, 3) @[Interconnect.scala 510:39]
+    mux_3.io.config <= _mux_io_config_T_3 @[Interconnect.scala 510:23]
+    inst mux_4 of Muxn_53 @[Interconnect.scala 500:25]
+    mux_4.clock <= clock
+    mux_4.reset <= reset
+    mux_4.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
+    mux_4.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
+    io.otrackE[0] <= mux_4.io.out @[Interconnect.scala 506:45]
+    node _mux_io_config_T_4 = bits(cfg.io.out[0], 4, 4) @[Interconnect.scala 510:39]
+    mux_4.io.config <= _mux_io_config_T_4 @[Interconnect.scala 510:23]
+
+  module GIB_8 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[0], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[0], flip opinSE : UInt<16>[0], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
 
     io.ipinNW[0] <= UInt<1>("h0") @[Interconnect.scala 453:20]
     io.ipinNW[1] <= UInt<1>("h0") @[Interconnect.scala 453:20]
@@ -56500,51 +60578,11 @@ circuit vitra :
     io.otrackN[0] <= UInt<1>("h0") @[Interconnect.scala 458:21]
     io.otrackE[0] <= UInt<1>("h0") @[Interconnect.scala 459:21]
     io.otrackS[0] <= UInt<1>("h0") @[Interconnect.scala 460:21]
-    inst cfg of ConfigMem_12 @[Interconnect.scala 490:21]
-    cfg.clock <= clock
-    cfg.reset <= reset
-    node _cfg_io_cfg_en_T = bits(io.cfg_addr, 11, 3) @[Interconnect.scala 491:65]
-    node _cfg_io_cfg_en_T_1 = eq(UInt<5>("h10"), _cfg_io_cfg_en_T) @[Interconnect.scala 491:50]
-    node _cfg_io_cfg_en_T_2 = and(io.cfg_en, _cfg_io_cfg_en_T_1) @[Interconnect.scala 491:32]
-    cfg.io.cfg_en <= _cfg_io_cfg_en_T_2 @[Interconnect.scala 491:19]
-    node _cfg_io_cfg_addr_T = bits(io.cfg_addr, 2, 0) @[Interconnect.scala 492:35]
-    cfg.io.cfg_addr <= _cfg_io_cfg_addr_T @[Interconnect.scala 492:21]
-    cfg.io.cfg_data <= io.cfg_data @[Interconnect.scala 493:21]
-    inst mux of Muxn_31 @[Interconnect.scala 500:25]
-    mux.clock <= clock
-    mux.reset <= reset
-    mux.io.in[0] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    mux.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    reg io_otrackW_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackW_0_REG) @[Interconnect.scala 504:55]
-    io_otrackW_0_REG <= mux.io.out @[Interconnect.scala 504:55]
-    io.otrackW[0] <= io_otrackW_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T = bits(cfg.io.out[0], 0, 0) @[Interconnect.scala 510:39]
-    mux.io.config <= _mux_io_config_T @[Interconnect.scala 510:23]
-    inst mux_1 of Muxn_32 @[Interconnect.scala 500:25]
-    mux_1.clock <= clock
-    mux_1.reset <= reset
-    mux_1.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_1.io.in[1] <= io.itrackS[0] @[Interconnect.scala 502:63]
-    reg io_otrackN_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackN_0_REG) @[Interconnect.scala 504:55]
-    io_otrackN_0_REG <= mux_1.io.out @[Interconnect.scala 504:55]
-    io.otrackN[0] <= io_otrackN_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_1 = bits(cfg.io.out[0], 1, 1) @[Interconnect.scala 510:39]
-    mux_1.io.config <= _mux_io_config_T_1 @[Interconnect.scala 510:23]
-    inst mux_2 of Muxn_33 @[Interconnect.scala 500:25]
-    mux_2.clock <= clock
-    mux_2.reset <= reset
-    mux_2.io.in[0] <= io.itrackW[0] @[Interconnect.scala 502:63]
-    mux_2.io.in[1] <= io.itrackN[0] @[Interconnect.scala 502:63]
-    reg io_otrackS_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_otrackS_0_REG) @[Interconnect.scala 504:55]
-    io_otrackS_0_REG <= mux_2.io.out @[Interconnect.scala 504:55]
-    io.otrackS[0] <= io_otrackS_0_REG @[Interconnect.scala 504:45]
-    node _mux_io_config_T_2 = bits(cfg.io.out[0], 2, 2) @[Interconnect.scala 510:39]
-    mux_2.io.config <= _mux_io_config_T_2 @[Interconnect.scala 510:23]
+    io.ipinNW[1] <= io.opinSW[0] @[Interconnect.scala 520:41]
+    io.otrackW[0] <= io.itrackS[0] @[Interconnect.scala 520:41]
+    io.otrackS[0] <= io.itrackW[0] @[Interconnect.scala 520:41]
 
-  module GIB_8 :
+  module GIB_9 :
     input clock : Clock
     input reset : Reset
     output io : { flip cfg_en : UInt<1>, flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, ipinNW : UInt<16>[2], flip opinNW : UInt<16>[1], ipinNE : UInt<16>[0], flip opinNE : UInt<16>[0], ipinSE : UInt<16>[0], flip opinSE : UInt<16>[0], ipinSW : UInt<16>[2], flip opinSW : UInt<16>[1], flip itrackW : UInt<16>[1], otrackW : UInt<16>[1], flip itrackN : UInt<16>[1], otrackN : UInt<16>[1], flip itrackE : UInt<16>[1], otrackE : UInt<16>[1], flip itrackS : UInt<16>[1], otrackS : UInt<16>[1]}
@@ -56564,18 +60602,18 @@ circuit vitra :
   module CGRA :
     input clock : Clock
     input reset : Reset
-    output io : { flip cfg_en : UInt<1>[1], flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, flip iob_ens : UInt<4>[1], flip en : UInt<1>[1], flip start : UInt<1>[1], done : UInt<1>[1], flip srams : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}[4][1]}
+    output io : { flip cfg_en : UInt<1>[2], flip cfg_addr : UInt<12>, flip cfg_data : UInt<32>, flip iob_ens : UInt<4>[2], flip en : UInt<1>[2], flip start : UInt<1>[2], done : UInt<1>[2], flip srams : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}[4][2]}
 
-    inst iobs_0 of IOB @[MultiTileCGRA.scala 229:25]
+    inst iobs_0 of IOB @[MultiTileCGRA.scala 230:25]
     iobs_0.clock <= clock
     iobs_0.reset <= reset
-    inst iobs_1 of IOB_1 @[MultiTileCGRA.scala 229:25]
+    inst iobs_1 of IOB_1 @[MultiTileCGRA.scala 230:25]
     iobs_1.clock <= clock
     iobs_1.reset <= reset
-    inst iobs_2 of IOB_2 @[MultiTileCGRA.scala 229:25]
+    inst iobs_2 of IOB_2 @[MultiTileCGRA.scala 230:25]
     iobs_2.clock <= clock
     iobs_2.reset <= reset
-    inst iobs_3 of IOB_3 @[MultiTileCGRA.scala 229:25]
+    inst iobs_3 of IOB_3 @[MultiTileCGRA.scala 230:25]
     iobs_3.clock <= clock
     iobs_3.reset <= reset
     inst pes_0 of GPE @[MultiTileCGRA.scala 304:22]
@@ -56584,257 +60622,382 @@ circuit vitra :
     inst pes_1 of GPE_1 @[MultiTileCGRA.scala 304:22]
     pes_1.clock <= clock
     pes_1.reset <= reset
+    inst gibs_0 of GIB @[MultiTileCGRA.scala 392:23]
+    gibs_0.clock <= clock
+    gibs_0.reset <= reset
+    inst gibs_1 of GIB_1 @[MultiTileCGRA.scala 392:23]
+    gibs_1.clock <= clock
+    gibs_1.reset <= reset
+    inst gibs_2 of GIB_2 @[MultiTileCGRA.scala 392:23]
+    gibs_2.clock <= clock
+    gibs_2.reset <= reset
+    inst gibs_3 of GIB_3 @[MultiTileCGRA.scala 392:23]
+    gibs_3.clock <= clock
+    gibs_3.reset <= reset
+    wire done : UInt<1>[4] @[MultiTileCGRA.scala 539:20]
+    node _T = bits(io.iob_ens[0], 0, 0) @[MultiTileCGRA.scala 544:57]
+    node _T_1 = and(io.start[0], _T) @[MultiTileCGRA.scala 544:38]
+    iobs_0.io.start <= _T_1 @[MultiTileCGRA.scala 544:20]
+    node _T_2 = bits(io.iob_ens[0], 0, 0) @[MultiTileCGRA.scala 545:51]
+    node _T_3 = and(io.en[0], _T_2) @[MultiTileCGRA.scala 545:32]
+    iobs_0.io.en <= _T_3 @[MultiTileCGRA.scala 545:17]
+    iobs_0.io.sram <= io.srams[0][0] @[MultiTileCGRA.scala 546:19]
+    node _done_0_T = bits(io.iob_ens[0], 0, 0) @[MultiTileCGRA.scala 547:51]
+    node _done_0_T_1 = bits(_done_0_T, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_0_T_2 = eq(_done_0_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_0_T_3 = or(iobs_0.io.done, _done_0_T_2) @[MultiTileCGRA.scala 547:30]
+    done[0] <= _done_0_T_3 @[MultiTileCGRA.scala 547:15]
+    iobs_0.io.in[0] <= gibs_0.io.ipinNE[0] @[MultiTileCGRA.scala 553:16]
+    iobs_0.io.in[1] <= gibs_1.io.ipinNW[0] @[MultiTileCGRA.scala 557:16]
+    iobs_0.io.in[2] <= gibs_0.io.ipinNE[1] @[MultiTileCGRA.scala 553:16]
+    iobs_0.io.in[3] <= gibs_1.io.ipinNW[1] @[MultiTileCGRA.scala 557:16]
+    gibs_0.io.opinNE[0] <= iobs_0.io.out[0] @[MultiTileCGRA.scala 563:37]
+    gibs_1.io.opinNW[0] <= iobs_0.io.out[0] @[MultiTileCGRA.scala 564:39]
+    node _T_4 = bits(io.iob_ens[0], 1, 1) @[MultiTileCGRA.scala 544:57]
+    node _T_5 = and(io.start[0], _T_4) @[MultiTileCGRA.scala 544:38]
+    iobs_1.io.start <= _T_5 @[MultiTileCGRA.scala 544:20]
+    node _T_6 = bits(io.iob_ens[0], 1, 1) @[MultiTileCGRA.scala 545:51]
+    node _T_7 = and(io.en[0], _T_6) @[MultiTileCGRA.scala 545:32]
+    iobs_1.io.en <= _T_7 @[MultiTileCGRA.scala 545:17]
+    iobs_1.io.sram <= io.srams[0][1] @[MultiTileCGRA.scala 546:19]
+    node _done_1_T = bits(io.iob_ens[0], 1, 1) @[MultiTileCGRA.scala 547:51]
+    node _done_1_T_1 = bits(_done_1_T, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_1_T_2 = eq(_done_1_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_1_T_3 = or(iobs_1.io.done, _done_1_T_2) @[MultiTileCGRA.scala 547:30]
+    done[1] <= _done_1_T_3 @[MultiTileCGRA.scala 547:15]
+    iobs_1.io.in[0] <= gibs_1.io.ipinNE[0] @[MultiTileCGRA.scala 575:16]
+    iobs_1.io.in[2] <= gibs_1.io.ipinNE[1] @[MultiTileCGRA.scala 575:16]
+    gibs_1.io.opinNE[0] <= iobs_1.io.out[0] @[MultiTileCGRA.scala 581:37]
+    node _T_8 = bits(io.iob_ens[0], 2, 2) @[MultiTileCGRA.scala 544:57]
+    node _T_9 = and(io.start[0], _T_8) @[MultiTileCGRA.scala 544:38]
+    iobs_2.io.start <= _T_9 @[MultiTileCGRA.scala 544:20]
+    node _T_10 = bits(io.iob_ens[0], 2, 2) @[MultiTileCGRA.scala 545:51]
+    node _T_11 = and(io.en[0], _T_10) @[MultiTileCGRA.scala 545:32]
+    iobs_2.io.en <= _T_11 @[MultiTileCGRA.scala 545:17]
+    iobs_2.io.sram <= io.srams[0][2] @[MultiTileCGRA.scala 546:19]
+    node _done_2_T = bits(io.iob_ens[0], 2, 2) @[MultiTileCGRA.scala 547:51]
+    node _done_2_T_1 = bits(_done_2_T, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_2_T_2 = eq(_done_2_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_2_T_3 = or(iobs_2.io.done, _done_2_T_2) @[MultiTileCGRA.scala 547:30]
+    done[2] <= _done_2_T_3 @[MultiTileCGRA.scala 547:15]
+    iobs_2.io.in[0] <= gibs_2.io.ipinSE[0] @[MultiTileCGRA.scala 596:16]
+    iobs_2.io.in[1] <= gibs_3.io.ipinSW[0] @[MultiTileCGRA.scala 600:16]
+    iobs_2.io.in[2] <= gibs_2.io.ipinSE[1] @[MultiTileCGRA.scala 596:16]
+    iobs_2.io.in[3] <= gibs_3.io.ipinSW[1] @[MultiTileCGRA.scala 600:16]
+    gibs_2.io.opinSE[0] <= iobs_2.io.out[0] @[MultiTileCGRA.scala 606:37]
+    gibs_3.io.opinSW[0] <= iobs_2.io.out[0] @[MultiTileCGRA.scala 607:41]
+    node _T_12 = bits(io.iob_ens[0], 3, 3) @[MultiTileCGRA.scala 544:57]
+    node _T_13 = and(io.start[0], _T_12) @[MultiTileCGRA.scala 544:38]
+    iobs_3.io.start <= _T_13 @[MultiTileCGRA.scala 544:20]
+    node _T_14 = bits(io.iob_ens[0], 3, 3) @[MultiTileCGRA.scala 545:51]
+    node _T_15 = and(io.en[0], _T_14) @[MultiTileCGRA.scala 545:32]
+    iobs_3.io.en <= _T_15 @[MultiTileCGRA.scala 545:17]
+    iobs_3.io.sram <= io.srams[0][3] @[MultiTileCGRA.scala 546:19]
+    node _done_3_T = bits(io.iob_ens[0], 3, 3) @[MultiTileCGRA.scala 547:51]
+    node _done_3_T_1 = bits(_done_3_T, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_3_T_2 = eq(_done_3_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_3_T_3 = or(iobs_3.io.done, _done_3_T_2) @[MultiTileCGRA.scala 547:30]
+    done[3] <= _done_3_T_3 @[MultiTileCGRA.scala 547:15]
+    iobs_3.io.in[0] <= gibs_3.io.ipinSE[0] @[MultiTileCGRA.scala 620:16]
+    iobs_3.io.in[2] <= gibs_3.io.ipinSE[1] @[MultiTileCGRA.scala 620:16]
+    gibs_3.io.opinSE[0] <= iobs_3.io.out[0] @[MultiTileCGRA.scala 631:37]
+    node io_done_0_lo = cat(done[1], done[0]) @[MultiTileCGRA.scala 646:35]
+    node io_done_0_hi = cat(done[3], done[2]) @[MultiTileCGRA.scala 646:35]
+    node _io_done_0_T = cat(io_done_0_hi, io_done_0_lo) @[MultiTileCGRA.scala 646:35]
+    reg io_done_0_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_done_0_REG) @[MultiTileCGRA.scala 646:29]
+    io_done_0_REG <= _io_done_0_T @[MultiTileCGRA.scala 646:29]
+    io.done[0] <= io_done_0_REG @[MultiTileCGRA.scala 646:19]
+    pes_0.io.start <= io.start[0] @[MultiTileCGRA.scala 657:29]
+    pes_0.io.en <= io.en[0] @[MultiTileCGRA.scala 658:26]
+    pes_0.io.in[0] <= gibs_0.io.ipinSE[0] @[MultiTileCGRA.scala 668:40]
+    pes_0.io.in[4] <= gibs_0.io.ipinSE[1] @[MultiTileCGRA.scala 668:40]
+    pes_0.io.in[1] <= gibs_1.io.ipinSW[0] @[MultiTileCGRA.scala 677:40]
+    pes_0.io.in[5] <= gibs_1.io.ipinSW[1] @[MultiTileCGRA.scala 677:40]
+    pes_0.io.in[2] <= gibs_2.io.ipinNE[0] @[MultiTileCGRA.scala 687:59]
+    pes_0.io.in[6] <= gibs_2.io.ipinNE[1] @[MultiTileCGRA.scala 687:59]
+    pes_0.io.in[3] <= gibs_3.io.ipinNW[0] @[MultiTileCGRA.scala 696:40]
+    pes_0.io.in[7] <= gibs_3.io.ipinNW[1] @[MultiTileCGRA.scala 696:40]
+    gibs_0.io.opinSE[0] <= pes_0.io.out[0] @[MultiTileCGRA.scala 706:39]
+    gibs_1.io.opinSW[0] <= pes_0.io.out[0] @[MultiTileCGRA.scala 711:39]
+    gibs_2.io.opinNE[0] <= pes_0.io.out[0] @[MultiTileCGRA.scala 716:39]
+    gibs_3.io.opinNW[0] <= pes_0.io.out[0] @[MultiTileCGRA.scala 721:39]
+    pes_1.io.start <= io.start[0] @[MultiTileCGRA.scala 657:29]
+    pes_1.io.en <= io.en[0] @[MultiTileCGRA.scala 658:26]
+    pes_1.io.in[0] <= gibs_1.io.ipinSE[0] @[MultiTileCGRA.scala 668:40]
+    pes_1.io.in[4] <= gibs_1.io.ipinSE[1] @[MultiTileCGRA.scala 668:40]
+    pes_1.io.in[2] <= gibs_3.io.ipinNE[0] @[MultiTileCGRA.scala 687:59]
+    pes_1.io.in[6] <= gibs_3.io.ipinNE[1] @[MultiTileCGRA.scala 687:59]
+    gibs_1.io.opinSE[0] <= pes_1.io.out[0] @[MultiTileCGRA.scala 706:39]
+    gibs_3.io.opinNE[0] <= pes_1.io.out[0] @[MultiTileCGRA.scala 716:39]
+    gibs_0.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 746:55]
+    gibs_0.io.itrackS[0] <= gibs_2.io.otrackN[0] @[MultiTileCGRA.scala 748:18]
+    gibs_0.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 781:55]
+    gibs_0.io.itrackE[0] <= gibs_1.io.otrackW[0] @[MultiTileCGRA.scala 783:18]
+    gibs_1.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 746:55]
+    gibs_1.io.itrackS[0] <= gibs_3.io.otrackN[0] @[MultiTileCGRA.scala 748:18]
+    gibs_1.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 789:55]
+    gibs_1.io.itrackW[0] <= gibs_0.io.otrackE[0] @[MultiTileCGRA.scala 791:18]
+    gibs_2.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 754:55]
+    gibs_2.io.itrackN[0] <= gibs_0.io.otrackS[0] @[MultiTileCGRA.scala 756:18]
+    gibs_2.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 781:55]
+    gibs_2.io.itrackE[0] <= gibs_3.io.otrackW[0] @[MultiTileCGRA.scala 783:18]
+    gibs_3.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 754:55]
+    gibs_3.io.itrackN[0] <= gibs_1.io.otrackS[0] @[MultiTileCGRA.scala 756:18]
+    gibs_3.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 789:55]
+    gibs_3.io.itrackW[0] <= gibs_2.io.otrackE[0] @[MultiTileCGRA.scala 791:18]
+    iobs_0.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1024:23]
+    iobs_0.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_0.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    iobs_1.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1024:23]
+    iobs_1.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_1.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    iobs_2.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1024:23]
+    iobs_2.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_2.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    iobs_3.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1024:23]
+    iobs_3.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_3.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    gibs_0.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1035:73]
+    gibs_0.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_0.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    pes_0.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1040:70]
+    pes_0.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1042:70]
+    pes_0.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1043:70]
+    gibs_1.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1035:73]
+    gibs_1.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_1.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    pes_1.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1040:70]
+    pes_1.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1042:70]
+    pes_1.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1043:70]
+    gibs_2.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1035:73]
+    gibs_2.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_2.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    gibs_3.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1035:73]
+    gibs_3.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_3.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    inst iobs_4 of IOB_4 @[MultiTileCGRA.scala 230:25]
+    iobs_4.clock <= clock
+    iobs_4.reset <= reset
+    inst iobs_5 of IOB_5 @[MultiTileCGRA.scala 230:25]
+    iobs_5.clock <= clock
+    iobs_5.reset <= reset
+    inst iobs_6 of IOB_6 @[MultiTileCGRA.scala 230:25]
+    iobs_6.clock <= clock
+    iobs_6.reset <= reset
+    inst iobs_7 of IOB_7 @[MultiTileCGRA.scala 230:25]
+    iobs_7.clock <= clock
+    iobs_7.reset <= reset
     inst pes_2 of GPE_2 @[MultiTileCGRA.scala 304:22]
     pes_2.clock <= clock
     pes_2.reset <= reset
     inst pes_3 of GPE_3 @[MultiTileCGRA.scala 304:22]
     pes_3.clock <= clock
     pes_3.reset <= reset
-    inst gibs_0 of GIB @[MultiTileCGRA.scala 393:23]
-    gibs_0.clock <= clock
-    gibs_0.reset <= reset
-    inst gibs_1 of GIB_1 @[MultiTileCGRA.scala 393:23]
-    gibs_1.clock <= clock
-    gibs_1.reset <= reset
-    inst gibs_2 of GIB_2 @[MultiTileCGRA.scala 393:23]
-    gibs_2.clock <= clock
-    gibs_2.reset <= reset
-    inst gibs_3 of GIB_3 @[MultiTileCGRA.scala 393:23]
-    gibs_3.clock <= clock
-    gibs_3.reset <= reset
-    inst gibs_4 of GIB_4 @[MultiTileCGRA.scala 393:23]
+    inst gibs_4 of GIB_4 @[MultiTileCGRA.scala 392:23]
     gibs_4.clock <= clock
     gibs_4.reset <= reset
-    inst gibs_5 of GIB_5 @[MultiTileCGRA.scala 393:23]
+    inst gibs_5 of GIB_5 @[MultiTileCGRA.scala 392:23]
     gibs_5.clock <= clock
     gibs_5.reset <= reset
-    wire done : UInt<1>[4] @[MultiTileCGRA.scala 540:20]
-    node _T = bits(io.iob_ens[0], 0, 0) @[MultiTileCGRA.scala 545:57]
-    node _T_1 = and(io.start[0], _T) @[MultiTileCGRA.scala 545:38]
-    iobs_0.io.start <= _T_1 @[MultiTileCGRA.scala 545:20]
-    node _T_2 = bits(io.iob_ens[0], 0, 0) @[MultiTileCGRA.scala 546:51]
-    node _T_3 = and(io.en[0], _T_2) @[MultiTileCGRA.scala 546:32]
-    iobs_0.io.en <= _T_3 @[MultiTileCGRA.scala 546:17]
-    iobs_0.io.sram <= io.srams[0][0] @[MultiTileCGRA.scala 547:19]
-    node _done_0_T = bits(io.iob_ens[0], 0, 0) @[MultiTileCGRA.scala 548:51]
-    node _done_0_T_1 = bits(_done_0_T, 0, 0) @[MultiTileCGRA.scala 548:55]
-    node _done_0_T_2 = eq(_done_0_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 548:34]
-    node _done_0_T_3 = or(iobs_0.io.done, _done_0_T_2) @[MultiTileCGRA.scala 548:30]
-    done[0] <= _done_0_T_3 @[MultiTileCGRA.scala 548:15]
-    iobs_0.io.in[0] <= gibs_0.io.ipinNE[0] @[MultiTileCGRA.scala 554:16]
-    iobs_0.io.in[1] <= gibs_1.io.ipinNW[0] @[MultiTileCGRA.scala 558:16]
-    iobs_0.io.in[2] <= gibs_0.io.ipinNE[1] @[MultiTileCGRA.scala 554:16]
-    iobs_0.io.in[3] <= gibs_1.io.ipinNW[1] @[MultiTileCGRA.scala 558:16]
-    gibs_0.io.opinNE[0] <= iobs_0.io.out[0] @[MultiTileCGRA.scala 564:37]
-    gibs_1.io.opinNW[0] <= iobs_0.io.out[0] @[MultiTileCGRA.scala 565:39]
-    node _T_4 = bits(io.iob_ens[0], 1, 1) @[MultiTileCGRA.scala 545:57]
-    node _T_5 = and(io.start[0], _T_4) @[MultiTileCGRA.scala 545:38]
-    iobs_1.io.start <= _T_5 @[MultiTileCGRA.scala 545:20]
-    node _T_6 = bits(io.iob_ens[0], 1, 1) @[MultiTileCGRA.scala 546:51]
-    node _T_7 = and(io.en[0], _T_6) @[MultiTileCGRA.scala 546:32]
-    iobs_1.io.en <= _T_7 @[MultiTileCGRA.scala 546:17]
-    iobs_1.io.sram <= io.srams[0][1] @[MultiTileCGRA.scala 547:19]
-    node _done_1_T = bits(io.iob_ens[0], 1, 1) @[MultiTileCGRA.scala 548:51]
-    node _done_1_T_1 = bits(_done_1_T, 0, 0) @[MultiTileCGRA.scala 548:55]
-    node _done_1_T_2 = eq(_done_1_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 548:34]
-    node _done_1_T_3 = or(iobs_1.io.done, _done_1_T_2) @[MultiTileCGRA.scala 548:30]
-    done[1] <= _done_1_T_3 @[MultiTileCGRA.scala 548:15]
-    iobs_1.io.in[0] <= gibs_1.io.ipinNE[0] @[MultiTileCGRA.scala 576:16]
-    iobs_1.io.in[2] <= gibs_1.io.ipinNE[1] @[MultiTileCGRA.scala 576:16]
-    gibs_1.io.opinNE[0] <= iobs_1.io.out[0] @[MultiTileCGRA.scala 582:37]
-    node _T_8 = bits(io.iob_ens[0], 2, 2) @[MultiTileCGRA.scala 545:57]
-    node _T_9 = and(io.start[0], _T_8) @[MultiTileCGRA.scala 545:38]
-    iobs_2.io.start <= _T_9 @[MultiTileCGRA.scala 545:20]
-    node _T_10 = bits(io.iob_ens[0], 2, 2) @[MultiTileCGRA.scala 546:51]
-    node _T_11 = and(io.en[0], _T_10) @[MultiTileCGRA.scala 546:32]
-    iobs_2.io.en <= _T_11 @[MultiTileCGRA.scala 546:17]
-    iobs_2.io.sram <= io.srams[0][2] @[MultiTileCGRA.scala 547:19]
-    node _done_2_T = bits(io.iob_ens[0], 2, 2) @[MultiTileCGRA.scala 548:51]
-    node _done_2_T_1 = bits(_done_2_T, 0, 0) @[MultiTileCGRA.scala 548:55]
-    node _done_2_T_2 = eq(_done_2_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 548:34]
-    node _done_2_T_3 = or(iobs_2.io.done, _done_2_T_2) @[MultiTileCGRA.scala 548:30]
-    done[2] <= _done_2_T_3 @[MultiTileCGRA.scala 548:15]
-    iobs_2.io.in[0] <= gibs_4.io.ipinSE[0] @[MultiTileCGRA.scala 597:16]
-    iobs_2.io.in[1] <= gibs_5.io.ipinSW[0] @[MultiTileCGRA.scala 601:16]
-    iobs_2.io.in[2] <= gibs_4.io.ipinSE[1] @[MultiTileCGRA.scala 597:16]
-    iobs_2.io.in[3] <= gibs_5.io.ipinSW[1] @[MultiTileCGRA.scala 601:16]
-    gibs_4.io.opinSE[0] <= iobs_2.io.out[0] @[MultiTileCGRA.scala 607:37]
-    gibs_5.io.opinSW[0] <= iobs_2.io.out[0] @[MultiTileCGRA.scala 608:41]
-    node _T_12 = bits(io.iob_ens[0], 3, 3) @[MultiTileCGRA.scala 545:57]
-    node _T_13 = and(io.start[0], _T_12) @[MultiTileCGRA.scala 545:38]
-    iobs_3.io.start <= _T_13 @[MultiTileCGRA.scala 545:20]
-    node _T_14 = bits(io.iob_ens[0], 3, 3) @[MultiTileCGRA.scala 546:51]
-    node _T_15 = and(io.en[0], _T_14) @[MultiTileCGRA.scala 546:32]
-    iobs_3.io.en <= _T_15 @[MultiTileCGRA.scala 546:17]
-    iobs_3.io.sram <= io.srams[0][3] @[MultiTileCGRA.scala 547:19]
-    node _done_3_T = bits(io.iob_ens[0], 3, 3) @[MultiTileCGRA.scala 548:51]
-    node _done_3_T_1 = bits(_done_3_T, 0, 0) @[MultiTileCGRA.scala 548:55]
-    node _done_3_T_2 = eq(_done_3_T_1, UInt<1>("h0")) @[MultiTileCGRA.scala 548:34]
-    node _done_3_T_3 = or(iobs_3.io.done, _done_3_T_2) @[MultiTileCGRA.scala 548:30]
-    done[3] <= _done_3_T_3 @[MultiTileCGRA.scala 548:15]
-    iobs_3.io.in[0] <= gibs_5.io.ipinSE[0] @[MultiTileCGRA.scala 621:16]
-    iobs_3.io.in[2] <= gibs_5.io.ipinSE[1] @[MultiTileCGRA.scala 621:16]
-    gibs_5.io.opinSE[0] <= iobs_3.io.out[0] @[MultiTileCGRA.scala 632:37]
-    node io_done_0_lo = cat(done[1], done[0]) @[MultiTileCGRA.scala 647:35]
-    node io_done_0_hi = cat(done[3], done[2]) @[MultiTileCGRA.scala 647:35]
-    node _io_done_0_T = cat(io_done_0_hi, io_done_0_lo) @[MultiTileCGRA.scala 647:35]
-    reg io_done_0_REG : UInt, clock with :
-      reset => (UInt<1>("h0"), io_done_0_REG) @[MultiTileCGRA.scala 647:29]
-    io_done_0_REG <= _io_done_0_T @[MultiTileCGRA.scala 647:29]
-    io.done[0] <= io_done_0_REG @[MultiTileCGRA.scala 647:19]
-    pes_0.io.start <= io.start[0] @[MultiTileCGRA.scala 658:29]
-    pes_0.io.en <= io.en[0] @[MultiTileCGRA.scala 659:26]
-    pes_0.io.in[0] <= gibs_0.io.ipinSE[0] @[MultiTileCGRA.scala 669:40]
-    pes_0.io.in[4] <= gibs_0.io.ipinSE[1] @[MultiTileCGRA.scala 669:40]
-    pes_0.io.in[1] <= gibs_1.io.ipinSW[0] @[MultiTileCGRA.scala 678:40]
-    pes_0.io.in[5] <= gibs_1.io.ipinSW[1] @[MultiTileCGRA.scala 678:40]
-    pes_0.io.in[2] <= gibs_2.io.ipinNE[0] @[MultiTileCGRA.scala 688:59]
-    pes_0.io.in[6] <= gibs_2.io.ipinNE[1] @[MultiTileCGRA.scala 688:59]
-    pes_0.io.in[3] <= gibs_3.io.ipinNW[0] @[MultiTileCGRA.scala 697:40]
-    pes_0.io.in[7] <= gibs_3.io.ipinNW[1] @[MultiTileCGRA.scala 697:40]
-    gibs_0.io.opinSE[0] <= pes_0.io.out[0] @[MultiTileCGRA.scala 707:39]
-    gibs_3.io.opinNW[0] <= pes_0.io.out[0] @[MultiTileCGRA.scala 722:39]
-    pes_1.io.start <= io.start[0] @[MultiTileCGRA.scala 658:29]
-    pes_1.io.en <= io.en[0] @[MultiTileCGRA.scala 659:26]
-    pes_1.io.in[0] <= gibs_1.io.ipinSE[0] @[MultiTileCGRA.scala 669:40]
-    pes_1.io.in[4] <= gibs_1.io.ipinSE[1] @[MultiTileCGRA.scala 669:40]
-    pes_1.io.in[2] <= gibs_3.io.ipinNE[0] @[MultiTileCGRA.scala 688:59]
-    pes_1.io.in[6] <= gibs_3.io.ipinNE[1] @[MultiTileCGRA.scala 688:59]
-    gibs_1.io.opinSE[0] <= pes_1.io.out[0] @[MultiTileCGRA.scala 707:39]
-    pes_2.io.start <= io.start[0] @[MultiTileCGRA.scala 658:29]
-    pes_2.io.en <= io.en[0] @[MultiTileCGRA.scala 659:26]
-    pes_2.io.in[0] <= gibs_2.io.ipinSE[0] @[MultiTileCGRA.scala 669:40]
-    pes_2.io.in[4] <= gibs_2.io.ipinSE[1] @[MultiTileCGRA.scala 669:40]
-    pes_2.io.in[1] <= gibs_3.io.ipinSW[0] @[MultiTileCGRA.scala 678:40]
-    pes_2.io.in[5] <= gibs_3.io.ipinSW[1] @[MultiTileCGRA.scala 678:40]
-    pes_2.io.in[2] <= gibs_4.io.ipinNE[0] @[MultiTileCGRA.scala 688:59]
-    pes_2.io.in[6] <= gibs_4.io.ipinNE[1] @[MultiTileCGRA.scala 688:59]
-    pes_2.io.in[3] <= gibs_5.io.ipinNW[0] @[MultiTileCGRA.scala 697:40]
-    pes_2.io.in[7] <= gibs_5.io.ipinNW[1] @[MultiTileCGRA.scala 697:40]
-    gibs_2.io.opinSE[0] <= pes_2.io.out[0] @[MultiTileCGRA.scala 707:39]
-    gibs_5.io.opinNW[0] <= pes_2.io.out[0] @[MultiTileCGRA.scala 722:39]
-    pes_3.io.start <= io.start[0] @[MultiTileCGRA.scala 658:29]
-    pes_3.io.en <= io.en[0] @[MultiTileCGRA.scala 659:26]
-    pes_3.io.in[0] <= gibs_3.io.ipinSE[0] @[MultiTileCGRA.scala 669:40]
-    pes_3.io.in[4] <= gibs_3.io.ipinSE[1] @[MultiTileCGRA.scala 669:40]
-    pes_3.io.in[2] <= gibs_5.io.ipinNE[0] @[MultiTileCGRA.scala 688:59]
-    pes_3.io.in[6] <= gibs_5.io.ipinNE[1] @[MultiTileCGRA.scala 688:59]
-    gibs_3.io.opinSE[0] <= pes_3.io.out[0] @[MultiTileCGRA.scala 707:39]
-    gibs_0.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 747:55]
-    gibs_0.io.itrackS[0] <= gibs_2.io.otrackN[0] @[MultiTileCGRA.scala 749:18]
-    gibs_0.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 782:55]
-    gibs_0.io.itrackE[0] <= gibs_1.io.otrackW[0] @[MultiTileCGRA.scala 784:18]
-    gibs_1.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 747:55]
-    gibs_1.io.itrackS[0] <= gibs_3.io.otrackN[0] @[MultiTileCGRA.scala 749:18]
-    gibs_1.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 790:55]
-    gibs_1.io.itrackW[0] <= gibs_0.io.otrackE[0] @[MultiTileCGRA.scala 792:18]
-    gibs_2.io.itrackN[0] <= gibs_0.io.otrackS[0] @[MultiTileCGRA.scala 764:18]
-    gibs_2.io.itrackS[0] <= gibs_4.io.otrackN[0] @[MultiTileCGRA.scala 770:18]
-    gibs_2.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 782:55]
-    gibs_2.io.itrackE[0] <= gibs_3.io.otrackW[0] @[MultiTileCGRA.scala 784:18]
-    gibs_3.io.itrackN[0] <= gibs_1.io.otrackS[0] @[MultiTileCGRA.scala 764:18]
-    gibs_3.io.itrackS[0] <= gibs_5.io.otrackN[0] @[MultiTileCGRA.scala 770:18]
-    gibs_3.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 790:55]
-    gibs_3.io.itrackW[0] <= gibs_2.io.otrackE[0] @[MultiTileCGRA.scala 792:18]
-    gibs_4.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 755:55]
-    gibs_4.io.itrackN[0] <= gibs_2.io.otrackS[0] @[MultiTileCGRA.scala 757:18]
-    gibs_4.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 782:55]
-    gibs_4.io.itrackE[0] <= gibs_5.io.otrackW[0] @[MultiTileCGRA.scala 784:18]
-    gibs_5.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 755:55]
-    gibs_5.io.itrackN[0] <= gibs_3.io.otrackS[0] @[MultiTileCGRA.scala 757:18]
-    gibs_5.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 790:55]
-    gibs_5.io.itrackW[0] <= gibs_4.io.otrackE[0] @[MultiTileCGRA.scala 792:18]
-    inst gibs_6 of GIB_6 @[MultiTileCGRA.scala 847:23]
+    inst gibs_6 of GIB_6 @[MultiTileCGRA.scala 392:23]
     gibs_6.clock <= clock
     gibs_6.reset <= reset
-    inst gibs_7 of GIB_7 @[MultiTileCGRA.scala 847:23]
+    inst gibs_7 of GIB_7 @[MultiTileCGRA.scala 392:23]
     gibs_7.clock <= clock
     gibs_7.reset <= reset
-    inst gibs_8 of GIB_8 @[MultiTileCGRA.scala 847:23]
+    iobs_1.io.in[1] <= gibs_4.io.ipinNW[0] @[MultiTileCGRA.scala 433:18]
+    iobs_1.io.in[3] <= gibs_4.io.ipinNW[1] @[MultiTileCGRA.scala 433:18]
+    gibs_4.io.opinNW[0] <= iobs_1.io.out[0] @[MultiTileCGRA.scala 439:40]
+    iobs_3.io.in[1] <= gibs_6.io.ipinSW[0] @[MultiTileCGRA.scala 449:18]
+    iobs_3.io.in[3] <= gibs_6.io.ipinSW[1] @[MultiTileCGRA.scala 449:18]
+    gibs_6.io.opinSW[0] <= iobs_3.io.out[0] @[MultiTileCGRA.scala 455:40]
+    pes_1.io.in[1] <= gibs_4.io.ipinSW[0] @[MultiTileCGRA.scala 478:33]
+    pes_1.io.in[5] <= gibs_4.io.ipinSW[1] @[MultiTileCGRA.scala 478:33]
+    pes_1.io.in[3] <= gibs_6.io.ipinNW[0] @[MultiTileCGRA.scala 487:33]
+    pes_1.io.in[7] <= gibs_6.io.ipinNW[1] @[MultiTileCGRA.scala 487:33]
+    gibs_4.io.opinSW[0] <= pes_1.io.out[0] @[MultiTileCGRA.scala 496:39]
+    gibs_6.io.opinNW[0] <= pes_1.io.out[0] @[MultiTileCGRA.scala 501:39]
+    gibs_6.io.itrackW[0] <= gibs_3.io.otrackE[0] @[MultiTileCGRA.scala 514:16]
+    gibs_3.io.itrackE[0] <= gibs_6.io.otrackW[0] @[MultiTileCGRA.scala 521:16]
+    gibs_4.io.itrackW[0] <= gibs_1.io.otrackE[0] @[MultiTileCGRA.scala 514:16]
+    gibs_1.io.itrackE[0] <= gibs_4.io.otrackW[0] @[MultiTileCGRA.scala 521:16]
+    wire done_1 : UInt<1>[4] @[MultiTileCGRA.scala 539:20]
+    node _T_16 = bits(io.iob_ens[1], 0, 0) @[MultiTileCGRA.scala 544:57]
+    node _T_17 = and(io.start[1], _T_16) @[MultiTileCGRA.scala 544:38]
+    iobs_4.io.start <= _T_17 @[MultiTileCGRA.scala 544:20]
+    node _T_18 = bits(io.iob_ens[1], 0, 0) @[MultiTileCGRA.scala 545:51]
+    node _T_19 = and(io.en[1], _T_18) @[MultiTileCGRA.scala 545:32]
+    iobs_4.io.en <= _T_19 @[MultiTileCGRA.scala 545:17]
+    iobs_4.io.sram <= io.srams[1][0] @[MultiTileCGRA.scala 546:19]
+    node _done_0_T_4 = bits(io.iob_ens[1], 0, 0) @[MultiTileCGRA.scala 547:51]
+    node _done_0_T_5 = bits(_done_0_T_4, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_0_T_6 = eq(_done_0_T_5, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_0_T_7 = or(iobs_4.io.done, _done_0_T_6) @[MultiTileCGRA.scala 547:30]
+    done_1[0] <= _done_0_T_7 @[MultiTileCGRA.scala 547:15]
+    iobs_4.io.in[0] <= gibs_4.io.ipinNE[0] @[MultiTileCGRA.scala 553:16]
+    iobs_4.io.in[1] <= gibs_5.io.ipinNW[0] @[MultiTileCGRA.scala 557:16]
+    iobs_4.io.in[2] <= gibs_4.io.ipinNE[1] @[MultiTileCGRA.scala 553:16]
+    iobs_4.io.in[3] <= gibs_5.io.ipinNW[1] @[MultiTileCGRA.scala 557:16]
+    gibs_4.io.opinNE[0] <= iobs_4.io.out[0] @[MultiTileCGRA.scala 563:37]
+    gibs_5.io.opinNW[0] <= iobs_4.io.out[0] @[MultiTileCGRA.scala 564:39]
+    node _T_20 = bits(io.iob_ens[1], 1, 1) @[MultiTileCGRA.scala 544:57]
+    node _T_21 = and(io.start[1], _T_20) @[MultiTileCGRA.scala 544:38]
+    iobs_5.io.start <= _T_21 @[MultiTileCGRA.scala 544:20]
+    node _T_22 = bits(io.iob_ens[1], 1, 1) @[MultiTileCGRA.scala 545:51]
+    node _T_23 = and(io.en[1], _T_22) @[MultiTileCGRA.scala 545:32]
+    iobs_5.io.en <= _T_23 @[MultiTileCGRA.scala 545:17]
+    iobs_5.io.sram <= io.srams[1][1] @[MultiTileCGRA.scala 546:19]
+    node _done_1_T_4 = bits(io.iob_ens[1], 1, 1) @[MultiTileCGRA.scala 547:51]
+    node _done_1_T_5 = bits(_done_1_T_4, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_1_T_6 = eq(_done_1_T_5, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_1_T_7 = or(iobs_5.io.done, _done_1_T_6) @[MultiTileCGRA.scala 547:30]
+    done_1[1] <= _done_1_T_7 @[MultiTileCGRA.scala 547:15]
+    iobs_5.io.in[0] <= gibs_5.io.ipinNE[0] @[MultiTileCGRA.scala 575:16]
+    iobs_5.io.in[2] <= gibs_5.io.ipinNE[1] @[MultiTileCGRA.scala 575:16]
+    gibs_5.io.opinNE[0] <= iobs_5.io.out[0] @[MultiTileCGRA.scala 581:37]
+    node _T_24 = bits(io.iob_ens[1], 2, 2) @[MultiTileCGRA.scala 544:57]
+    node _T_25 = and(io.start[1], _T_24) @[MultiTileCGRA.scala 544:38]
+    iobs_6.io.start <= _T_25 @[MultiTileCGRA.scala 544:20]
+    node _T_26 = bits(io.iob_ens[1], 2, 2) @[MultiTileCGRA.scala 545:51]
+    node _T_27 = and(io.en[1], _T_26) @[MultiTileCGRA.scala 545:32]
+    iobs_6.io.en <= _T_27 @[MultiTileCGRA.scala 545:17]
+    iobs_6.io.sram <= io.srams[1][2] @[MultiTileCGRA.scala 546:19]
+    node _done_2_T_4 = bits(io.iob_ens[1], 2, 2) @[MultiTileCGRA.scala 547:51]
+    node _done_2_T_5 = bits(_done_2_T_4, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_2_T_6 = eq(_done_2_T_5, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_2_T_7 = or(iobs_6.io.done, _done_2_T_6) @[MultiTileCGRA.scala 547:30]
+    done_1[2] <= _done_2_T_7 @[MultiTileCGRA.scala 547:15]
+    iobs_6.io.in[0] <= gibs_6.io.ipinSE[0] @[MultiTileCGRA.scala 596:16]
+    iobs_6.io.in[1] <= gibs_7.io.ipinSW[0] @[MultiTileCGRA.scala 600:16]
+    iobs_6.io.in[2] <= gibs_6.io.ipinSE[1] @[MultiTileCGRA.scala 596:16]
+    iobs_6.io.in[3] <= gibs_7.io.ipinSW[1] @[MultiTileCGRA.scala 600:16]
+    gibs_6.io.opinSE[0] <= iobs_6.io.out[0] @[MultiTileCGRA.scala 606:37]
+    gibs_7.io.opinSW[0] <= iobs_6.io.out[0] @[MultiTileCGRA.scala 607:41]
+    node _T_28 = bits(io.iob_ens[1], 3, 3) @[MultiTileCGRA.scala 544:57]
+    node _T_29 = and(io.start[1], _T_28) @[MultiTileCGRA.scala 544:38]
+    iobs_7.io.start <= _T_29 @[MultiTileCGRA.scala 544:20]
+    node _T_30 = bits(io.iob_ens[1], 3, 3) @[MultiTileCGRA.scala 545:51]
+    node _T_31 = and(io.en[1], _T_30) @[MultiTileCGRA.scala 545:32]
+    iobs_7.io.en <= _T_31 @[MultiTileCGRA.scala 545:17]
+    iobs_7.io.sram <= io.srams[1][3] @[MultiTileCGRA.scala 546:19]
+    node _done_3_T_4 = bits(io.iob_ens[1], 3, 3) @[MultiTileCGRA.scala 547:51]
+    node _done_3_T_5 = bits(_done_3_T_4, 0, 0) @[MultiTileCGRA.scala 547:55]
+    node _done_3_T_6 = eq(_done_3_T_5, UInt<1>("h0")) @[MultiTileCGRA.scala 547:34]
+    node _done_3_T_7 = or(iobs_7.io.done, _done_3_T_6) @[MultiTileCGRA.scala 547:30]
+    done_1[3] <= _done_3_T_7 @[MultiTileCGRA.scala 547:15]
+    iobs_7.io.in[0] <= gibs_7.io.ipinSE[0] @[MultiTileCGRA.scala 620:16]
+    iobs_7.io.in[2] <= gibs_7.io.ipinSE[1] @[MultiTileCGRA.scala 620:16]
+    gibs_7.io.opinSE[0] <= iobs_7.io.out[0] @[MultiTileCGRA.scala 631:37]
+    node io_done_1_lo = cat(done_1[1], done_1[0]) @[MultiTileCGRA.scala 646:35]
+    node io_done_1_hi = cat(done_1[3], done_1[2]) @[MultiTileCGRA.scala 646:35]
+    node _io_done_1_T = cat(io_done_1_hi, io_done_1_lo) @[MultiTileCGRA.scala 646:35]
+    reg io_done_1_REG : UInt, clock with :
+      reset => (UInt<1>("h0"), io_done_1_REG) @[MultiTileCGRA.scala 646:29]
+    io_done_1_REG <= _io_done_1_T @[MultiTileCGRA.scala 646:29]
+    io.done[1] <= io_done_1_REG @[MultiTileCGRA.scala 646:19]
+    pes_2.io.start <= io.start[1] @[MultiTileCGRA.scala 657:29]
+    pes_2.io.en <= io.en[1] @[MultiTileCGRA.scala 658:26]
+    pes_2.io.in[0] <= gibs_4.io.ipinSE[0] @[MultiTileCGRA.scala 668:40]
+    pes_2.io.in[4] <= gibs_4.io.ipinSE[1] @[MultiTileCGRA.scala 668:40]
+    pes_2.io.in[1] <= gibs_5.io.ipinSW[0] @[MultiTileCGRA.scala 677:40]
+    pes_2.io.in[5] <= gibs_5.io.ipinSW[1] @[MultiTileCGRA.scala 677:40]
+    pes_2.io.in[2] <= gibs_6.io.ipinNE[0] @[MultiTileCGRA.scala 687:59]
+    pes_2.io.in[6] <= gibs_6.io.ipinNE[1] @[MultiTileCGRA.scala 687:59]
+    pes_2.io.in[3] <= gibs_7.io.ipinNW[0] @[MultiTileCGRA.scala 696:40]
+    pes_2.io.in[7] <= gibs_7.io.ipinNW[1] @[MultiTileCGRA.scala 696:40]
+    gibs_4.io.opinSE[0] <= pes_2.io.out[0] @[MultiTileCGRA.scala 706:39]
+    gibs_5.io.opinSW[0] <= pes_2.io.out[0] @[MultiTileCGRA.scala 711:39]
+    gibs_6.io.opinNE[0] <= pes_2.io.out[0] @[MultiTileCGRA.scala 716:39]
+    gibs_7.io.opinNW[0] <= pes_2.io.out[0] @[MultiTileCGRA.scala 721:39]
+    pes_3.io.start <= io.start[1] @[MultiTileCGRA.scala 657:29]
+    pes_3.io.en <= io.en[1] @[MultiTileCGRA.scala 658:26]
+    pes_3.io.in[0] <= gibs_5.io.ipinSE[0] @[MultiTileCGRA.scala 668:40]
+    pes_3.io.in[4] <= gibs_5.io.ipinSE[1] @[MultiTileCGRA.scala 668:40]
+    pes_3.io.in[2] <= gibs_7.io.ipinNE[0] @[MultiTileCGRA.scala 687:59]
+    pes_3.io.in[6] <= gibs_7.io.ipinNE[1] @[MultiTileCGRA.scala 687:59]
+    gibs_5.io.opinSE[0] <= pes_3.io.out[0] @[MultiTileCGRA.scala 706:39]
+    gibs_7.io.opinNE[0] <= pes_3.io.out[0] @[MultiTileCGRA.scala 716:39]
+    gibs_4.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 746:55]
+    gibs_4.io.itrackS[0] <= gibs_6.io.otrackN[0] @[MultiTileCGRA.scala 748:18]
+    gibs_4.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 781:55]
+    gibs_4.io.itrackE[0] <= gibs_5.io.otrackW[0] @[MultiTileCGRA.scala 783:18]
+    gibs_5.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 746:55]
+    gibs_5.io.itrackS[0] <= gibs_7.io.otrackN[0] @[MultiTileCGRA.scala 748:18]
+    gibs_5.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 789:55]
+    gibs_5.io.itrackW[0] <= gibs_4.io.otrackE[0] @[MultiTileCGRA.scala 791:18]
+    gibs_6.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 754:55]
+    gibs_6.io.itrackN[0] <= gibs_4.io.otrackS[0] @[MultiTileCGRA.scala 756:18]
+    gibs_6.io.itrackW[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 781:55]
+    gibs_6.io.itrackE[0] <= gibs_7.io.otrackW[0] @[MultiTileCGRA.scala 783:18]
+    gibs_7.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 754:55]
+    gibs_7.io.itrackN[0] <= gibs_5.io.otrackS[0] @[MultiTileCGRA.scala 756:18]
+    gibs_7.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 789:55]
+    gibs_7.io.itrackW[0] <= gibs_6.io.otrackE[0] @[MultiTileCGRA.scala 791:18]
+    inst gibs_8 of GIB_8 @[MultiTileCGRA.scala 846:23]
     gibs_8.clock <= clock
     gibs_8.reset <= reset
-    iobs_1.io.in[1] <= gibs_6.io.ipinNW[0] @[MultiTileCGRA.scala 879:18]
-    iobs_1.io.in[3] <= gibs_6.io.ipinNW[1] @[MultiTileCGRA.scala 879:18]
-    gibs_6.io.opinNW[0] <= iobs_1.io.out[0] @[MultiTileCGRA.scala 885:40]
-    iobs_3.io.in[1] <= gibs_8.io.ipinSW[0] @[MultiTileCGRA.scala 895:18]
-    iobs_3.io.in[3] <= gibs_8.io.ipinSW[1] @[MultiTileCGRA.scala 895:18]
-    gibs_8.io.opinSW[0] <= iobs_3.io.out[0] @[MultiTileCGRA.scala 901:40]
-    pes_3.io.in[1] <= gibs_7.io.ipinSW[0] @[MultiTileCGRA.scala 924:33]
-    pes_3.io.in[5] <= gibs_7.io.ipinSW[1] @[MultiTileCGRA.scala 924:33]
-    pes_3.io.in[3] <= gibs_8.io.ipinNW[0] @[MultiTileCGRA.scala 933:33]
-    pes_3.io.in[7] <= gibs_8.io.ipinNW[1] @[MultiTileCGRA.scala 933:33]
-    gibs_8.io.opinNW[0] <= pes_3.io.out[0] @[MultiTileCGRA.scala 947:39]
-    pes_1.io.in[1] <= gibs_6.io.ipinSW[0] @[MultiTileCGRA.scala 924:33]
-    pes_1.io.in[5] <= gibs_6.io.ipinSW[1] @[MultiTileCGRA.scala 924:33]
-    pes_1.io.in[3] <= gibs_7.io.ipinNW[0] @[MultiTileCGRA.scala 933:33]
-    pes_1.io.in[7] <= gibs_7.io.ipinNW[1] @[MultiTileCGRA.scala 933:33]
-    gibs_7.io.opinNW[0] <= pes_1.io.out[0] @[MultiTileCGRA.scala 947:39]
-    gibs_8.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 960:53]
-    gibs_8.io.itrackW[0] <= gibs_5.io.otrackE[0] @[MultiTileCGRA.scala 962:16]
-    gibs_5.io.itrackE[0] <= gibs_8.io.otrackW[0] @[MultiTileCGRA.scala 969:16]
-    gibs_7.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 960:53]
-    gibs_7.io.itrackW[0] <= gibs_3.io.otrackE[0] @[MultiTileCGRA.scala 962:16]
-    gibs_3.io.itrackE[0] <= gibs_7.io.otrackW[0] @[MultiTileCGRA.scala 969:16]
-    gibs_6.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 960:53]
-    gibs_6.io.itrackW[0] <= gibs_1.io.otrackE[0] @[MultiTileCGRA.scala 962:16]
-    gibs_1.io.itrackE[0] <= gibs_6.io.otrackW[0] @[MultiTileCGRA.scala 969:16]
-    gibs_6.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 984:55]
-    gibs_6.io.itrackS[0] <= gibs_7.io.otrackN[0] @[MultiTileCGRA.scala 986:18]
-    gibs_7.io.itrackN[0] <= gibs_6.io.otrackS[0] @[MultiTileCGRA.scala 1001:18]
-    gibs_7.io.itrackS[0] <= gibs_8.io.otrackN[0] @[MultiTileCGRA.scala 1007:18]
-    gibs_8.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 992:55]
-    gibs_8.io.itrackN[0] <= gibs_7.io.otrackS[0] @[MultiTileCGRA.scala 994:18]
-    iobs_0.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1025:23]
-    iobs_0.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1027:23]
-    iobs_0.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1028:23]
-    iobs_1.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1025:23]
-    iobs_1.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1027:23]
-    iobs_1.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1028:23]
-    iobs_2.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1025:23]
-    iobs_2.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1027:23]
-    iobs_2.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1028:23]
-    iobs_3.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1025:23]
-    iobs_3.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1027:23]
-    iobs_3.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1028:23]
-    gibs_0.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1036:73]
-    gibs_0.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1038:73]
-    gibs_0.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1039:73]
-    pes_0.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1041:70]
-    pes_0.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1043:70]
-    pes_0.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1044:70]
-    gibs_1.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1036:73]
-    gibs_1.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1038:73]
-    gibs_1.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1039:73]
-    pes_1.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1041:70]
-    pes_1.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1043:70]
-    pes_1.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1044:70]
-    gibs_6.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1049:89]
-    gibs_6.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1050:89]
-    gibs_6.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1051:89]
-    gibs_2.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1036:73]
-    gibs_2.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1038:73]
-    gibs_2.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1039:73]
-    pes_2.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1041:70]
-    pes_2.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1043:70]
-    pes_2.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1044:70]
-    gibs_3.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1036:73]
-    gibs_3.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1038:73]
-    gibs_3.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1039:73]
-    pes_3.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1041:70]
-    pes_3.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1043:70]
-    pes_3.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1044:70]
-    gibs_7.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1049:89]
-    gibs_7.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1050:89]
-    gibs_7.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1051:89]
-    gibs_4.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1036:73]
-    gibs_4.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1038:73]
-    gibs_4.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1039:73]
-    gibs_5.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1036:73]
-    gibs_5.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1038:73]
-    gibs_5.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1039:73]
-    gibs_8.io.cfg_en <= io.cfg_en[0] @[MultiTileCGRA.scala 1049:89]
-    gibs_8.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1050:89]
-    gibs_8.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1051:89]
+    inst gibs_9 of GIB_9 @[MultiTileCGRA.scala 846:23]
+    gibs_9.clock <= clock
+    gibs_9.reset <= reset
+    iobs_5.io.in[1] <= gibs_8.io.ipinNW[0] @[MultiTileCGRA.scala 878:18]
+    iobs_5.io.in[3] <= gibs_8.io.ipinNW[1] @[MultiTileCGRA.scala 878:18]
+    gibs_8.io.opinNW[0] <= iobs_5.io.out[0] @[MultiTileCGRA.scala 884:40]
+    iobs_7.io.in[1] <= gibs_9.io.ipinSW[0] @[MultiTileCGRA.scala 894:18]
+    iobs_7.io.in[3] <= gibs_9.io.ipinSW[1] @[MultiTileCGRA.scala 894:18]
+    gibs_9.io.opinSW[0] <= iobs_7.io.out[0] @[MultiTileCGRA.scala 900:40]
+    pes_3.io.in[1] <= gibs_8.io.ipinSW[0] @[MultiTileCGRA.scala 923:33]
+    pes_3.io.in[5] <= gibs_8.io.ipinSW[1] @[MultiTileCGRA.scala 923:33]
+    pes_3.io.in[3] <= gibs_9.io.ipinNW[0] @[MultiTileCGRA.scala 932:33]
+    pes_3.io.in[7] <= gibs_9.io.ipinNW[1] @[MultiTileCGRA.scala 932:33]
+    gibs_8.io.opinSW[0] <= pes_3.io.out[0] @[MultiTileCGRA.scala 941:39]
+    gibs_9.io.opinNW[0] <= pes_3.io.out[0] @[MultiTileCGRA.scala 946:39]
+    gibs_9.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 959:53]
+    gibs_9.io.itrackW[0] <= gibs_7.io.otrackE[0] @[MultiTileCGRA.scala 961:16]
+    gibs_7.io.itrackE[0] <= gibs_9.io.otrackW[0] @[MultiTileCGRA.scala 968:16]
+    gibs_8.io.itrackE[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 959:53]
+    gibs_8.io.itrackW[0] <= gibs_5.io.otrackE[0] @[MultiTileCGRA.scala 961:16]
+    gibs_5.io.itrackE[0] <= gibs_8.io.otrackW[0] @[MultiTileCGRA.scala 968:16]
+    gibs_8.io.itrackN[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 983:55]
+    gibs_8.io.itrackS[0] <= gibs_9.io.otrackN[0] @[MultiTileCGRA.scala 985:18]
+    gibs_9.io.itrackS[0] <= UInt<1>("h0") @[MultiTileCGRA.scala 991:55]
+    gibs_9.io.itrackN[0] <= gibs_8.io.otrackS[0] @[MultiTileCGRA.scala 993:18]
+    iobs_4.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1024:23]
+    iobs_4.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_4.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    iobs_5.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1024:23]
+    iobs_5.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_5.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    iobs_6.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1024:23]
+    iobs_6.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_6.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    iobs_7.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1024:23]
+    iobs_7.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1026:23]
+    iobs_7.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1027:23]
+    gibs_4.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1035:73]
+    gibs_4.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_4.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    pes_2.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1040:70]
+    pes_2.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1042:70]
+    pes_2.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1043:70]
+    gibs_5.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1035:73]
+    gibs_5.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_5.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    pes_3.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1040:70]
+    pes_3.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1042:70]
+    pes_3.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1043:70]
+    gibs_8.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1048:89]
+    gibs_8.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1049:89]
+    gibs_8.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1050:89]
+    gibs_6.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1035:73]
+    gibs_6.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_6.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    gibs_7.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1035:73]
+    gibs_7.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1037:73]
+    gibs_7.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1038:73]
+    gibs_9.io.cfg_en <= io.cfg_en[1] @[MultiTileCGRA.scala 1048:89]
+    gibs_9.io.cfg_addr <= io.cfg_addr @[MultiTileCGRA.scala 1049:89]
+    gibs_9.io.cfg_data <= io.cfg_data @[MultiTileCGRA.scala 1050:89]
 
   module ConfigController :
     input clock : Clock
@@ -56880,7 +61043,7 @@ circuit vitra :
       else :
         node _T_3 = eq(UInt<2>("h2"), state) @[ConfigController.scala 48:16]
         when _T_3 : @[ConfigController.scala 48:16]
-          node _T_4 = geq(waitCnt, UInt<3>("h6")) @[ConfigController.scala 61:20]
+          node _T_4 = geq(waitCnt, UInt<3>("h4")) @[ConfigController.scala 61:20]
           when _T_4 : @[ConfigController.scala 61:35]
             state <= UInt<2>("h0") @[ConfigController.scala 62:15]
             done <= UInt<1>("h1") @[ConfigController.scala 63:14]
@@ -56991,7 +61154,7 @@ circuit vitra :
   module SRAMBanksCoalesce :
     input clock : Clock
     input reset : Reset
-    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[2], coal : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<13>, flip din : UInt<16>, dout : UInt<16>}[2]}
+    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[2], coal : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<13>, flip din : UInt<16>, dout : UInt<16>}[2]}
 
     node _inSel_T = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
     node _inSel_T_1 = eq(_inSel_T, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 49:78]
@@ -57067,7 +61230,159 @@ circuit vitra :
   module SRAMBanksCoalesce_1 :
     input clock : Clock
     input reset : Reset
-    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[2], coal : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<13>, flip din : UInt<16>, dout : UInt<16>}[2]}
+    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[2], coal : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<13>, flip din : UInt<16>, dout : UInt<16>}[2]}
+
+    node _inSel_T = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_1 = eq(_inSel_T, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_0 = and(io.coal[0].en, _inSel_T_1) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _inSel_T_2 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_3 = eq(_inSel_T_2, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_1 = and(io.coal[1].en, _inSel_T_3) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _io_orig_0_en_T = mux(inSel_1, io.coal[1].en, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_en_T_1 = mux(inSel_0, io.coal[0].en, _io_orig_0_en_T) @[Mux.scala 101:16]
+    io.orig[0].en <= _io_orig_0_en_T_1 @[MultiTileSRAMCoalesce.scala 50:21]
+    node _io_orig_0_we_T = mux(inSel_1, io.coal[1].we, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_we_T_1 = mux(inSel_0, io.coal[0].we, _io_orig_0_we_T) @[Mux.scala 101:16]
+    io.orig[0].we <= _io_orig_0_we_T_1 @[MultiTileSRAMCoalesce.scala 51:21]
+    node _io_orig_0_addr_T = bits(io.coal[0].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_0_addr_T_1 = bits(io.coal[1].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_0_addr_T_2 = mux(inSel_1, _io_orig_0_addr_T_1, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_addr_T_3 = mux(inSel_0, _io_orig_0_addr_T, _io_orig_0_addr_T_2) @[Mux.scala 101:16]
+    io.orig[0].addr <= _io_orig_0_addr_T_3 @[MultiTileSRAMCoalesce.scala 52:23]
+    node _io_orig_0_din_T = mux(inSel_1, io.coal[1].din, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_din_T_1 = mux(inSel_0, io.coal[0].din, _io_orig_0_din_T) @[Mux.scala 101:16]
+    io.orig[0].din <= _io_orig_0_din_T_1 @[MultiTileSRAMCoalesce.scala 53:22]
+    node _outSel_T = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_1 = eq(_outSel_T, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_2 = and(io.coal[0].en, _outSel_T_1) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_0 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_0) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_0 <= _outSel_T_2 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _outSel_T_3 = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_4 = eq(_outSel_T_3, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_5 = and(io.coal[0].en, _outSel_T_4) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_1) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_1 <= _outSel_T_5 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _io_coal_0_dout_T = mux(outSel_1, io.orig[1].dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_coal_0_dout_T_1 = mux(outSel_0, io.orig[0].dout, _io_coal_0_dout_T) @[Mux.scala 101:16]
+    io.coal[0].dout <= _io_coal_0_dout_T_1 @[MultiTileSRAMCoalesce.scala 56:23]
+    node _inSel_T_4 = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_5 = eq(_inSel_T_4, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_0_1 = and(io.coal[0].en, _inSel_T_5) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _inSel_T_6 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_7 = eq(_inSel_T_6, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_1_1 = and(io.coal[1].en, _inSel_T_7) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _io_orig_1_en_T = mux(inSel_1_1, io.coal[1].en, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_en_T_1 = mux(inSel_0_1, io.coal[0].en, _io_orig_1_en_T) @[Mux.scala 101:16]
+    io.orig[1].en <= _io_orig_1_en_T_1 @[MultiTileSRAMCoalesce.scala 50:21]
+    node _io_orig_1_we_T = mux(inSel_1_1, io.coal[1].we, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_we_T_1 = mux(inSel_0_1, io.coal[0].we, _io_orig_1_we_T) @[Mux.scala 101:16]
+    io.orig[1].we <= _io_orig_1_we_T_1 @[MultiTileSRAMCoalesce.scala 51:21]
+    node _io_orig_1_addr_T = bits(io.coal[0].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_1_addr_T_1 = bits(io.coal[1].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_1_addr_T_2 = mux(inSel_1_1, _io_orig_1_addr_T_1, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_addr_T_3 = mux(inSel_0_1, _io_orig_1_addr_T, _io_orig_1_addr_T_2) @[Mux.scala 101:16]
+    io.orig[1].addr <= _io_orig_1_addr_T_3 @[MultiTileSRAMCoalesce.scala 52:23]
+    node _io_orig_1_din_T = mux(inSel_1_1, io.coal[1].din, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_din_T_1 = mux(inSel_0_1, io.coal[0].din, _io_orig_1_din_T) @[Mux.scala 101:16]
+    io.orig[1].din <= _io_orig_1_din_T_1 @[MultiTileSRAMCoalesce.scala 53:22]
+    node _outSel_T_6 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_7 = eq(_outSel_T_6, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_8 = and(io.coal[1].en, _outSel_T_7) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_0_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_0_1) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_0_1 <= _outSel_T_8 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _outSel_T_9 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_10 = eq(_outSel_T_9, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_11 = and(io.coal[1].en, _outSel_T_10) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_1_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_1_1) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_1_1 <= _outSel_T_11 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _io_coal_1_dout_T = mux(outSel_1_1, io.orig[1].dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_coal_1_dout_T_1 = mux(outSel_0_1, io.orig[0].dout, _io_coal_1_dout_T) @[Mux.scala 101:16]
+    io.coal[1].dout <= _io_coal_1_dout_T_1 @[MultiTileSRAMCoalesce.scala 56:23]
+
+  module SRAMBanksCoalesce_2 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[2], coal : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<13>, flip din : UInt<16>, dout : UInt<16>}[2]}
+
+    node _inSel_T = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_1 = eq(_inSel_T, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_0 = and(io.coal[0].en, _inSel_T_1) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _inSel_T_2 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_3 = eq(_inSel_T_2, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_1 = and(io.coal[1].en, _inSel_T_3) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _io_orig_0_en_T = mux(inSel_1, io.coal[1].en, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_en_T_1 = mux(inSel_0, io.coal[0].en, _io_orig_0_en_T) @[Mux.scala 101:16]
+    io.orig[0].en <= _io_orig_0_en_T_1 @[MultiTileSRAMCoalesce.scala 50:21]
+    node _io_orig_0_we_T = mux(inSel_1, io.coal[1].we, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_we_T_1 = mux(inSel_0, io.coal[0].we, _io_orig_0_we_T) @[Mux.scala 101:16]
+    io.orig[0].we <= _io_orig_0_we_T_1 @[MultiTileSRAMCoalesce.scala 51:21]
+    node _io_orig_0_addr_T = bits(io.coal[0].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_0_addr_T_1 = bits(io.coal[1].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_0_addr_T_2 = mux(inSel_1, _io_orig_0_addr_T_1, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_addr_T_3 = mux(inSel_0, _io_orig_0_addr_T, _io_orig_0_addr_T_2) @[Mux.scala 101:16]
+    io.orig[0].addr <= _io_orig_0_addr_T_3 @[MultiTileSRAMCoalesce.scala 52:23]
+    node _io_orig_0_din_T = mux(inSel_1, io.coal[1].din, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_0_din_T_1 = mux(inSel_0, io.coal[0].din, _io_orig_0_din_T) @[Mux.scala 101:16]
+    io.orig[0].din <= _io_orig_0_din_T_1 @[MultiTileSRAMCoalesce.scala 53:22]
+    node _outSel_T = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_1 = eq(_outSel_T, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_2 = and(io.coal[0].en, _outSel_T_1) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_0 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_0) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_0 <= _outSel_T_2 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _outSel_T_3 = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_4 = eq(_outSel_T_3, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_5 = and(io.coal[0].en, _outSel_T_4) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_1) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_1 <= _outSel_T_5 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _io_coal_0_dout_T = mux(outSel_1, io.orig[1].dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_coal_0_dout_T_1 = mux(outSel_0, io.orig[0].dout, _io_coal_0_dout_T) @[Mux.scala 101:16]
+    io.coal[0].dout <= _io_coal_0_dout_T_1 @[MultiTileSRAMCoalesce.scala 56:23]
+    node _inSel_T_4 = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_5 = eq(_inSel_T_4, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_0_1 = and(io.coal[0].en, _inSel_T_5) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _inSel_T_6 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
+    node _inSel_T_7 = eq(_inSel_T_6, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 49:78]
+    node inSel_1_1 = and(io.coal[1].en, _inSel_T_7) @[MultiTileSRAMCoalesce.scala 49:42]
+    node _io_orig_1_en_T = mux(inSel_1_1, io.coal[1].en, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_en_T_1 = mux(inSel_0_1, io.coal[0].en, _io_orig_1_en_T) @[Mux.scala 101:16]
+    io.orig[1].en <= _io_orig_1_en_T_1 @[MultiTileSRAMCoalesce.scala 50:21]
+    node _io_orig_1_we_T = mux(inSel_1_1, io.coal[1].we, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_we_T_1 = mux(inSel_0_1, io.coal[0].we, _io_orig_1_we_T) @[Mux.scala 101:16]
+    io.orig[1].we <= _io_orig_1_we_T_1 @[MultiTileSRAMCoalesce.scala 51:21]
+    node _io_orig_1_addr_T = bits(io.coal[0].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_1_addr_T_1 = bits(io.coal[1].addr, 11, 0) @[MultiTileSRAMCoalesce.scala 52:101]
+    node _io_orig_1_addr_T_2 = mux(inSel_1_1, _io_orig_1_addr_T_1, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_addr_T_3 = mux(inSel_0_1, _io_orig_1_addr_T, _io_orig_1_addr_T_2) @[Mux.scala 101:16]
+    io.orig[1].addr <= _io_orig_1_addr_T_3 @[MultiTileSRAMCoalesce.scala 52:23]
+    node _io_orig_1_din_T = mux(inSel_1_1, io.coal[1].din, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_orig_1_din_T_1 = mux(inSel_0_1, io.coal[0].din, _io_orig_1_din_T) @[Mux.scala 101:16]
+    io.orig[1].din <= _io_orig_1_din_T_1 @[MultiTileSRAMCoalesce.scala 53:22]
+    node _outSel_T_6 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_7 = eq(_outSel_T_6, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_8 = and(io.coal[1].en, _outSel_T_7) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_0_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_0_1) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_0_1 <= _outSel_T_8 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _outSel_T_9 = bits(io.coal[1].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 55:49]
+    node _outSel_T_10 = eq(_outSel_T_9, UInt<1>("h1")) @[MultiTileSRAMCoalesce.scala 55:76]
+    node _outSel_T_11 = and(io.coal[1].en, _outSel_T_10) @[MultiTileSRAMCoalesce.scala 55:31]
+    reg outSel_1_1 : UInt<1>, clock with :
+      reset => (UInt<1>("h0"), outSel_1_1) @[MultiTileSRAMCoalesce.scala 55:16]
+    outSel_1_1 <= _outSel_T_11 @[MultiTileSRAMCoalesce.scala 55:16]
+    node _io_coal_1_dout_T = mux(outSel_1_1, io.orig[1].dout, UInt<1>("h0")) @[Mux.scala 101:16]
+    node _io_coal_1_dout_T_1 = mux(outSel_0_1, io.orig[0].dout, _io_coal_1_dout_T) @[Mux.scala 101:16]
+    io.coal[1].dout <= _io_coal_1_dout_T_1 @[MultiTileSRAMCoalesce.scala 56:23]
+
+  module SRAMBanksCoalesce_3 :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[2], coal : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<13>, flip din : UInt<16>, dout : UInt<16>}[2]}
 
     node _inSel_T = bits(io.coal[0].addr, 12, 12) @[MultiTileSRAMCoalesce.scala 49:51]
     node _inSel_T_1 = eq(_inSel_T, UInt<1>("h0")) @[MultiTileSRAMCoalesce.scala 49:78]
@@ -57143,7 +61458,7 @@ circuit vitra :
   module MultiTileSRAMCoalesce :
     input clock : Clock
     input reset : Reset
-    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[4], coal : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}[4][1]}
+    output io : { flip orig : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[8], coal : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<15>, flip din : UInt<16>, dout : UInt<16>}[4][2]}
 
     inst group of SRAMBanksCoalesce @[MultiTileSRAMCoalesce.scala 100:25]
     group.clock <= clock
@@ -57175,8 +61490,98 @@ circuit vitra :
     group_1.io.coal[1].addr <= io.coal[0][3].addr @[MultiTileSRAMCoalesce.scala 104:26]
     group_1.io.coal[1].we <= io.coal[0][3].we @[MultiTileSRAMCoalesce.scala 104:26]
     group_1.io.coal[1].en <= io.coal[0][3].en @[MultiTileSRAMCoalesce.scala 104:26]
+    inst group_2 of SRAMBanksCoalesce_2 @[MultiTileSRAMCoalesce.scala 100:25]
+    group_2.clock <= clock
+    group_2.reset <= reset
+    group_2.io.orig[0] <= io.orig[4] @[MultiTileSRAMCoalesce.scala 103:26]
+    io.coal[1][0].dout <= group_2.io.coal[0].dout @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[0].din <= io.coal[1][0].din @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[0].addr <= io.coal[1][0].addr @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[0].we <= io.coal[1][0].we @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[0].en <= io.coal[1][0].en @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.orig[1] <= io.orig[5] @[MultiTileSRAMCoalesce.scala 103:26]
+    io.coal[1][1].dout <= group_2.io.coal[1].dout @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[1].din <= io.coal[1][1].din @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[1].addr <= io.coal[1][1].addr @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[1].we <= io.coal[1][1].we @[MultiTileSRAMCoalesce.scala 104:26]
+    group_2.io.coal[1].en <= io.coal[1][1].en @[MultiTileSRAMCoalesce.scala 104:26]
+    inst group_3 of SRAMBanksCoalesce_3 @[MultiTileSRAMCoalesce.scala 100:25]
+    group_3.clock <= clock
+    group_3.reset <= reset
+    group_3.io.orig[0] <= io.orig[6] @[MultiTileSRAMCoalesce.scala 103:26]
+    io.coal[1][2].dout <= group_3.io.coal[0].dout @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[0].din <= io.coal[1][2].din @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[0].addr <= io.coal[1][2].addr @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[0].we <= io.coal[1][2].we @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[0].en <= io.coal[1][2].en @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.orig[1] <= io.orig[7] @[MultiTileSRAMCoalesce.scala 103:26]
+    io.coal[1][3].dout <= group_3.io.coal[1].dout @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[1].din <= io.coal[1][3].din @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[1].addr <= io.coal[1][3].addr @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[1].we <= io.coal[1][3].we @[MultiTileSRAMCoalesce.scala 104:26]
+    group_3.io.coal[1].en <= io.coal[1][3].en @[MultiTileSRAMCoalesce.scala 104:26]
 
   module TileStateCtrl :
+    input clock : Clock
+    input reset : Reset
+    output io : { flip cfgStartReq : UInt<1>, flip cfgDoneIn : UInt<1>, flip exeStartReq : UInt<1>, flip exeIobEnReq : UInt<4>, flip exeDoneIn : UInt<1>, cfgDone : UInt<1>, exeDone : UInt<1>, exeStartP : UInt<1>, exeIobEn : UInt<4>, exeEn : UInt<1>}
+
+    reg exeIobEnReg : UInt<4>, clock with :
+      reset => (reset, UInt<4>("h0")) @[VitraCGRAController.scala 44:28]
+    reg tile_state : UInt<3>, clock with :
+      reset => (reset, UInt<3>("h0")) @[VitraCGRAController.scala 49:27]
+    node _T = eq(UInt<3>("h0"), tile_state) @[VitraCGRAController.scala 51:21]
+    when _T : @[VitraCGRAController.scala 51:21]
+      when io.cfgStartReq : @[VitraCGRAController.scala 53:27]
+        tile_state <= UInt<3>("h1") @[VitraCGRAController.scala 54:23]
+      else :
+        when io.exeStartReq : @[VitraCGRAController.scala 56:32]
+          tile_state <= UInt<3>("h4") @[VitraCGRAController.scala 57:21]
+          exeIobEnReg <= io.exeIobEnReq @[VitraCGRAController.scala 58:21]
+    else :
+      node _T_1 = eq(UInt<3>("h1"), tile_state) @[VitraCGRAController.scala 51:21]
+      when _T_1 : @[VitraCGRAController.scala 51:21]
+        tile_state <= UInt<3>("h2") @[VitraCGRAController.scala 63:18]
+      else :
+        node _T_2 = eq(UInt<3>("h2"), tile_state) @[VitraCGRAController.scala 51:21]
+        when _T_2 : @[VitraCGRAController.scala 51:21]
+          when io.cfgDoneIn : @[VitraCGRAController.scala 66:25]
+            tile_state <= UInt<3>("h0") @[VitraCGRAController.scala 67:20]
+          else :
+            when io.exeStartReq : @[VitraCGRAController.scala 69:32]
+              exeIobEnReg <= io.exeIobEnReq @[VitraCGRAController.scala 70:21]
+              tile_state <= UInt<3>("h3") @[VitraCGRAController.scala 71:20]
+        else :
+          node _T_3 = eq(UInt<3>("h3"), tile_state) @[VitraCGRAController.scala 51:21]
+          when _T_3 : @[VitraCGRAController.scala 51:21]
+            when io.cfgDoneIn : @[VitraCGRAController.scala 76:25]
+              tile_state <= UInt<3>("h4") @[VitraCGRAController.scala 77:19]
+          else :
+            node _T_4 = eq(UInt<3>("h4"), tile_state) @[VitraCGRAController.scala 51:21]
+            when _T_4 : @[VitraCGRAController.scala 51:21]
+              tile_state <= UInt<3>("h5") @[VitraCGRAController.scala 82:18]
+            else :
+              node _T_5 = eq(UInt<3>("h5"), tile_state) @[VitraCGRAController.scala 51:21]
+              when _T_5 : @[VitraCGRAController.scala 51:21]
+                when io.exeDoneIn : @[VitraCGRAController.scala 85:25]
+                  tile_state <= UInt<3>("h0") @[VitraCGRAController.scala 86:20]
+    node _io_cfgDone_T = neq(tile_state, UInt<3>("h1")) @[VitraCGRAController.scala 96:30]
+    node _io_cfgDone_T_1 = neq(tile_state, UInt<3>("h2")) @[VitraCGRAController.scala 96:57]
+    node _io_cfgDone_T_2 = and(_io_cfgDone_T, _io_cfgDone_T_1) @[VitraCGRAController.scala 96:44]
+    io.cfgDone <= _io_cfgDone_T_2 @[VitraCGRAController.scala 96:17]
+    node _io_exeDone_T = neq(tile_state, UInt<3>("h3")) @[VitraCGRAController.scala 97:30]
+    node _io_exeDone_T_1 = neq(tile_state, UInt<3>("h4")) @[VitraCGRAController.scala 97:57]
+    node _io_exeDone_T_2 = and(_io_exeDone_T, _io_exeDone_T_1) @[VitraCGRAController.scala 97:44]
+    node _io_exeDone_T_3 = neq(tile_state, UInt<3>("h5")) @[VitraCGRAController.scala 97:85]
+    node _io_exeDone_T_4 = and(_io_exeDone_T_2, _io_exeDone_T_3) @[VitraCGRAController.scala 97:72]
+    io.exeDone <= _io_exeDone_T_4 @[VitraCGRAController.scala 97:17]
+    node _io_exeStartP_T = eq(tile_state, UInt<3>("h4")) @[VitraCGRAController.scala 99:30]
+    io.exeStartP <= _io_exeStartP_T @[VitraCGRAController.scala 99:17]
+    node _io_exeEn_T = eq(tile_state, UInt<3>("h5")) @[VitraCGRAController.scala 100:30]
+    io.exeEn <= _io_exeEn_T @[VitraCGRAController.scala 100:17]
+    io.exeIobEn <= exeIobEnReg @[VitraCGRAController.scala 101:17]
+
+  module TileStateCtrl_1 :
     input clock : Clock
     input reset : Reset
     output io : { flip cfgStartReq : UInt<1>, flip cfgDoneIn : UInt<1>, flip exeStartReq : UInt<1>, flip exeIobEnReq : UInt<4>, flip exeDoneIn : UInt<1>, cfgDone : UInt<1>, exeDone : UInt<1>, exeStartP : UInt<1>, exeIobEn : UInt<4>, exeEn : UInt<1>}
@@ -57239,7 +61644,7 @@ circuit vitra :
   module VitraCGRAController :
     input clock : Clock
     input reset : Reset
-    output io : { flip s_axilite : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, strb : UInt<1>}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { resp : UInt<2>}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, resp : UInt<2>}}}, flip srams_iob : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[4], flip sram_cfg : { flip en : UInt<1>, flip we : UInt<1>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}}
+    output io : { flip s_axilite : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, strb : UInt<1>}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { resp : UInt<2>}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, resp : UInt<2>}}}, flip srams_iob : { flip en : UInt<1>, flip we : UInt<2>, flip addr : UInt<12>, flip din : UInt<16>, dout : UInt<16>}[8], flip sram_cfg : { flip en : UInt<1>, flip we : UInt<8>, flip addr : UInt<9>, flip din : UInt<64>, dout : UInt<64>}}
 
     reg reg_cfg_base_addr_0 : UInt<8>, clock with :
       reset => (reset, UInt<8>("h0")) @[VitraCGRAController.scala 159:67]
@@ -57273,10 +61678,18 @@ circuit vitra :
     cgra.io.srams[0][1] <= sram_coalesce_iob.io.coal[0][1] @[VitraCGRAController.scala 248:21]
     cgra.io.srams[0][2] <= sram_coalesce_iob.io.coal[0][2] @[VitraCGRAController.scala 248:21]
     cgra.io.srams[0][3] <= sram_coalesce_iob.io.coal[0][3] @[VitraCGRAController.scala 248:21]
+    cgra.io.srams[1][0] <= sram_coalesce_iob.io.coal[1][0] @[VitraCGRAController.scala 248:21]
+    cgra.io.srams[1][1] <= sram_coalesce_iob.io.coal[1][1] @[VitraCGRAController.scala 248:21]
+    cgra.io.srams[1][2] <= sram_coalesce_iob.io.coal[1][2] @[VitraCGRAController.scala 248:21]
+    cgra.io.srams[1][3] <= sram_coalesce_iob.io.coal[1][3] @[VitraCGRAController.scala 248:21]
     sram_coalesce_iob.io.orig[0] <= io.srams_iob[0] @[VitraCGRAController.scala 249:21]
     sram_coalesce_iob.io.orig[1] <= io.srams_iob[1] @[VitraCGRAController.scala 249:21]
     sram_coalesce_iob.io.orig[2] <= io.srams_iob[2] @[VitraCGRAController.scala 249:21]
     sram_coalesce_iob.io.orig[3] <= io.srams_iob[3] @[VitraCGRAController.scala 249:21]
+    sram_coalesce_iob.io.orig[4] <= io.srams_iob[4] @[VitraCGRAController.scala 249:21]
+    sram_coalesce_iob.io.orig[5] <= io.srams_iob[5] @[VitraCGRAController.scala 249:21]
+    sram_coalesce_iob.io.orig[6] <= io.srams_iob[6] @[VitraCGRAController.scala 249:21]
+    sram_coalesce_iob.io.orig[7] <= io.srams_iob[7] @[VitraCGRAController.scala 249:21]
     cfgCtrl.io.sram <= io.sram_cfg @[VitraCGRAController.scala 250:21]
     cgra.io.cfg_addr <= cfgCtrl.io.cfg_addr @[VitraCGRAController.scala 253:21]
     cgra.io.cfg_data <= cfgCtrl.io.cfg_data @[VitraCGRAController.scala 254:21]
@@ -57286,20 +61699,24 @@ circuit vitra :
       reset => (reset, UInt<9>("h0")) @[VitraCGRAController.scala 257:30]
     reg cfg_num : UInt<12>, clock with :
       reset => (reset, UInt<12>("h0")) @[VitraCGRAController.scala 258:30]
-    reg cfg_en_tiles : UInt<1>, clock with :
-      reset => (reset, UInt<1>("h0")) @[VitraCGRAController.scala 259:30]
-    reg iob_ens : UInt<4>, clock with :
-      reset => (reset, UInt<4>("h0")) @[VitraCGRAController.scala 260:30]
+    reg cfg_en_tiles : UInt<2>, clock with :
+      reset => (reset, UInt<2>("h0")) @[VitraCGRAController.scala 259:30]
+    reg iob_ens : UInt<8>, clock with :
+      reset => (reset, UInt<8>("h0")) @[VitraCGRAController.scala 260:30]
     reg cfg_start : UInt<1>, clock with :
       reset => (reset, UInt<1>("h0")) @[VitraCGRAController.scala 261:30]
     reg exe_start : UInt<1>, clock with :
       reset => (reset, UInt<1>("h0")) @[VitraCGRAController.scala 262:30]
     node _exe_en_tiles_T = bits(iob_ens, 3, 0) @[VitraCGRAController.scala 267:12]
     node _exe_en_tiles_T_1 = orr(_exe_en_tiles_T) @[VitraCGRAController.scala 267:21]
-    wire _exe_en_tiles_WIRE : UInt<1>[1] @[VitraCGRAController.scala 264:30]
+    node _exe_en_tiles_T_2 = bits(iob_ens, 7, 4) @[VitraCGRAController.scala 267:12]
+    node _exe_en_tiles_T_3 = orr(_exe_en_tiles_T_2) @[VitraCGRAController.scala 267:21]
+    wire _exe_en_tiles_WIRE : UInt<1>[2] @[VitraCGRAController.scala 264:30]
     _exe_en_tiles_WIRE[0] <= _exe_en_tiles_T_1 @[VitraCGRAController.scala 264:30]
-    wire tile_cfg_done : UInt<1>[1] @[VitraCGRAController.scala 273:27]
-    wire tile_exe_run : UInt<1>[1] @[VitraCGRAController.scala 274:27]
+    _exe_en_tiles_WIRE[1] <= _exe_en_tiles_T_3 @[VitraCGRAController.scala 264:30]
+    node exe_en_tiles = cat(_exe_en_tiles_WIRE[1], _exe_en_tiles_WIRE[0]) @[VitraCGRAController.scala 268:6]
+    wire tile_cfg_done : UInt<1>[2] @[VitraCGRAController.scala 273:27]
+    wire tile_exe_run : UInt<1>[2] @[VitraCGRAController.scala 274:27]
     wire cfg_avail : UInt<1> @[VitraCGRAController.scala 275:23]
     wire exe_avail : UInt<1> @[VitraCGRAController.scala 276:23]
     reg cgra_state : UInt<3>, clock with :
@@ -57316,7 +61733,7 @@ circuit vitra :
       else :
         when reg_exe_start : @[VitraCGRAController.scala 293:31]
           cgra_state <= UInt<3>("h4") @[VitraCGRAController.scala 294:21]
-          node _iob_ens_T = bits(reg_exe_iob_ens_0, 3, 0) @[VitraCGRAController.scala 295:48]
+          node _iob_ens_T = bits(reg_exe_iob_ens_0, 7, 0) @[VitraCGRAController.scala 295:48]
           iob_ens <= _iob_ens_T @[VitraCGRAController.scala 295:17]
     else :
       node _T_1 = eq(UInt<3>("h1"), cgra_state) @[VitraCGRAController.scala 284:21]
@@ -57333,7 +61750,7 @@ circuit vitra :
           else :
             when reg_exe_start : @[VitraCGRAController.scala 311:31]
               cgra_state <= UInt<3>("h4") @[VitraCGRAController.scala 312:20]
-              node _iob_ens_T_1 = bits(reg_exe_iob_ens_0, 3, 0) @[VitraCGRAController.scala 313:48]
+              node _iob_ens_T_1 = bits(reg_exe_iob_ens_0, 7, 0) @[VitraCGRAController.scala 313:48]
               iob_ens <= _iob_ens_T_1 @[VitraCGRAController.scala 313:17]
         else :
           node _T_3 = eq(UInt<3>("h4"), cgra_state) @[VitraCGRAController.scala 284:21]
@@ -57352,11 +61769,14 @@ circuit vitra :
     inst tileStates_0 of TileStateCtrl @[VitraCGRAController.scala 340:43]
     tileStates_0.clock <= clock
     tileStates_0.reset <= reset
+    inst tileStates_1 of TileStateCtrl_1 @[VitraCGRAController.scala 340:43]
+    tileStates_1.clock <= clock
+    tileStates_1.reset <= reset
     node _tileStates_0_io_cfgStartReq_T = bits(cfg_en_tiles, 0, 0) @[VitraCGRAController.scala 342:58]
     node _tileStates_0_io_cfgStartReq_T_1 = and(cfg_start, _tileStates_0_io_cfgStartReq_T) @[VitraCGRAController.scala 342:44]
     tileStates_0.io.cfgStartReq <= _tileStates_0_io_cfgStartReq_T_1 @[VitraCGRAController.scala 342:31]
     tileStates_0.io.cfgDoneIn <= cfgCtrl.io.done @[VitraCGRAController.scala 343:31]
-    node _tileStates_0_io_exeStartReq_T = bits(_exe_en_tiles_WIRE[0], 0, 0) @[VitraCGRAController.scala 344:58]
+    node _tileStates_0_io_exeStartReq_T = bits(exe_en_tiles, 0, 0) @[VitraCGRAController.scala 344:58]
     node _tileStates_0_io_exeStartReq_T_1 = and(exe_start, _tileStates_0_io_exeStartReq_T) @[VitraCGRAController.scala 344:44]
     tileStates_0.io.exeStartReq <= _tileStates_0_io_exeStartReq_T_1 @[VitraCGRAController.scala 344:31]
     node _tileStates_0_io_exeIobEnReq_T = bits(iob_ens, 3, 0) @[VitraCGRAController.scala 345:41]
@@ -57372,33 +61792,57 @@ circuit vitra :
     cgra.io.cfg_en[0] <= _cgra_io_cfg_en_0_T_1 @[VitraCGRAController.scala 354:31]
     node _tile_exe_run_0_T = or(tileStates_0.io.exeEn, tileStates_0.io.exeStartP) @[VitraCGRAController.scala 355:53]
     tile_exe_run[0] <= _tile_exe_run_0_T @[VitraCGRAController.scala 355:31]
+    node _tileStates_1_io_cfgStartReq_T = bits(cfg_en_tiles, 1, 1) @[VitraCGRAController.scala 342:58]
+    node _tileStates_1_io_cfgStartReq_T_1 = and(cfg_start, _tileStates_1_io_cfgStartReq_T) @[VitraCGRAController.scala 342:44]
+    tileStates_1.io.cfgStartReq <= _tileStates_1_io_cfgStartReq_T_1 @[VitraCGRAController.scala 342:31]
+    tileStates_1.io.cfgDoneIn <= cfgCtrl.io.done @[VitraCGRAController.scala 343:31]
+    node _tileStates_1_io_exeStartReq_T = bits(exe_en_tiles, 1, 1) @[VitraCGRAController.scala 344:58]
+    node _tileStates_1_io_exeStartReq_T_1 = and(exe_start, _tileStates_1_io_exeStartReq_T) @[VitraCGRAController.scala 344:44]
+    tileStates_1.io.exeStartReq <= _tileStates_1_io_exeStartReq_T_1 @[VitraCGRAController.scala 344:31]
+    node _tileStates_1_io_exeIobEnReq_T = bits(iob_ens, 7, 4) @[VitraCGRAController.scala 345:41]
+    tileStates_1.io.exeIobEnReq <= _tileStates_1_io_exeIobEnReq_T @[VitraCGRAController.scala 345:31]
+    tileStates_1.io.exeDoneIn <= cgra.io.done[1] @[VitraCGRAController.scala 346:31]
+    cgra.io.start[1] <= tileStates_1.io.exeStartP @[VitraCGRAController.scala 348:31]
+    cgra.io.en[1] <= tileStates_1.io.exeEn @[VitraCGRAController.scala 349:31]
+    cgra.io.iob_ens[1] <= tileStates_1.io.exeIobEn @[VitraCGRAController.scala 350:31]
+    tile_cfg_done[1] <= tileStates_1.io.cfgDone @[VitraCGRAController.scala 351:31]
+    reg_exe_done_0 <= tileStates_1.io.exeDone @[VitraCGRAController.scala 352:40]
+    node _cgra_io_cfg_en_1_T = bits(cfg_en_tiles, 1, 1) @[VitraCGRAController.scala 354:46]
+    node _cgra_io_cfg_en_1_T_1 = and(_cgra_io_cfg_en_1_T, cfgCtrl.io.cfg_en) @[VitraCGRAController.scala 354:52]
+    cgra.io.cfg_en[1] <= _cgra_io_cfg_en_1_T_1 @[VitraCGRAController.scala 354:31]
+    node _tile_exe_run_1_T = or(tileStates_1.io.exeEn, tileStates_1.io.exeStartP) @[VitraCGRAController.scala 355:53]
+    tile_exe_run[1] <= _tile_exe_run_1_T @[VitraCGRAController.scala 355:31]
     cfgCtrl.io.start <= cfg_start @[VitraCGRAController.scala 360:25]
     cfgCtrl.io.base_addr <= cfg_base_addr @[VitraCGRAController.scala 361:25]
     cfgCtrl.io.cfg_num <= cfg_num @[VitraCGRAController.scala 362:25]
     node _cfg_avail_T = eq(cgra_state, UInt<3>("h0")) @[VitraCGRAController.scala 364:29]
     node _cfg_avail_T_1 = eq(cgra_state, UInt<3>("h1")) @[VitraCGRAController.scala 364:58]
     node _cfg_avail_T_2 = or(_cfg_avail_T, _cfg_avail_T_1) @[VitraCGRAController.scala 364:45]
-    node _cfg_avail_T_3 = not(tile_cfg_done[0]) @[VitraCGRAController.scala 365:37]
-    node _cfg_avail_T_4 = and(cfg_en_tiles, _cfg_avail_T_3) @[VitraCGRAController.scala 365:35]
-    node _cfg_avail_T_5 = orr(_cfg_avail_T_4) @[VitraCGRAController.scala 365:62]
-    node _cfg_avail_T_6 = not(_cfg_avail_T_5) @[VitraCGRAController.scala 365:19]
-    node _cfg_avail_T_7 = and(_cfg_avail_T_2, _cfg_avail_T_6) @[VitraCGRAController.scala 365:17]
-    node _cfg_avail_T_8 = and(cfg_en_tiles, tile_exe_run[0]) @[VitraCGRAController.scala 366:35]
-    node _cfg_avail_T_9 = orr(_cfg_avail_T_8) @[VitraCGRAController.scala 366:58]
-    node _cfg_avail_T_10 = not(_cfg_avail_T_9) @[VitraCGRAController.scala 366:19]
-    node _cfg_avail_T_11 = and(_cfg_avail_T_7, _cfg_avail_T_10) @[VitraCGRAController.scala 366:17]
-    cfg_avail <= _cfg_avail_T_11 @[VitraCGRAController.scala 364:13]
+    node _cfg_avail_T_3 = cat(tile_cfg_done[1], tile_cfg_done[0]) @[VitraCGRAController.scala 365:53]
+    node _cfg_avail_T_4 = not(_cfg_avail_T_3) @[VitraCGRAController.scala 365:37]
+    node _cfg_avail_T_5 = and(cfg_en_tiles, _cfg_avail_T_4) @[VitraCGRAController.scala 365:35]
+    node _cfg_avail_T_6 = orr(_cfg_avail_T_5) @[VitraCGRAController.scala 365:62]
+    node _cfg_avail_T_7 = not(_cfg_avail_T_6) @[VitraCGRAController.scala 365:19]
+    node _cfg_avail_T_8 = and(_cfg_avail_T_2, _cfg_avail_T_7) @[VitraCGRAController.scala 365:17]
+    node _cfg_avail_T_9 = cat(tile_exe_run[1], tile_exe_run[0]) @[VitraCGRAController.scala 366:50]
+    node _cfg_avail_T_10 = and(cfg_en_tiles, _cfg_avail_T_9) @[VitraCGRAController.scala 366:35]
+    node _cfg_avail_T_11 = orr(_cfg_avail_T_10) @[VitraCGRAController.scala 366:58]
+    node _cfg_avail_T_12 = not(_cfg_avail_T_11) @[VitraCGRAController.scala 366:19]
+    node _cfg_avail_T_13 = and(_cfg_avail_T_8, _cfg_avail_T_12) @[VitraCGRAController.scala 366:17]
+    cfg_avail <= _cfg_avail_T_13 @[VitraCGRAController.scala 364:13]
     node _exe_avail_T = neq(cgra_state, UInt<3>("h5")) @[VitraCGRAController.scala 368:28]
-    node _exe_avail_T_1 = not(tile_cfg_done[0]) @[VitraCGRAController.scala 369:37]
-    node _exe_avail_T_2 = and(_exe_en_tiles_WIRE[0], _exe_avail_T_1) @[VitraCGRAController.scala 369:35]
-    node _exe_avail_T_3 = orr(_exe_avail_T_2) @[VitraCGRAController.scala 369:62]
-    node _exe_avail_T_4 = not(_exe_avail_T_3) @[VitraCGRAController.scala 369:19]
-    node _exe_avail_T_5 = and(_exe_avail_T, _exe_avail_T_4) @[VitraCGRAController.scala 369:17]
-    node _exe_avail_T_6 = and(_exe_en_tiles_WIRE[0], tile_exe_run[0]) @[VitraCGRAController.scala 370:35]
-    node _exe_avail_T_7 = orr(_exe_avail_T_6) @[VitraCGRAController.scala 370:58]
-    node _exe_avail_T_8 = not(_exe_avail_T_7) @[VitraCGRAController.scala 370:19]
-    node _exe_avail_T_9 = and(_exe_avail_T_5, _exe_avail_T_8) @[VitraCGRAController.scala 370:17]
-    exe_avail <= _exe_avail_T_9 @[VitraCGRAController.scala 368:13]
+    node _exe_avail_T_1 = cat(tile_cfg_done[1], tile_cfg_done[0]) @[VitraCGRAController.scala 369:53]
+    node _exe_avail_T_2 = not(_exe_avail_T_1) @[VitraCGRAController.scala 369:37]
+    node _exe_avail_T_3 = and(exe_en_tiles, _exe_avail_T_2) @[VitraCGRAController.scala 369:35]
+    node _exe_avail_T_4 = orr(_exe_avail_T_3) @[VitraCGRAController.scala 369:62]
+    node _exe_avail_T_5 = not(_exe_avail_T_4) @[VitraCGRAController.scala 369:19]
+    node _exe_avail_T_6 = and(_exe_avail_T, _exe_avail_T_5) @[VitraCGRAController.scala 369:17]
+    node _exe_avail_T_7 = cat(tile_exe_run[1], tile_exe_run[0]) @[VitraCGRAController.scala 370:50]
+    node _exe_avail_T_8 = and(exe_en_tiles, _exe_avail_T_7) @[VitraCGRAController.scala 370:35]
+    node _exe_avail_T_9 = orr(_exe_avail_T_8) @[VitraCGRAController.scala 370:58]
+    node _exe_avail_T_10 = not(_exe_avail_T_9) @[VitraCGRAController.scala 370:19]
+    node _exe_avail_T_11 = and(_exe_avail_T_6, _exe_avail_T_10) @[VitraCGRAController.scala 370:17]
+    exe_avail <= _exe_avail_T_11 @[VitraCGRAController.scala 368:13]
     reg w_reg_addr : UInt<8>, clock with :
       reset => (reset, UInt<8>("h0")) @[VitraCGRAController.scala 380:27]
     reg w_state : UInt<3>, clock with :
@@ -57496,24 +61940,24 @@ circuit vitra :
         node _T_27 = and(io.s_axilite.r.ready, io.s_axilite.r.valid) @[Decoupled.scala 51:35]
         when _T_27 : @[VitraCGRAController.scala 496:33]
           r_state <= UInt<1>("h0") @[VitraCGRAController.scala 497:17]
-    node _r_data_T = eq(UInt<3>("h5"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_1 = mux(_r_data_T, reg_cfg_en, UInt<1>("h0")) @[Mux.scala 81:58]
-    node _r_data_T_2 = eq(UInt<3>("h7"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_3 = mux(_r_data_T_2, reg_exe_start, _r_data_T_1) @[Mux.scala 81:58]
-    node _r_data_T_4 = eq(UInt<2>("h2"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_5 = mux(_r_data_T_4, reg_cfg_num_0, _r_data_T_3) @[Mux.scala 81:58]
-    node _r_data_T_6 = eq(UInt<3>("h4"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_7 = mux(_r_data_T_6, reg_cfg_en_tile_0, _r_data_T_5) @[Mux.scala 81:58]
-    node _r_data_T_8 = eq(UInt<1>("h1"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_9 = mux(_r_data_T_8, reg_cfg_base_addr_1, _r_data_T_7) @[Mux.scala 81:58]
-    node _r_data_T_10 = eq(UInt<1>("h0"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_11 = mux(_r_data_T_10, reg_cfg_base_addr_0, _r_data_T_9) @[Mux.scala 81:58]
-    node _r_data_T_12 = eq(UInt<3>("h6"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_13 = mux(_r_data_T_12, reg_exe_iob_ens_0, _r_data_T_11) @[Mux.scala 81:58]
-    node _r_data_T_14 = eq(UInt<4>("h8"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_15 = mux(_r_data_T_14, reg_exe_done_0, _r_data_T_13) @[Mux.scala 81:58]
-    node _r_data_T_16 = eq(UInt<2>("h3"), r_reg_addr) @[Mux.scala 81:61]
-    node _r_data_T_17 = mux(_r_data_T_16, reg_cfg_num_1, _r_data_T_15) @[Mux.scala 81:58]
+    node _r_data_T = eq(UInt<3>("h7"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_1 = mux(_r_data_T, reg_exe_start, UInt<1>("h0")) @[Mux.scala 81:58]
+    node _r_data_T_2 = eq(UInt<4>("h8"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_3 = mux(_r_data_T_2, reg_exe_done_0, _r_data_T_1) @[Mux.scala 81:58]
+    node _r_data_T_4 = eq(UInt<3>("h6"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_5 = mux(_r_data_T_4, reg_exe_iob_ens_0, _r_data_T_3) @[Mux.scala 81:58]
+    node _r_data_T_6 = eq(UInt<1>("h1"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_7 = mux(_r_data_T_6, reg_cfg_base_addr_1, _r_data_T_5) @[Mux.scala 81:58]
+    node _r_data_T_8 = eq(UInt<3>("h5"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_9 = mux(_r_data_T_8, reg_cfg_en, _r_data_T_7) @[Mux.scala 81:58]
+    node _r_data_T_10 = eq(UInt<2>("h2"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_11 = mux(_r_data_T_10, reg_cfg_num_0, _r_data_T_9) @[Mux.scala 81:58]
+    node _r_data_T_12 = eq(UInt<2>("h3"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_13 = mux(_r_data_T_12, reg_cfg_num_1, _r_data_T_11) @[Mux.scala 81:58]
+    node _r_data_T_14 = eq(UInt<1>("h0"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_15 = mux(_r_data_T_14, reg_cfg_base_addr_0, _r_data_T_13) @[Mux.scala 81:58]
+    node _r_data_T_16 = eq(UInt<3>("h4"), r_reg_addr) @[Mux.scala 81:61]
+    node _r_data_T_17 = mux(_r_data_T_16, reg_cfg_en_tile_0, _r_data_T_15) @[Mux.scala 81:58]
     r_data <= _r_data_T_17 @[VitraCGRAController.scala 506:10]
     node _reg_cfg_en_next_T = eq(w_state, UInt<3>("h1")) @[VitraCGRAController.scala 509:34]
     node _reg_cfg_en_next_T_1 = bits(io.s_axilite.w.bits.data, 0, 0) @[VitraCGRAController.scala 510:51]
@@ -57545,7 +61989,7 @@ circuit vitra :
   module vitra :
     input clock : Clock
     input reset : UInt<1>
-    output io : { flip s_axi : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<16>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}}, flip s_axilite : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, strb : UInt<1>}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { resp : UInt<2>}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, resp : UInt<2>}}}}
+    output io : { flip s_axi : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<64>, strb : UInt<8>, last : UInt<1>, user : { }}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, resp : UInt<2>, user : { }, echo : { }}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, addr : UInt<17>, len : UInt<8>, size : UInt<3>, burst : UInt<2>, lock : UInt<1>, cache : UInt<4>, prot : UInt<3>, qos : UInt<4>, user : { }, echo : { }}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { id : UInt<6>, data : UInt<64>, resp : UInt<2>, user : { }, echo : { }, last : UInt<1>}}}, flip s_axilite : { aw : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, w : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, strb : UInt<1>}}, flip b : { flip ready : UInt<1>, valid : UInt<1>, bits : { resp : UInt<2>}}, ar : { flip ready : UInt<1>, valid : UInt<1>, bits : { addr : UInt<8>, prot : UInt<3>}}, flip r : { flip ready : UInt<1>, valid : UInt<1>, bits : { data : UInt<8>, resp : UInt<2>}}}}
 
     inst spad of AXI4Scratchpad @[VitraWithAxi.scala 131:20]
     spad.clock <= clock
@@ -57563,5 +62007,9 @@ circuit vitra :
     cgra.io.srams_iob[1] <= spad.io.srams[1] @[VitraWithAxi.scala 150:21]
     cgra.io.srams_iob[2] <= spad.io.srams[2] @[VitraWithAxi.scala 150:21]
     cgra.io.srams_iob[3] <= spad.io.srams[3] @[VitraWithAxi.scala 150:21]
+    cgra.io.srams_iob[4] <= spad.io.srams[4] @[VitraWithAxi.scala 150:21]
+    cgra.io.srams_iob[5] <= spad.io.srams[5] @[VitraWithAxi.scala 150:21]
+    cgra.io.srams_iob[6] <= spad.io.srams[6] @[VitraWithAxi.scala 150:21]
+    cgra.io.srams_iob[7] <= spad.io.srams[7] @[VitraWithAxi.scala 150:21]
     cgra.io.sram_cfg <= spad.io.sram_last @[VitraWithAxi.scala 151:21]
 

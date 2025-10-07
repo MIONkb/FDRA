@@ -40,6 +40,9 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
   apply("iob_spad_bank_size", (1 << spad_bank_lg_size))
   apply("cfg_spad_size", (1 << cfg_spad_lg_size))
   apply("cfg_spad_data_width", cfg_spad_data_width)
+  apply("cfg_tile_offset", cfgTileOffset)
+  apply("tile_modules", tile_numSubModules)
+  println("cfg_tile_offset", cfgTileOffset)
   
   apply("connection_format", ("src_id", "src_type", "src_out_idx", "dst_id", "dst_type", "dst_in_idx"))
   // This:src_out_idx is the input index
@@ -145,7 +148,10 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     "GPE" -> ListBuffer[Int](), // id = cfg_blk_idx
     "GIB" -> ListBuffer[Int]()  // id = cfg_blk_idx
   )
-
+  var sm_id_offset = 0
+  val iob_type_modid : mutable.Map[Int , Int] = mutable.Map()
+  val gpe_type_modid : mutable.Map[Int , Int] = mutable.Map()
+  val gib_type_modid : mutable.Map[Int , Int] = mutable.Map()
   // sub-module id to attribute
   val sm_id_attrs = mutable.Map[Int, mutable.Map[String, Any]]()
   // sub-module instance id to attribute
@@ -200,8 +206,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       // col_idxs_iob += col_idx /// Right most column IOB is not initialized 
       col_idx += 1
     }
-    var sm_id_offset = 0
-    val iob_type_modid : mutable.Map[Int , Int] = mutable.Map()
     
     ////////////////////////////////////
     /// Generate IOB row by row
@@ -217,7 +221,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           val y = if(numIOBSides>2) 2 * j + 2 else 2 * j + 1
           val index = iob_index_base + j + 1 + tile_numSubModules * tile // start from 1
           iob_attrs("cfg_blk_index") = index
-          iob_attrs("iob_index") = i * tile_cols + j
+          iob_attrs("iob_index") = i * tile_cols + j + tile * numIOBSides * tile_cols
           iob_attrs("tile") = tile
           iob_attrs("x") = x
           iob_attrs("y") = y
@@ -236,7 +240,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           val smi_id_attr: mutable.Map[String, Any] = mutable.Map(
             "module_id" -> iob_type_modid(iob_type),
             "cfg_blk_index" -> index,
-            "iob_index" -> (i * tile_cols + j),
+            "iob_index" -> (i * tile_cols + j + tile * numIOBSides * tile_cols),
             "max_delay" -> iobsParam(i)(j).max_delay,
             "tile" -> tile,
             "x" -> x,
@@ -252,7 +256,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           val index = if(y == 0)  (tile_cols + numIOBSides - 2) * 2 *(j+1) + 1 + tile_numSubModules * tile
                       else (tile_cols + numIOBSides - 2) * 2 *(j) + 1 + tile_cols + 1 + tile_numSubModules * tile
           iob_attrs("cfg_blk_index") = index
-          iob_attrs("iob_index") = tile_cols * 2  + (i-2) * tile_rows + j
+          iob_attrs("iob_index") = tile_cols * 2  + (i-2) * tile_rows + j  + tile * numIOBSides * tile_cols
           iob_attrs("x") = x
           iob_attrs("y") = y
           iob_attrs("tile") = tile
@@ -271,7 +275,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           val smi_id_attr: mutable.Map[String, Any] = mutable.Map(
             "module_id" -> iob_type_modid(iob_type),
             "cfg_blk_index" -> index,
-            "iob_index" -> (tile_cols * 2  + (i-2) * tile_rows + j),
+            "iob_index" -> (tile_cols * 2  + (i-2) * tile_rows + j + tile * numIOBSides * tile_cols),
             "max_delay" -> iobsParam(i)(j).max_delay,
             "x" -> x,
             "y" -> y,
@@ -286,7 +290,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     //  sm_id_attrs += sm_id_offset -> iobs.last.getAttrs
 
     // GPE
-    val gpe_type_modid : mutable.Map[Int , Int] = mutable.Map()
     for(i <- 0 until tile_rows){
       val x = row_idxs_pe(i)
       for(j <- 0 until tile_cols){
@@ -326,7 +329,6 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     //  sm_id_attrs += sm_id_offset -> pes.last.getAttrs
 
     // GIB
-    val gib_type_modid : mutable.Map[Int , Int] = mutable.Map()
   //  val iopin_list_map = mutable.Map[mutable.Map[String, Int], Int]()
     // for(i <- 0 to tile_rows){
     //   for(j <- 0 to tile_cols){
@@ -589,7 +591,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         unconnectedIOBs += i -> iob
       }
       else if (i < 2 * tile_cols - 1) { // Bottom row IOB (cols+rows to 2*cols+rows-1)
-        //val gibIdx = (rows * (cols + 1) - cols) + (i - cols - rows) // 底部行 GIB 索引// buttom row
+        // val gibIdx = (rows * (cols + 1) - cols) + (i - cols - rows) // 底部行 GIB 索引// buttom row
         // val gibIdx = rows * (cols + 1) - cols + i
         val gibIdx = tile_rows * (tile_cols) + i - tile_cols + tile_cols * (tile_rows + 1) * tile
         iob.io.in.zipWithIndex.foreach { case (in, j) =>
@@ -1053,8 +1055,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     }
   } /// end of multi tile
   
-  // println("sm_id:", sm_id)
-  // println("smi_id:", smi_id)
+  println("sm_id:", sm_id)
+  println("smi_id:", smi_id)
 
   val sub_modules = sm_id.map{case (name, ids) =>
     ids.map{id => mutable.Map(

@@ -60,9 +60,9 @@ object VitraSpec{
     "cgra_cfg_blk_offset" -> 3,  // config bus: block index offset in the address
 
     // tile parameters
-    "tile_num_row" -> 2,  
+    "tile_num_row" -> 1,  
     "tile_num_column" -> 2,  
-    "cgra_tile_num" -> 1,  
+    "cgra_tile_num" -> 2,  
 
     // 1.2. GPE attributes (default for all)
 //    "cgra_gpe_num_rf_reg" -> 1,
@@ -77,7 +77,7 @@ object VitraSpec{
                                         // "BFEQ16", "BFOLT16", "BFOLE16", "BFUNO16",                                        
                                         // "ISEL" ,"INTLV4" , "INTLV3", "INTLV2",
                                         // "DEINTLV4" , "DEINTLV3", "DEINTLV2",
-                                        // "MAC", "FMAC32"
+                                        // // "MAC", "FMAC32"
                                       ),
     // "cgra_gpe_operations" -> ListBuffer("PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", 
     //                                     "UDIV", "SDIV",
@@ -99,8 +99,8 @@ object VitraSpec{
     "cgra_gpe_max_delay" -> 10,
     "cgra_gpe_in_from_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST),
     // "cgra_gpe_in_from_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST),
-    // "cgra_gpe_out_to_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST),
-    "cgra_gpe_out_to_dir" -> List(NORTHWEST, SOUTHEAST),
+    "cgra_gpe_out_to_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST),
+    // "cgra_gpe_out_to_dir" -> List(NORTHWEST, SOUTHEAST),
     // 1.3. GIB attributes (default for all)
     "cgra_gib_num_track" -> 1,   // init : 1
     "cgra_gib_track_reged_mode" -> 1,
@@ -159,8 +159,8 @@ object VitraSpec{
     "operation_set_filename" -> "operations.json",
     "cgra_adg_filename" -> "cgra_adg.json",
 
-    "axilite_addrspace" -> 256, // Bytes
-    "axilite_datawidth" -> 8,  // bits    
+    "axilite_addrspace" -> 1024, // Bytes
+    "axilite_datawidth" -> 32,  // bits    
   )
   attrs += ("tile_spad_num_banks" -> (
     attrs("cgra_iob_num_sides").asInstanceOf[Int] * attrs("tile_num_column").asInstanceOf[Int]))

@@ -92,14 +92,14 @@ class MultiTileSRAMCoalesce(width: Int, lgDepth: Int, hasMask: Boolean, nTiles: 
   // }
 
   // IOB on one side of one tile could access all SPM on this side of this tile
-  println("nTiles:", nTiles, "tileNBanks:", tileNBanks)
+  // println("nTiles:", nTiles, "tileNBanks:", tileNBanks)
   for(tile <- 0 until nTiles){
     for(group_idx <- 0 until 2){
       // for(i <- 0 until tileNBanks by coalesceBanks){
         // val coalBanks = coalesceBanks min (tileNBanks-i) // last group may have banks no more than coalesceBanks
       val group = Module(new SRAMBanksCoalesce(width, lgDepth, hasMask, tileNBanks/2))
       for(j <- 0 until tileNBanks/2){
-        println("tile:", tile, "group_idx:", group_idx, "j:", j)
+        // println("tile:", tile, "group_idx:", group_idx, "j:", j)
         group.io.orig(j) <> io.orig(tile*tileNBanks+j+group_idx*tileNBanks/2)
         group.io.coal(j) <> io.coal(tile)(j+group_idx*tileNBanks/2)
       }
