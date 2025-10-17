@@ -338,6 +338,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   //////////////////////////////////////
   ///// state ctrl for each tile
   //////////////////////////////////////
+  val exeDoneBits = Wire(Vec(nTiles, Bool()))
   val tileStates = Seq.fill(nTiles)(Module(new TileStateCtrl(nBanksIOB)))
   tileStates.zipWithIndex.foreach { case (tileState, idx) =>
     tileState.io.cfgStartReq  := cfg_start & cfg_en_tiles(idx)
@@ -350,10 +351,24 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
     cgra.io.en(idx)           := tileState.io.exeEn
     cgra.io.iob_ens(idx)      := tileState.io.exeIobEn
     tile_cfg_done(idx)        := tileState.io.cfgDone
-    reg_exe_done(idx/AxiLiteDataWidth) := tileState.io.exeDone
+    // println(reg_exe_done)
+    // println(reg_exe_done(idx/AxiLiteDataWidth))
+    // reg_exe_done(idx/AxiLiteDataWidth)(idx%AxiLiteDataWidth) := tileState.io.exeDone
+    exeDoneBits(idx) := tileState.io.exeDone
 
     cgra.io.cfg_en(idx)       := cfg_en_tiles(idx) & cfgCtrl.io.cfg_en
     tile_exe_run(idx)         := tileState.io.exeEn | tileState.io.exeStartP
+  }
+
+
+  for (w <- 0 until Num_regs_done) {
+    val lo = w * AxiLiteDataWidth
+    val hi = math.min(lo + AxiLiteDataWidth, nTiles)
+
+    val slice = (lo until hi).map(i => exeDoneBits(i).asUInt)                  
+    val pad   = Seq.fill(AxiLiteDataWidth - (hi - lo))(0.U(1.W))               
+
+    reg_exe_done(w) := Cat((slice ++ pad).reverse)
   }
   //////////////////////////////////////
   ///// combination logic
@@ -367,7 +382,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
                 & ~((cfg_en_tiles & tile_exe_run.asUInt).orR))   // orR: reduction, every selected tile must not be exe running
   
   exe_avail := (cgra_state =/= s_cgra_exe 
-                & ~((exe_en_tiles & ~(tile_cfg_done.asUInt)).orR) // orR: reduction, every selected tile must be cfg done
+                // & ~((exe_en_tiles & ~(tile_cfg_done.asUInt)).orR) // orR: reduction, every selected tile must be cfg done
                 & ~((exe_en_tiles & tile_exe_run.asUInt).orR))   // orR: reduction, every selected tile must not be exe running
 
 

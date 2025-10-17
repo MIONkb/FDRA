@@ -646,7 +646,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       }
     }
 
-    io.done(tile) := RegNext(done.asUInt)
+    // io.done(tile) := RegNext(done.asUInt)
+    io.done(tile) := done.asUInt
 
     // PE to GIB connections
     for(i <- 0 until tile_rows){

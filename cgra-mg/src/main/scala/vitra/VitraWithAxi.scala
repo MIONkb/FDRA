@@ -48,7 +48,8 @@ object VitraParam {
 }
 
 class VitraWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends Module  {
-  override def desiredName = "vitra"
+  override def desiredName = "CGRAWithAXI"
+  // override def desiredName = "vitra"
   import VitraParam._
   // println(tram_spec_filename)
   if(dumpSpec){ VitraSpec.dumpSpec(vitra_spec_filename) }
