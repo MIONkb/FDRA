@@ -241,8 +241,10 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   
   // dontTouch(cgra.io.done)
   val cfgRegNum = cgra.cfgRegNum // config chain register number
+  val cfgBroadcastBufferLevel = 1 // for one level buffer's latency in broadcast the config to every tile
   val cfgCtrl = Module(new ConfigController(dataWidthSramCfg, addrWidthSramCfg, hasMaskSramCfg, readLatencySramCfg,
-    cfgDataWidth, cfgAddrWidth, cfgAddrWidthAlign, cfgRegNum))
+    cfgDataWidth, cfgAddrWidth, cfgAddrWidthAlign, cfgRegNum,
+    cfgBroadcastBufferLevel))
 
   val sram_coalesce_iob = Module(new MultiTileSRAMCoalesce(dataWidthCgra, addrWidthSram, hasMaskSram, nTiles, nBanksIOB, coalesceBanksIOB))
   

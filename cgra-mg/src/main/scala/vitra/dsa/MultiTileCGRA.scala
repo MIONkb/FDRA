@@ -158,6 +158,18 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
   val smi_id_attrs = mutable.Map[Int, mutable.Map[String, Any]]()
   var cfgRegNum = 0
 
+  /// add a level of broadcast config register to drive multiple modules' configuration process
+  val cfgAddrTile = Reg(Vec(tile_num, UInt(io.cfg_addr.getWidth.W)))
+  val cfgDataTile = Reg(Vec(tile_num, UInt(io.cfg_data.getWidth.W)))
+  val cfgEnTile   = Reg(Vec(tile_num, Bool()))
+  for (t <- 0 until tile_num) {
+    // When cfg_en(t) is high, capture the addr and data
+    cfgAddrTile(t) := RegEnable(io.cfg_addr, io.cfg_en(t))
+    cfgDataTile(t) := RegEnable(io.cfg_data, io.cfg_en(t))
+    cfgEnTile(t)   := RegNext(io.cfg_en(t), false.B)  // 1-cycle delayed version of en
+  }
+
+
   val iobs = new ArrayBuffer[IOB]()
   val pes = new ArrayBuffer[GPE]()
   val gibs = new ArrayBuffer[GIB]()
@@ -1026,10 +1038,10 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     ///////////////////////////////
     for(i <- 0 until numIOBSides * tile_cols) {  
       val iob = iobs(i + tile*numIOBSides * tile_cols)
-      iob.io.cfg_en   := io.cfg_en(tile)
+      iob.io.cfg_en   := cfgEnTile(tile)
       // iob.io.cfg_en_w := io.cfg_en_w
-      iob.io.cfg_addr := io.cfg_addr
-      iob.io.cfg_data := io.cfg_data
+      iob.io.cfg_addr := cfgAddrTile(tile)
+      iob.io.cfg_data := cfgDataTile(tile)
     }
 
     for(i <- 0 to tile_rows){
@@ -1037,22 +1049,22 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       val peCfgIdx = {if(i < tile_rows) row_idxs_pe(i) - 1 else 0}
       // for(j <- 0 to tile_cols){
       for(j <- 0 until tile_cols){  
-        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_en   := io.cfg_en(tile)
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_en   := cfgEnTile(tile)
         // gibs(i*(cols+1)+j).io.cfg_en_w   := io.cfg_en_w
-        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_addr := io.cfg_addr
-        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_data := io.cfg_data
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_addr := cfgAddrTile(tile)
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_data := cfgDataTile(tile)
         if((i < tile_rows) && (j < tile_cols)){
-          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_en   := io.cfg_en(tile)
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_en   := cfgEnTile(tile)
           // pes(i*cols+j).io.cfg_en_w   := io.cfg_en_w
-          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_addr := io.cfg_addr
-          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_data := io.cfg_data
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_addr := cfgAddrTile(tile)
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_data := cfgDataTile(tile)
         }
       }
 
       if(tile == tile_num - 1){
-        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_en   := io.cfg_en(tile)
-        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_addr := io.cfg_addr
-        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_data := io.cfg_data
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_en   := cfgEnTile(tile)
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_addr := cfgAddrTile(tile)
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_data := cfgDataTile(tile)
       }
     }
   } /// end of multi tile

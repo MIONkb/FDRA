@@ -15,8 +15,10 @@ import tram.dsa.SRAMIO
  * @param cfgAddrWidthAlign  Config address width aligned to power2
  * @param cfgRegNum          Config chain register number, the last config data arrive in the last row of IOB after cfgRegNum cycles
  */
+// class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Boolean, readLatencySram: Int,
+                      //  cfgDataWidth: Int, cfgAddrWidth: Int, cfgAddrWidthAlign: Int, cfgRegNum: Int) extends Module {
 class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Boolean, readLatencySram: Int,
-                       cfgDataWidth: Int, cfgAddrWidth: Int, cfgAddrWidthAlign: Int, cfgRegNum: Int) extends Module {
+                       cfgDataWidth: Int, cfgAddrWidth: Int, cfgAddrWidthAlign: Int, cfgRegNum: Int, waitLatency: Int = 0) extends Module {
   val io = IO(new Bundle {
     val start = Input(Bool()) // pulse signal
     val done = Output(Bool()) // config done, keep true until next start
@@ -58,7 +60,8 @@ class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Bool
       }
     }
     is(s_wait){
-      when(waitCnt >= cfgRegNum.U){
+      // when(waitCnt >= cfgRegNum.U){ //@ jhlou 20251023
+      when(waitCnt >= cfgRegNum.U + waitLatency.U){  
         state := s_idle
         done := true.B
       }
