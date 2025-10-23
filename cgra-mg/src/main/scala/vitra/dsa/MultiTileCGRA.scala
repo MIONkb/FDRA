@@ -230,7 +230,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           iob_attrs("iob_mode") = iob_param.mode
           iob_attrs("num_input_per_operand") = iob_param.num_input_per_operand
           iob_attrs("max_delay") = iobsParam(i)(j).max_delay // do not affect type decision
-          iobs += Module(new IOB(iob_attrs))
+          iobs += Module(new IOB(iob_attrs)).suggestName(s"iob_${index}")
+          println("iobsindex:", index)
           if (!iob_type_modid.contains(iob_type)) { // new IOB type
             sm_id_offset += 1
             iob_type_modid += (iob_type -> sm_id_offset)
@@ -265,7 +266,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           iob_attrs("iob_mode") = iob_param.mode
           iob_attrs("num_input_per_operand") = iob_param.num_input_per_operand
           iob_attrs("max_delay") = iobsParam(i)(j).max_delay // 不影响类型决定
-          iobs += Module(new IOB(iob_attrs))
+          iobs += Module(new IOB(iob_attrs)).suggestName(s"iob_${index}")
           if (!iob_type_modid.contains(iob_type)) { // 新的 IOB 类型
             sm_id_offset += 1
             iob_type_modid += (iob_type -> sm_id_offset)
@@ -304,7 +305,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         gpe_attrs("operations") = gpe_param.operations
         gpe_attrs("num_input_per_operand") = gpe_param.num_input_per_operand
         gpe_attrs("max_delay") = gpesParam(i)(j).max_delay  // do not affect type decision
-        pes += Module(new GPE(gpe_attrs))
+        pes += Module(new GPE(gpe_attrs)).suggestName(s"gpe_${index}")
         if(!gpe_type_modid.contains(gpe_type)){ // new GPE type
           sm_id_offset += 1
           gpe_type_modid += (gpe_type -> sm_id_offset)
@@ -392,7 +393,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         gib_attrs("diag_iopin_connect") = gib_param.diag_iopin_connect
         gib_attrs("connect_flexibility") = gib_param.fc_list
         gib_attrs("track_directions") = gib_param.track_directions
-        gibs += Module(new GIB(gib_attrs))
+        gibs += Module(new GIB(gib_attrs)).suggestName(s"gib_${index}")
         //      if(!iopin_list_map.contains(num_iopin_list)){
         //        iopin_list_map += num_iopin_list -> sm_id_offset
         //        sm_id("GIB") += sm_id_offset
@@ -647,7 +648,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
     }
 
     // io.done(tile) := RegNext(done.asUInt)
-    io.done(tile) := done.asUInt
+    io.done(tile) := done.reduce(_&_).asUInt
 
     // PE to GIB connections
     for(i <- 0 until tile_rows){
@@ -847,7 +848,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
         gib_attrs("diag_iopin_connect") = gib_param.diag_iopin_connect
         gib_attrs("connect_flexibility") = gib_param.fc_list
         gib_attrs("track_directions") = gib_param.track_directions
-        gibs += Module(new GIB(gib_attrs))
+        gibs += Module(new GIB(gib_attrs)).suggestName(s"gib_${index}")
         //      if(!iopin_list_map.contains(num_iopin_list)){
         //        iopin_list_map += num_iopin_list -> sm_id_offset
         //        sm_id("GIB") += sm_id_offset

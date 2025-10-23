@@ -75,6 +75,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
   apply("operations", ops)
   apply("max_delay", maxDelay)
 
+  // override def desiredName: String = s"GPE$cfgBlkIndex"
 
   val io = IO(new Bundle {
     val cfg_en = Input(Bool())
@@ -246,7 +247,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
       alu.io.in(0) := dmr.io.out(1)
       alu.io.in(1) := delay_pipe.io.out(0)
     }
-   
+
     alu.io.in.zipWithIndex.foreach { case (in, i) =>
       if(hasMac && i == 2){
         when(OpInfo.isMacOp(opc)){

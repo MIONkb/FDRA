@@ -1,22 +1,13 @@
 {
-  "reg_exe_iob_ens_9" : "0xC",
+  "reg_cfg_en" : "0x2",
   "axilite_addr_bit_with" : 8,
   "reg_bit_width" : 8,
-  "reg_exe_iob_ens_8" : "0xB",
-  "reg_exe_iob_ens_7" : "0xA",
-  "reg_exe_iob_ens_6" : "0x9",
-  "reg_exe_iob_ens_5" : "0x8",
-  "reg_exe_iob_ens_4" : "0x7",
-  "reg_exe_iob_ens_10" : "0xD",
+  "reg_exe_start" : "0x6",
+  "reg_exe_done" : "0x7",
+  "iob_bank_num" : 20,
+  "reg_cfg_num" : "0x1",
   "reg_cfg_base_addr" : "0x0",
-  "reg_exe_iob_ens_3" : "0x6",
   "reg_exe_iob_ens_2" : "0x5",
   "reg_exe_iob_ens_1" : "0x4",
-  "reg_exe_iob_ens_0" : "0x3",
-  "reg_exe_iob_ens_11" : "0xE",
-  "reg_cfg_en" : "0x2",
-  "reg_exe_start" : "0xF",
-  "reg_exe_done" : "0x10",
-  "iob_bank_num" : 96,
-  "reg_cfg_num" : "0x1"
+  "reg_exe_iob_ens_0" : "0x3"
 }

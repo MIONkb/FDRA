@@ -382,6 +382,23 @@ object OpInfo {
 		}
 	}
 
+	def getALUResultNum(op: String): Int = {
+		if (AccOpInfoMap.contains(op)) {
+			OpInfoMap(AccOpInfoMap(op)._2)(1)
+		} else if (CondAccOpInfoMap.contains(op)) {
+			OpInfoMap(CondAccOpInfoMap(op)._2)(1)
+		} else if (CondInitAccOpInfoMap.contains(op)) {
+			OpInfoMap(CondInitAccOpInfoMap(op)._2)(1)
+		} else if (IACCInfoMap.contains(op)) {
+			OpInfoMap(IACCInfoMap(op)._2)(1)
+		} else if (ISelInfoMap.contains(op)) {
+			OpInfoMap(ISelInfoMap(op)._2)(1)
+		}else {
+			OpInfoMap(op)(1)
+		}
+	}
+
+
 	private var width = 32
 	private var high = width - 1
 
@@ -749,27 +766,27 @@ object OpInfo {
 			},
 			"EQ" -> {
 				val res = op0 === op1
-				Seq(res, res)
+				Seq(res)
 			},
 			"NE" -> {
 				val res = op0 =/= op1
-				Seq(res, res)
+				Seq(res)
 			},
 			"ULT" -> { // unsigned less than
 				val res = op0 < op1
-				Seq(res, res)
+				Seq(res)
 			},
 			"ULE" -> { // unsigned less than or equal
 				val res = op0 <= op1
-				Seq(res, res)
+				Seq(res)
 			},
 			"SLT" -> { // signed less than
 				val res = op0.asSInt < op1.asSInt
-				Seq(res, res)
+				Seq(res)
 			},
 			"SLE" -> { // signed less than or equal
 				val res = op0.asSInt <= op1.asSInt
-				Seq(res, res)
+				Seq(res)
 			},
 			"SEL" -> {
 				Seq(Mux(op2.asBool, op1, op0))
@@ -909,7 +926,7 @@ object OpInfo {
 					fCmp32_io.a := op0
 					fCmp32_io.b := op1
 					fCmp32_io.cmpType := shareUnitsCfgBits
-					Seq(fCmp32_io.result, fCmp32_io.result)
+					Seq(fCmp32_io.result)
 				}
     		},
 	 		"FOLT32"    ->  {
@@ -921,7 +938,7 @@ object OpInfo {
 					fCmp32_io.a := op0
 					fCmp32_io.b := op1
 					fCmp32_io.cmpType := shareUnitsCfgBits
-					Seq(fCmp32_io.result, fCmp32_io.result)
+					Seq(fCmp32_io.result)
 				}
     		},		
 	 		"FOLE32"    ->  {
@@ -933,7 +950,7 @@ object OpInfo {
 					fCmp32_io.a := op0
 					fCmp32_io.b := op1
 					fCmp32_io.cmpType := shareUnitsCfgBits
-					Seq(fCmp32_io.result, fCmp32_io.result)
+					Seq(fCmp32_io.result)
 				}
     		},					
 	 		"FUNO32"    ->  {
@@ -945,7 +962,7 @@ object OpInfo {
 					fCmp32_io.a := op0
 					fCmp32_io.b := op1
 					fCmp32_io.cmpType := shareUnitsCfgBits
-					Seq(fCmp32_io.result, fCmp32_io.result)
+					Seq(fCmp32_io.result)
 				}
     		},		
 
@@ -1018,7 +1035,7 @@ object OpInfo {
 					bfCmp16_io.a := op0
 					bfCmp16_io.b := op1
 					bfCmp16_io.cmpType := shareUnitsCfgBits
-					Seq(bfCmp16_io.result, bfCmp16_io.result)
+					Seq(bfCmp16_io.result)
 				}
     		},
 	 		"BFOLT16"    ->  {
@@ -1030,7 +1047,7 @@ object OpInfo {
 					bfCmp16_io.a := op0
 					bfCmp16_io.b := op1
 					bfCmp16_io.cmpType := shareUnitsCfgBits
-					Seq(bfCmp16_io.result, bfCmp16_io.result)
+					Seq(bfCmp16_io.result)
 				}
     		},		
 	 		"BFOLE16"    ->  {
@@ -1042,7 +1059,7 @@ object OpInfo {
 					bfCmp16_io.a := op0
 					bfCmp16_io.b := op1
 					bfCmp16_io.cmpType := shareUnitsCfgBits
-					Seq(bfCmp16_io.result, bfCmp16_io.result)
+					Seq(bfCmp16_io.result)
 				}
     		},					
 	 		"BFUNO16"    ->  {
@@ -1054,7 +1071,7 @@ object OpInfo {
 					bfCmp16_io.a := op0
 					bfCmp16_io.b := op1
 					bfCmp16_io.cmpType := shareUnitsCfgBits
-					Seq(bfCmp16_io.result, bfCmp16_io.result)
+					Seq(bfCmp16_io.result)
 				}
     		},		
 
@@ -1063,15 +1080,15 @@ object OpInfo {
 			// = Merge op
 			"INTLV4BASE"    ->  {
 				val output = InterleaveOps(ops, 4, width, launch)
-				Seq(output, output)
+				Seq(output)
     		},		
 			"INTLV3BASE"    ->  {
 				val output = InterleaveOps(ops, 3, width, launch)
-				Seq(output, output)
+				Seq(output)
     		},	
 			"INTLV2BASE"    ->  {
 				val output = InterleaveOps(ops, 2, width, launch)
-				Seq(output, output)
+				Seq(output)
     		},	
 
 			// = Merge op
@@ -1136,6 +1153,301 @@ object OpInfo {
 			},
 		)
 		(opToRes, shareUnitsCfgBits, opToShareUnitCfg)
+	}
+
+
+	def OpFuncs2(opset: ListBuffer[String], ops: Seq[UInt], en: Bool, launch: Bool): (Map[String, Seq[UInt]], UInt, Map[String, UInt]) = {
+		//		def OpFuncs(ops: Seq[UInt], opc: UInt, opset: ListBuffer[OPC]) : Map[String, Seq[UInt]] = {
+		//		val op_names = opset.map(_.toString)
+		val op0 = ops.head(high, 0)
+		val op1 = ops(1)(high, 0)
+		val op2 = {
+			if (ops.size > 2) ops(2)
+			else 0.U(1.W)
+		}
+
+		def have(op: String): Boolean = opset.contains(op)
+
+		///// Some optional instance implementation
+		val udivOpt =
+			if (have("UDIV") || have("UREM")) Some(Module(new Div(width, false, DIV_LATENCY-1))) else None
+		val sdivOpt =
+			if (have("SDIV") || have("SREM")) Some(Module(new Div(width, true,  DIV_LATENCY-1))) else None
+
+		val fAdd32Opt =
+			if (have("FADD32") || have("FSUB32") || have("FMA32")) Some(Module(new FPAdd32).io) else None
+		val fMul32Opt =
+			if (have("FMUL32") || have("FMA32")) Some(Module(new FPMult32).io) else None
+		val fDiv32Opt =
+			if (have("FDIV32")) Some(Module(new FPDiv32).io) else None
+		val fCmp32Opt =
+			if (have("FEQ32") || have("FOLT32") || have("FOLE32") || have("FUNO32"))
+			Some(Module(new FPCmp32).io) else None
+
+		val bfAdd16Opt =
+			if (have("BFADD16") || have("BFSUB16") || have("BFMA16")) Some(Module(new BFAdd16).io) else None
+		val bfMul16Opt =
+			if (have("BFMUL16") || have("BFMA16")) Some(Module(new BFMult16).io) else None
+		val bfDiv16Opt =
+			if (have("BFDIV16")) Some(Module(new BFDiv16).io) else None
+		val bfCmp16Opt =
+			if (have("BFEQ16") || have("BFOLT16") || have("BFOLE16") || have("BFUNO16"))
+			Some(Module(new BFCmp16).io) else None
+		//// fp32 share units:  add cmp div
+		// lazy val fAdd32_io = Module(new FPAdd32).io
+		// lazy val fCmp32_io = Module(new FPCmp32).io
+		// lazy val fMul32_io = Module(new FPMult32).io
+		// lazy val fDiv32_io = Module(new FPDiv32).io
+
+		// //// bf16 share units:  add cmp div
+		// lazy val bfAdd16_io = Module(new BFAdd16).io
+		// lazy val bfCmp16_io = Module(new BFCmp16).io
+		// lazy val bfMul16_io = Module(new BFMult16).io
+		// lazy val bfDiv16_io = Module(new BFDiv16).io
+
+		val shn = op1(log2Ceil(width) - 1, 0)
+		
+		//// Shared Units
+		// val SharedUnitsExist = false.B
+		val ShareUnitsCfgBitsWidth = 3
+		lazy val shareUnitsCfgBits = Wire(UInt(ShareUnitsCfgBitsWidth.W))
+		shareUnitsCfgBits := 0.U 
+
+		lazy val opToShareUnitCfg: Map[String, UInt] = Map(
+			"FADD32"   ->  { /*fAdd32_io.subOp = */ 0.U},
+			"FSUB32"   ->  { /*fAdd32_io.subOp = */ 1.U},
+			"FMA"      ->  { /*fAdd32_io.subOp = */ 4.U},
+
+			//// FEQ32 FOLT32 FOLE32 FUNO32 share the same ValExec_CompareRecFN
+			"FEQ32"    ->  { /*fCmp32_io.cmpType = */  0.U},
+	 		"FOLE32"   ->  { /*fCmp32_io.cmpType = */  1.U},
+			"FOLT32"   ->  { /*fCmp32_io.cmpType = */  2.U},
+	 		// "FUNO32"   ->  { /*fCmp32_io.cmpType = */  3.U}, //// not supported
+
+			/// bf's share unit cfg is the same with fp32
+			"BFADD16"   ->  { /*bfAdd16_io.subOp = */ 0.U},
+			"BFSUB16"   ->  { /*bfAdd16_io.subOp = */ 1.U},
+			"BFMA16"   	->  { /*bfAdd16_io.subOp = */ 4.U},
+
+			"BFEQ16"    ->  { /*bfCmp16_io.cmpType = */  0.U},
+	 		"BFOLE16"   ->  { /*bfCmp16_io.cmpType = */  1.U},
+			"BFOLT16"   ->  { /*bfCmp16_io.cmpType = */  2.U},			
+		).filter{ case (k,_) => have(k) }
+
+		// ------------------connection ------------------//
+		// UDIV/UREM
+		udivOpt.foreach { d =>
+			d.io.op0 := op0
+			d.io.op1 := op1
+		}
+		val udivQuo = udivOpt.map(_.io.quo).getOrElse(0.U(width.W))
+		val udivRem = udivOpt.map(_.io.rem).getOrElse(0.U(width.W))		
+
+		// SDIV/SREM
+		sdivOpt.foreach { d =>
+			d.io.op0 := op0
+			d.io.op1 := op1
+		}
+		val sdivQuo = sdivOpt.map(_.io.quo).getOrElse(0.U(width.W))
+		val sdivRem = sdivOpt.map(_.io.rem).getOrElse(0.U(width.W))
+
+		// FP32
+		val f32a = if(op0.getWidth < 32) op0 else op0(31,0)
+		val f32b = if(op1.getWidth < 32) op1 else op1(31,0)
+		fMul32Opt.foreach { m => m.a := f32a; m.b := f32b; m.rm := 0.U }
+		val fmul32Res = fMul32Opt.map(_.result).getOrElse(0.U(32.W))
+
+		fAdd32Opt.foreach { a =>
+			a.a  := f32a
+			a.b  := f32b
+			a.sub:= shareUnitsCfgBits
+			a.rm := 0.U
+		}
+		val fadd32Res = fAdd32Opt.map(_.result).getOrElse(0.U(32.W))
+
+		fDiv32Opt.foreach { d =>
+			d.a := f32a; d.b := f32b; d.rm := 0.U; d.en := en; d.II := 13.U; d.mode := 0.U
+		}
+		val fdiv32Res = fDiv32Opt.map(_.result).getOrElse(0.U(32.W))
+
+		fCmp32Opt.foreach { c => c.a := f32a; c.b := f32b; c.cmpType := shareUnitsCfgBits}
+		val fcmp32Res = fCmp32Opt.map(_.result).getOrElse(0.U(1.W))		
+
+		// BF16
+		val bf16a = op0(15,0)
+		val bf16b = op1(15,0)
+		val bf16c = op2(15,0)
+		bfMul16Opt.foreach { m => m.a := bf16a; m.b := bf16b; m.rm := 0.U }
+		val bfmul16Res = bfMul16Opt.map(_.result).getOrElse(0.U(16.W))
+
+		// BFMA/BFADD/BFSUB share adds
+		val bfadd16Res = bfAdd16Opt.map(_.result).getOrElse(0.U(16.W))
+		if(have("BFMA16")){
+			val lhs = Mux(shareUnitsCfgBits === 4.U, RegNext(bfmul16Res), bf16a)
+			val rhs = Mux(shareUnitsCfgBits === 4.U, RegNext(op2), bf16b)
+			bfAdd16Opt.map(_.a).getOrElse(0.U(16.W)) := lhs
+			bfAdd16Opt.map(_.b).getOrElse(0.U(16.W)) := rhs
+			bfAdd16Opt.map(_.rm).getOrElse(0.U(16.W)) := 0.U
+			bfAdd16Opt.map(_.sub).getOrElse(0.U(16.W)) := shareUnitsCfgBits(0)
+		}
+		else if(!have("BFMA16")&have("BFADD16")){
+			bfAdd16Opt.map(_.a).getOrElse(0.U(16.W)) := bf16a
+			bfAdd16Opt.map(_.b).getOrElse(0.U(16.W)) := bf16b
+			bfAdd16Opt.map(_.rm).getOrElse(0.U(16.W)) := 0.U
+			bfAdd16Opt.map(_.sub).getOrElse(0.U(16.W)) := shareUnitsCfgBits(0)
+		}
+
+		bfDiv16Opt.foreach { d =>
+			d.a := bf16a; d.b := bf16b; d.rm := 0.U; d.en := en; d.II := 8.U; d.mode := 0.U
+		}
+		val bfdiv16Res = bfDiv16Opt.map(_.result).getOrElse(0.U(16.W))
+
+		bfCmp16Opt.foreach { c => c.a := bf16a; c.b := bf16b; c.cmpType := shareUnitsCfgBits }
+		val bfcmp16Res = bfCmp16Opt.map(_.result).getOrElse(0.U(1.W))
+
+		val resbuf = scala.collection.mutable.ArrayBuffer[(String, Seq[UInt])]()
+		def add(op: String)(res: => Seq[UInt]): Unit =
+			if (have(op)) resbuf += (op -> res)
+
+		// INT
+		add("PASS"){ Seq(op0) }
+		add("ADD"){  Seq(op0 + op1) }
+		add("SUB"){  Seq(op0 - op1) }
+		add("MUL"){  Seq(op0 * op1) }
+		add("UDIV"){ Seq(udivQuo) }
+		add("UREM"){ Seq(udivRem) }
+		add("SDIV"){ Seq(sdivQuo) }
+		add("SREM"){ Seq(sdivRem) }
+		add("MOD"){  Seq(op0 % op1) }
+		add("MIN"){  Seq(Mux(op0 < op1, op0, op1)) }
+		add("MAX"){  Seq(Mux(op0 > op1, op0, op1)) }
+		add("AND"){  Seq(op0 & op1) }
+		add("OR"){   Seq(op0 | op1) }
+		add("NOT"){  Seq(~op0) }
+		add("XOR"){  Seq(op0 ^ op1) }
+		add("SHL"){  Seq((op0 << shn).asUInt) }
+		add("LSHR"){ Seq((op0 >> shn).asUInt) }
+		add("ASHR"){ Seq((op0.asSInt >> shn).asUInt) }
+		add("CSHL"){ Seq(((op0 << shn).asUInt) | ((op0 >> (width.U - shn)).asUInt)) }
+		add("CSHR"){ Seq(((op0 >> shn).asUInt) | ((op0 << (width.U - shn)).asUInt)) }
+		add("EQ"){   Seq((op0 === op1).asUInt) }
+		add("NE"){   Seq((op0 =/= op1).asUInt) }
+		add("ULT"){  Seq((op0 <  op1).asUInt) }
+		add("ULE"){  Seq((op0 <= op1).asUInt) }
+		add("SLT"){  Seq((op0.asSInt <  op1.asSInt).asUInt) }
+		add("SLE"){  Seq((op0.asSInt <= op1.asSInt).asUInt) }
+		add("SEL"){  Seq(Mux(op2(0), op1, op0)) }
+
+		// FP32
+		add("FMUL32"){ Seq(fmul32Res) }
+		add("FDIV32"){ Seq(fdiv32Res) }
+		add("FADD32"){ Seq(fadd32Res) }
+		add("FSUB32"){ Seq(fadd32Res) }
+		add("FEQ32"){  Seq(fcmp32Res) }
+		add("FOLT32"){ Seq(fcmp32Res) }
+		add("FOLE32"){ Seq(fcmp32Res) }
+		add("FUNO32"){ Seq(fcmp32Res) }
+
+		// BF16
+		add("BFMUL16"){ Seq(bfmul16Res) }
+		add("BFDIV16"){ Seq(bfdiv16Res) }
+		add("BFADD16"){ Seq(bfadd16Res) }
+		add("BFSUB16"){ Seq(bfadd16Res) }
+		add("BFEQ16"){  Seq(bfcmp16Res) }
+		add("BFOLT16"){ Seq(bfcmp16Res) }
+		add("BFOLE16"){ Seq(bfcmp16Res) }
+		add("BFUNO16"){ Seq(bfcmp16Res) }
+
+		// INTLV interleave
+		// = Merge op
+		add("INTLV4BASE") {
+			val output = InterleaveOps(ops, 4, width, launch)
+			Seq(output)
+    	}
+		add("INTLV3BASE") {
+			val output = InterleaveOps(ops, 3, width, launch)
+			Seq(output)
+    	}
+		add("INTLV2BASE") {
+			val output = InterleaveOps(ops, 2, width, launch)
+			Seq(output)
+    	}		
+		
+		// DEINTLV deinterleave
+		add("DEINTLV4BASE" )     {
+			val output = DeinterleaveOps(ops.head, 4, width, launch)
+			Seq(output(0), output(1), output(2), output(3))
+    	}		
+		add("DEINTLV3BASE")      {
+			val output = DeinterleaveOps(ops.head, 3, width, launch)
+			Seq(output(0), output(1), output(2))
+    	}	
+		add("DEINTLV2BASE")     {
+			val output = DeinterleaveOps(ops.head, 2, width, launch)
+			Seq(output(0), output(1))
+    	}	
+
+		//// MAC @jhlou
+		add("MulAdd"){ Seq(RegNext(op0 * op1) + RegNext(op2)) }
+		add("FMA32"){
+			val lhs = RegNext(fmul32Res); val rhs = RegNext(f32b) // 这里只演示，实际按你定义
+			Seq(fadd32Res) // 若要严格 FMA，请用 add 的输入换成 lhs/rhs
+		}
+
+		// 仅输出存在的 op 的映射表
+		val opToRes: Map[String, Seq[UInt]] = resbuf.result().toMap
+
+		(opToRes, shareUnitsCfgBits, opToShareUnitCfg)
+
+		// lazy val opToRes = Map(
+
+		// //// MAC @jhlou
+		// "MulAdd" -> {
+		// 	val addLhs = RegNext(op0 * op1)
+		// 	val addRhs = RegNext(op2)
+		// 	Seq(addLhs + addRhs)
+		// },
+		// "FMA32" -> {
+		// 	if (ops.head.getWidth < 32 || ops(1).getWidth < 32 || ops.size < 3) {
+    	// 		Seq()
+  		// 	} else {
+      	// 		val op0 = ops.head.apply(31,0)
+      	// 		val op1 = ops(1).apply(31,0)
+		// 		val op2 = ops(2).apply(31,0)
+      	// 		// val fMul32_io = Module(new FPMult32).io
+      	// 		fMul32_io.a := op0
+      	// 			fMul32_io.b := op1
+		// 			fMul32_io.rm := 0.U
+		// 			val addLhs = RegNext(fMul32_io.result)
+      	// 			// Seq(fMul32_io.result)
+		// 			val addRhs = RegNext(op2)
+      	// 			fAdd32_io.a := addLhs
+      	// 			fAdd32_io.b := addRhs
+		// 			fAdd32_io.sub := shareUnitsCfgBits
+		// 			fAdd32_io.rm := 0.U
+      	// 			Seq(fAdd32_io.result)
+		// 		}
+		// 	},
+		// 	"BFMA16" -> {
+		// 		if (ops.head.getWidth < 16 || ops(1).getWidth < 16 || ops.size < 3) {
+    	// 			Seq()
+  		// 		} else {
+		// 			val op0 = ops.head.apply(15,0)
+		// 			val op1 = ops(1).apply(15,0)
+		// 			val op2 = ops(2).apply(15,0)
+		// 			bfMul16_io.a := op0
+		// 			bfMul16_io.b := op1
+		// 			bfMul16_io.rm := 0.U
+		// 			val addLhs = RegNext(bfMul16_io.result)
+		// 			val addRhs = RegNext(op2)
+		// 			bfAdd16_io.a := addLhs
+		// 			bfAdd16_io.b := addRhs
+		// 			bfAdd16_io.sub := shareUnitsCfgBits
+		// 			bfAdd16_io.rm := 0.U
+		// 			Seq(bfAdd16_io.result)
+		// 		}
+		// 	},
+		// )
 	}
 
 	def dumpOpInfo(filename: String): Unit = {

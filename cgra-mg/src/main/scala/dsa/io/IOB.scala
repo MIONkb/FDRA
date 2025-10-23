@@ -49,6 +49,8 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   if(mode != FIFO_MODE){ apply("max_delay", maxDelay) }
   // println("[mion]In IOB, hasMaskSram:", hasMaskSram)
 
+  // override def desiredName: String = s"IOB$cfgBlkIndex"
+
   val io = IO(new Bundle {
     val cfg_en   = Input(Bool())
     val cfg_addr = Input(UInt(cfgAddrWidth.W))
@@ -153,10 +155,11 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   cfg.io.cfg_en := io.cfg_en && (cfgBlkIndex.U === io.cfg_addr(cfgAddrWidth-1, cfgBlkOffset))
   cfg.io.cfg_addr := io.cfg_addr(cfgBlkOffset-1, 0)
   cfg.io.cfg_data := io.cfg_data
-  assert(cfg.cfgAddrWidth <= cfgBlkOffset)
+  // println("sumCfgWidth",sumCfgWidth)
   // println("cfgBlkIndex",cfgBlkIndex)
-  // println("cfgAddrWidth",cfgAddrWidth)
+  // println("cfg.cfgAddrWidth",cfg.cfgAddrWidth)
   // println("cfgBlkOffset",cfgBlkOffset)
+  assert(cfg.cfgAddrWidth <= cfgBlkOffset)
   assert(cfgBlkIndex < (1 << (cfgAddrWidth-cfgBlkOffset)))
   val cfgOut = cfg.io.out(0)
 

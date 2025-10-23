@@ -60,20 +60,21 @@ object VitraSpec{
     "cgra_cfg_blk_offset" -> 3,  // config bus: block index offset in the address
 
     // tile parameters
-    "tile_num_row" -> 5,  
+    "tile_num_row" -> 6,  
     "tile_num_column" -> 2,  
-    "cgra_tile_num" -> 5,  
+    "cgra_tile_num" -> 6,  
 
     // 1.2. GPE attributes (default for all)
 //    "cgra_gpe_num_rf_reg" -> 1,
-    "cgra_gpe_operations" -> ListBuffer("PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", 
+    "cgra_gpe_operations" -> ListBuffer("PASS", 
+                                        "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB",
                                         // /*"UDIV", "SDIV",*/
-                                        // "SEL", 
+                                        "SEL", 
                                         // // "FMUL32", "FSUB32", "FADD32", "FACC32",
                                         // // "FDIV32",
-                                        // // "FEQ32", "FOLT32", "FOLE32", "FUNO32",
+                                        // // // "FEQ32", "FOLT32", "FOLE32", "FUNO32",
                                         "BFMUL16", "BFSUB16", "BFADD16", "BFACC16",
-                                        /*"BFDIV16",*/
+                                        // /*"BFDIV16",*/
                                         "BFEQ16", "BFOLT16", "BFOLE16", "BFUNO16",                                        
                                         "ISEL" ,"INTLV4" , "INTLV3", "INTLV2",
                                         "DEINTLV4" , "DEINTLV3", "DEINTLV2",

@@ -428,6 +428,8 @@ class GIB(attrs: mutable.Map[String, Any]) extends Module with IR {
   apply("num_input", numIn)
   apply("num_output", numOut)
 
+  // override def desiredName: String = s"GIB$cfgBlkIndex"
+
   val io = IO(new Bundle{
     val cfg_en   = Input(Bool())
     val cfg_addr = Input(UInt(cfgAddrWidth.W))
