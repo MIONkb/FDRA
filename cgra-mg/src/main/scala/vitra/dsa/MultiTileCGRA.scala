@@ -1030,18 +1030,29 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       }
     } //// End of "if tile == tile_num - 1"
 
-    // Configurations, each row share one config bus
-    cfgRegNum = totalRows - 1
- 
     ///////////////////////////////
     /// connect cfg_addr cfg_en cfg_data
     ///////////////////////////////
+    // Configurations, each column share one config bus
+    cfgRegNum = tile_cols
+
+    val cfgRegs = RegInit(VecInit(Seq.fill(cfgRegNum)(0.U((1+cfgAddrWidth+cfgDataWidth).W))))
+    cfgRegs(0) := Cat(cfgEnTile(tile), cfgAddrTile(tile), cfgDataTile(tile))
+    (1 until cfgRegNum).foreach{ i => cfgRegs(i) := cfgRegs(i-1) }
+
     for(i <- 0 until numIOBSides * tile_cols) {  
+      require(numIOBSides == 1 || numIOBSides == 2)
       val iob = iobs(i + tile*numIOBSides * tile_cols)
-      iob.io.cfg_en   := cfgEnTile(tile)
-      // iob.io.cfg_en_w := io.cfg_en_w
-      iob.io.cfg_addr := cfgAddrTile(tile)
-      iob.io.cfg_data := cfgDataTile(tile)
+      if(i < tile_cols){
+        iob.io.cfg_en   := cfgRegs(i)(cfgAddrWidth+cfgDataWidth)
+        iob.io.cfg_addr := cfgRegs(i)(cfgAddrWidth+cfgDataWidth-1, cfgDataWidth)
+        iob.io.cfg_data := cfgRegs(i)(cfgDataWidth-1, 0)
+      }
+      else{
+        iob.io.cfg_en   := cfgRegs(i-tile_cols)(cfgAddrWidth+cfgDataWidth)
+        iob.io.cfg_addr := cfgRegs(i-tile_cols)(cfgAddrWidth+cfgDataWidth-1, cfgDataWidth)
+        iob.io.cfg_data := cfgRegs(i-tile_cols)(cfgDataWidth-1, 0)
+      }
     }
 
     for(i <- 0 to tile_rows){
@@ -1049,24 +1060,26 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
       val peCfgIdx = {if(i < tile_rows) row_idxs_pe(i) - 1 else 0}
       // for(j <- 0 to tile_cols){
       for(j <- 0 until tile_cols){  
-        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_en   := cfgEnTile(tile)
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_en   := cfgRegs(j)(cfgAddrWidth+cfgDataWidth)
         // gibs(i*(cols+1)+j).io.cfg_en_w   := io.cfg_en_w
-        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_addr := cfgAddrTile(tile)
-        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_data := cfgDataTile(tile)
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_addr := cfgRegs(j)(cfgAddrWidth+cfgDataWidth-1, cfgDataWidth)
+        gibs(i*(tile_cols)+j +tile*(tile_rows+1)*tile_cols).io.cfg_data := cfgRegs(j)(cfgDataWidth-1, 0)
         if((i < tile_rows) && (j < tile_cols)){
-          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_en   := cfgEnTile(tile)
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_en   := cfgRegs(j)(cfgAddrWidth+cfgDataWidth)
           // pes(i*cols+j).io.cfg_en_w   := io.cfg_en_w
-          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_addr := cfgAddrTile(tile)
-          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_data := cfgDataTile(tile)
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_addr := cfgRegs(j)(cfgAddrWidth+cfgDataWidth-1, cfgDataWidth)
+          pes(i*tile_cols+j +tile*(tile_rows)*tile_cols).io.cfg_data := cfgRegs(j)(cfgDataWidth-1, 0)
         }
       }
 
       if(tile == tile_num - 1){
-        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_en   := cfgEnTile(tile)
-        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_addr := cfgAddrTile(tile)
-        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_data := cfgDataTile(tile)
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_en   := cfgRegs(tile_cols - 1)(cfgAddrWidth+cfgDataWidth)
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_addr := cfgRegs(tile_cols - 1)(cfgAddrWidth+cfgDataWidth-1, cfgDataWidth)
+        gibs((tile_rows + 1) * tile_cols + i +tile*(tile_rows+1)*tile_cols).io.cfg_data := cfgRegs(tile_cols - 1)(cfgDataWidth-1, 0)
       }
     }
+    /// end of config connection
+
   } /// end of multi tile
   
   println("sm_id:", sm_id)

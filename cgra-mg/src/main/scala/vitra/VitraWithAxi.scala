@@ -33,7 +33,7 @@ object VitraParam {
   // val operation_set_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/operations.json"
   // val cgra_adg_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/vitra_cgra_adg.json"
   // val axil_reg_spec_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/axilite_spec.json"
-  val FPGAImp = false
+  val FPGAImp = true
   val spec_dir = (
     if(FPGAImp == true) "/home/jhlou/CGRVOPT/AXIFPGA/spec"
     else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl/spec"
