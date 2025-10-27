@@ -484,8 +484,8 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
         val trackdirbuf : ListBuffer[Int] = ListBuffer()
         if(j > 0 || tile > 0) trackdirbuf.append( WEST ) // WEST
         if(i > 0) trackdirbuf.append( NORTH ) // NORTH
-        if((j + 1) < gibsParam.head.size )  trackdirbuf.append( EAST ) // EAST
-        if((i + 1) < gibsParam.size  )  trackdirbuf.append( SOUTH )  // SOUTH
+        if((j + 1) < gibsParam.head.size || tile < tile_num - 1)  trackdirbuf.append( EAST ) // EAST
+        if((i + 1) < gibsParam.size)  trackdirbuf.append( SOUTH )  // SOUTH
         gib.track_directions = trackdirbuf
         // find the type of each GIB
         val res = gib_typemap.find(ins => ins._2 == gib)

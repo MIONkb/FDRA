@@ -527,6 +527,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           val idx_w = i * (tile_cols) + j + (tile_rows + 1) * tile_cols * (tile - 1)
           val idx_e = i * (tile_cols) + (tile_rows + 1) * tile_cols * tile
           gibs(idx_e).io.itrackW.zipWithIndex.foreach { case (in, k) =>
+            println("connect with west, (westidx, eastidx), (westidx, eastidx)", idx_w, idx_e, gibs(idx_w).cfgBlkIndex, gibs(idx_e).cfgBlkIndex)
             in := gib.io.otrackE(k)
             val index1 = gibs(idx_e).iPortMap("itrackW" + k.toString)
             val index2 = gib.oPortMap("otrackE" + k.toString)
@@ -534,6 +535,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           }
 
           gib.io.itrackE.zipWithIndex.foreach { case (in, k) =>
+            println("connect with east, (westidx, eastidx), (westidx, eastidx)", idx_w, idx_e, gibs(idx_w).cfgBlkIndex, gibs(idx_e).cfgBlkIndex)
             in := gibs(idx_e).io.otrackW(k)
             val index1 = gib.iPortMap("itrackE" + k.toString)
             val index2 = gibs(idx_e).oPortMap("otrackW" + k.toString)
@@ -791,11 +793,15 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           }
 
           if (tile_cols == 1) {
-            gibs(idx_c).io.itrackW.foreach { in => in := 0.U }
+            if (tile == 0) {
+              gibs(idx_c).io.itrackW.foreach { in => in := 0.U }
+            }
             unconnectedGIBs += (i, j) -> gibs(idx_c)
           }
           else if (j == 0) {
-            gibs(idx_c).io.itrackW.foreach { in => in := 0.U }
+            if (tile == 0) {
+              gibs(idx_c).io.itrackW.foreach { in => in := 0.U }
+            }
             gibs(idx_c).io.itrackE.zipWithIndex.foreach { case (in, k) =>
               in := gibs(idx_e).io.otrackW(k)
               val index1 = gibs(idx_c).iPortMap("itrackE" + k.toString)
