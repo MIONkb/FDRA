@@ -152,6 +152,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   val Num_regs_cfg_en  = (cfgAddrWidth / AxiLiteDataWidth) + 1
   val Num_reg_cfg_en_tile = (nTiles / AxiLiteDataWidth) + 1
   val Num_regs_iob_ens = (nTiles * nBanksIOB + AxiLiteDataWidth - 1) / AxiLiteDataWidth 
+  val Num_regs_tile_ens = (nTiles / AxiLiteDataWidth) + 1
   // val Num_regs_start   = (nTiles / AxiLiteDataWidth) + 1
   val Num_regs_done    = (nTiles / AxiLiteDataWidth) + 1
   val offsetBits       = math.min(/*4bytes*/ 2, log2Ceil(AxiLiteDataWidth))
@@ -165,6 +166,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   val reg_cfg_en_next   = Wire(Bool())
 
   val reg_exe_iob_ens   = Seq.fill(Num_regs_iob_ens){RegInit(0.U(AxiLiteDataWidth.W))}
+  val reg_exe_tile_ens  = Seq.fill(Num_regs_tile_ens){RegInit(0.U(AxiLiteDataWidth.W))}
   val reg_exe_start     = RegInit(false.B)
   val reg_exe_start_next   = Wire(Bool())
 
@@ -185,12 +187,15 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
     /// exe regs
     ++ (0 until Num_regs_iob_ens).map { i =>
       reg_exe_iob_ens(i)  -> ((i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1) << offsetBits).U
+    } ++ (0 until Num_regs_tile_ens).map { i =>
+      reg_exe_tile_ens(i)  -> ((i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile 
+                            + Num_regs_iob_ens + 0x1) << offsetBits).U
     } ++ Map(
       reg_exe_start     -> ((Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1 
-                            + Num_regs_iob_ens) << offsetBits).U,
+                            + Num_regs_iob_ens + Num_regs_tile_ens) << offsetBits).U,
     ) ++ (0 until Num_regs_done).map { i =>
       reg_exe_done(i)     -> ((i + Num_regs_cfg_base_addr + Num_regs_cfg_num + Num_reg_cfg_en_tile + 0x1 
-                              + Num_regs_iob_ens + 0x1) << offsetBits).U
+                              + Num_regs_iob_ens + Num_regs_tile_ens + 0x1) << offsetBits).U
     }
   ).toMap
 
@@ -217,6 +222,10 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
 
   (0 until Num_regs_iob_ens).map { i =>
     apply(f"reg_exe_iob_ens_${i}", f"0x${regMap(reg_exe_iob_ens(i)).litValue}%X")
+  }
+
+  (0 until Num_regs_tile_ens).map { i =>
+    apply(f"reg_exe_tile_ens_${i}", f"0x${regMap(reg_exe_tile_ens(i)).litValue}%X")
   }
 
   apply(f"reg_exe_start", f"0x${regMap(reg_exe_start).litValue}%X")
@@ -264,11 +273,12 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   val cfg_start     = RegInit(false.B)
   val exe_start     = RegInit(false.B)
 
-  val exe_en_tiles  = VecInit((0 until nTiles).map { t =>
-    val lo = t * nBanksIOB
-    val hi = (t + 1) * nBanksIOB - 1
-    iob_ens(hi, lo).orR
-  }).asUInt
+  // val exe_en_tiles  = VecInit((0 until nTiles).map { t =>
+  //   val lo = t * nBanksIOB
+  //   val hi = (t + 1) * nBanksIOB - 1
+  //   iob_ens(hi, lo).orR
+  // }).asUInt
+  val exe_en_tiles  = RegInit(0.U((nTiles).W))
 
   //////////////////////////////////////
   ///// CGRA Config and Exe controller
@@ -296,6 +306,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
       .elsewhen(reg_exe_start){
         cgra_state  := s_cgra_exe_wait
         iob_ens := Cat(reg_exe_iob_ens.reverse)(nBanksIOB*nTiles-1, 0)
+        exe_en_tiles := Cat(reg_exe_tile_ens.reverse)(nTiles, 0)
       }
     }
     is(s_cgra_cfg_wait){
@@ -314,6 +325,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
       .elsewhen(reg_exe_start){
         cgra_state := s_cgra_exe_wait
         iob_ens := Cat(reg_exe_iob_ens.reverse)(nBanksIOB*nTiles-1, 0)
+        exe_en_tiles := Cat(reg_exe_tile_ens.reverse)(nTiles, 0)
       }
     }
     is(s_cgra_exe_wait){
@@ -455,6 +467,13 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
           reg_exe_iob_ens(i) := Mux(w_reg_addr === regMap(reg_exe_iob_ens(i)),
                                       io.s_axilite.w.bits.data,
                                       reg_exe_iob_ens(i))
+        }
+
+        // reg_exe_iob_ens Vec
+        for (i <- 0 until Num_regs_tile_ens) {
+          reg_exe_tile_ens(i) := Mux(w_reg_addr === regMap(reg_exe_tile_ens(i)),
+                                      io.s_axilite.w.bits.data,
+                                      reg_exe_tile_ens(i))
         }
 
         // reg_exe_start := Mux(w_reg_addr === regMap(reg_exe_start),

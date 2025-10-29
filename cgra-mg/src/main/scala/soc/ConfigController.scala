@@ -31,95 +31,140 @@ class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Bool
     val cfg_addr = Output(UInt(cfgAddrWidth.W))
     val cfg_data = Output(UInt(cfgDataWidth.W))
   })
+  val cfgWidth = cfgDataWidth + cfgAddrWidthAlign // total per-entry bit-width
 
-  val cfgWidth = cfgDataWidth + cfgAddrWidthAlign
+  // FSM
   val s_idle :: s_data :: s_wait :: Nil = Enum(3)
-  val state = RegInit(s_idle)
-  val cnt = RegInit(0.U(cfgAddrWidth.W))
-  val regWidth = (((dataWidthSram max cfgWidth) + dataWidthSram - 1) / dataWidthSram  + readLatencySram + 1) * dataWidthSram
-  val dataReg = RegInit(0.U(regWidth.W))
-  val wOffset = RegInit(0.U(log2Ceil(regWidth+1).W))   // write offset in dataReg
-  val availOffset = RegInit(0.U(log2Ceil(regWidth+1).W)) // available offset in dataReg for new SRAM data
-  val sramRen = (availOffset <= (regWidth - dataWidthSram).U) && (state === s_data) // SRAM Read enable
-  val wen = ShiftRegister(sramRen, readLatencySram) // sram read data is valid, write to dataReg
-  val ren = (wOffset >= cfgWidth.U) && (cnt < io.cfg_num) // read from dataReg, =cfg_en
-  val waitCnt = RegInit(0.U(log2Ceil(cfgRegNum+1).W))
-  val done = RegInit(false.B)
-  io.done := done
-//  io.busy := (state === s_data)
-  switch(state){
-    is(s_idle){
-      when(io.start){
-        state := s_data
-        done := false.B
+  val state   = RegInit(s_idle)
+  val cnt     = RegInit(0.U(cfgAddrWidth.W)) // Number of emitted cfg entries
+  val waitCnt = RegInit(0.U(log2Ceil(cfgRegNum + waitLatency + 1).W))
+  val doneReg = RegInit(false.B)
+  io.done := doneReg
+
+  // ------------------------------
+  // LSB-PACKED BIT BUFFER
+  // ------------------------------
+
+  // Capacity design:
+  // Must support: one-in + one-out in same cycle + multiple in-flight reads
+  private val safetyWords = 2 + readLatencySram
+  private val ACC_W_raw   = cfgWidth + dataWidthSram * safetyWords
+  private val ACC_W       = ((ACC_W_raw + dataWidthSram - 1) / dataWidthSram) * dataWidthSram
+  println("safetyWords, dataWidthSram, ACC_W_raw, ACC_W: ",safetyWords, dataWidthSram, ACC_W_raw, ACC_W)
+  require(ACC_W >= 2*cfgWidth)
+
+  val dataReg      = RegInit(0.U(ACC_W.W)) // LSB-packed buffer storage
+  val validBits    = RegInit(0.U(log2Ceil(ACC_W + 1).W)) // Valid packed bits in dataReg
+  val reservedBits = RegInit(0.U(log2Ceil(ACC_W + 1).W)) // Space allocated for in-flight reads
+
+  val freeBits = (ACC_W.U - validBits) - reservedBits
+  val canPull  = (state === s_data) && (freeBits >= dataWidthSram.U)
+
+  val sramRen = canPull
+  val wen     = ShiftRegister(sramRen, readLatencySram) // read data valid
+  val ren     = (validBits >= cfgWidth.U) && (cnt < io.cfg_num) // cfg output consumes cfgWidth bits
+
+  // ------------------------------
+  // FSM
+  // ------------------------------
+  switch(state) {
+    is(s_idle) {
+      when(io.start) {
+        state   := s_data
+        doneReg := false.B
       }
     }
-    is(s_data){
-      when(cnt >= io.cfg_num){
+    is(s_data) {
+      when(cnt >= io.cfg_num) {
         state := s_wait
       }
     }
-    is(s_wait){
-      // when(waitCnt >= cfgRegNum.U){ //@ jhlou 20251023
-      when(waitCnt >= cfgRegNum.U + waitLatency.U){  
-        state := s_idle
-        done := true.B
+    is(s_wait) {
+      when(waitCnt >= (cfgRegNum + waitLatency).U) {
+        state   := s_idle
+        doneReg := true.B
       }
     }
   }
-  // cfg_en count
-  when(state === s_idle){
+
+  // Track number of emitted cfg entries
+  when(state === s_idle) {
     cnt := 0.U
-  }.elsewhen(ren){
+  }.elsewhen(ren) {
     cnt := cnt + 1.U
   }
-  // wait count
-  when(state === s_idle){
+
+  // Tail pipeline wait for config shift chain
+  when(state === s_idle) {
     waitCnt := 0.U
-  }.elsewhen(state === s_wait){
+  }.elsewhen(state === s_wait) {
     waitCnt := waitCnt + 1.U
   }
-  // R/W dataReg
-  when(state === s_idle){
-    availOffset := 0.U
-  }.elsewhen(sramRen && ren){
-    availOffset := availOffset + dataWidthSram.U - cfgWidth.U
-  }.elsewhen(sramRen){
-    availOffset := availOffset + dataWidthSram.U
-  }.elsewhen(ren){
-    availOffset := availOffset - cfgWidth.U
+
+  // ------------------------------
+  // LSB-PACKED READ/WRITE HANDLING
+  // ------------------------------
+  val incRes  = Mux(sramRen, dataWidthSram.U, 0.U)    // reserve on issue
+  val decRes  = Mux(wen,     dataWidthSram.U, 0.U)    // release on return
+  val incVal  = Mux(wen,     dataWidthSram.U, 0.U)    // valid grows on return
+  val decVal  = Mux(ren,     cfgWidth.U,      0.U)    // valid shrinks on emit
+
+  when (state === s_idle) {
+    dataReg      := 0.U
+    validBits    := 0.U
+    reservedBits := 0.U
+  } .otherwise {
+    // dataReg update: 4-case mux,保持与你原来的优先级一致
+    when (wen && ren) {
+      val withNew = dataReg | (io.sram.dout << validBits)
+      dataReg := (withNew >> cfgWidth.U).asUInt
+    } .elsewhen (wen) {
+      dataReg := dataReg | (io.sram.dout << validBits)
+    } .elsewhen (ren) {
+      dataReg := (dataReg >> cfgWidth.U).asUInt
+    } .otherwise {
+      dataReg := dataReg
+    }
+
+    // counters with net effects in one place
+    validBits    := validBits + incVal - decVal
+    reservedBits := reservedBits + incRes - decRes
   }
 
-  when(state === s_idle){
-    wOffset := 0.U
-    dataReg := 0.U
-  }.elsewhen(wen && ren){
-    wOffset := wOffset + dataWidthSram.U - cfgWidth.U
-    dataReg := ((dataReg << (regWidth.U - wOffset)) >> (regWidth.U + cfgWidth.U - wOffset)).asUInt |
-                (io.sram.dout << (wOffset - cfgWidth.U)).asUInt
-  }.elsewhen(wen){
-    wOffset := wOffset + dataWidthSram.U
-    dataReg := ((dataReg << (regWidth.U - wOffset)) >> (regWidth.U - wOffset)).asUInt |
-      (io.sram.dout << wOffset).asUInt
-  }.elsewhen(ren){
-    wOffset := wOffset - cfgWidth.U
-    dataReg := (dataReg >> cfgWidth.U).asUInt
-  }
-
+  // ------------------------------
+  // SRAM interface
+  // ------------------------------
   val addrSram = RegInit(0.U(addrWidthSram.W))
-  when(state === s_idle){
+  when(state === s_idle) {
     addrSram := io.base_addr
-  }.elsewhen(sramRen){
+  }.elsewhen(sramRen) {
     addrSram := addrSram + 1.U
   }
-  io.sram.en := sramRen
-  io.sram.we := 0.U
+
+  io.sram.en   := sramRen
+  io.sram.we   := 0.U
   io.sram.addr := addrSram
-  io.sram.din := 0.U
-  io.cfg_en := ren
+  io.sram.din  := 0.U
+
+  // ------------------------------
+  // CONFIG BUS OUTPUT
+  // Lowest cfgWidth bits always represent the next ready cfg entry
+  // ------------------------------
+  io.cfg_en   := ren
   io.cfg_addr := dataReg(cfgWidth-1, cfgDataWidth)
   io.cfg_data := dataReg(cfgDataWidth-1, 0)
 
+  // ------------------------------
+  // SAFE-BOUNDS ASSERTIONS (recommended during simulation)
+  // ------------------------------
+  assert(validBits    <= ACC_W.U)
+  assert(reservedBits <= ACC_W.U)
+  assert((validBits + reservedBits) <= ACC_W.U,
+    "dataReg overflow: insufficient free bits before issuing SRAM read.")
+  when(sramRen) {
+    assert(freeBits >= dataWidthSram.U,
+      "Read issued without guaranteeing enough buffer space.")
+  }
 }
 
 
