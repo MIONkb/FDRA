@@ -45,7 +45,10 @@ class TileStateCtrl(numIOB: Int) extends Module {
   //////////////////////////////////////
   ///// state machine
   //////////////////////////////////////
-  val s_idle :: s_cfg_wait :: s_cfg_run :: s_exe_wait :: s_exe_start :: s_exe_run :: Nil = Enum(6)  
+  val s_idle::s_cfg_wait::s_cfg_run::s_exe_wait::s_exe_start::s_exe_run::s_exe_soft_run::Nil = Enum(7)
+  //  s_exe_run : running, not interruptible
+  //  s_exe_soft_run : running, interruptible
+
   val tile_state = RegInit(s_idle) /// cgra state
 
   switch(tile_state){
@@ -82,10 +85,23 @@ class TileStateCtrl(numIOB: Int) extends Module {
       tile_state := s_exe_run
     }
     is(s_exe_run){
-      when(io.exeDoneIn){ // indicate execution is running
+      when(io.exeDoneIn & (io.exeIobEn === 0.U)){
+        tile_state := s_exe_soft_run
+      }
+      .elsewhen(io.exeDoneIn){ // indicate execution is running
         tile_state := s_idle
         // exeDoneReg := true.B
       } 
+    }
+    is(s_exe_soft_run){
+      when(io.cfgStartReq){
+        tile_state    := s_cfg_wait
+      }
+      .elsewhen(io.exeStartReq){
+        tile_state  := s_exe_start
+        exeIobEnReg := io.exeIobEnReq
+        // exeDoneReg  := false.B  
+      }
     }
   }  
 
@@ -97,7 +113,7 @@ class TileStateCtrl(numIOB: Int) extends Module {
   io.exeDone    := tile_state=/=s_exe_wait && tile_state=/=s_exe_start && tile_state=/=s_exe_run
 
   io.exeStartP  := tile_state===s_exe_start
-  io.exeEn      := tile_state===s_exe_run
+  io.exeEn      := tile_state===s_exe_run || tile_state===s_exe_soft_run
   io.exeIobEn   := exeIobEnReg
 }
 
