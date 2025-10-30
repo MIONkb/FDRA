@@ -127,7 +127,7 @@ class DelayPipe(width: Int, maxDelay: Int , num: Int) extends Module {
   * @param maxDelay  total max delay cycles
   * @param num       pairs of IO ports
   */
-class SharedDelayPipe(width: Int, maxDelay: Int, num: Int) extends Module {
+class SharedDelayPipe_old(width: Int, maxDelay: Int, num: Int) extends Module {
   val cfgWidth = log2Ceil(maxDelay+1)
   val io = IO(new Bundle {
     val en = Input(Bool())
@@ -207,6 +207,88 @@ class SharedDelayPipe(width: Int, maxDelay: Int, num: Int) extends Module {
 //    for (i <- 0 until num) {
 //      wptr(i) := 0.U
 //    }
+  }
+}
+
+/** Reconfigurable Delay Pipe shared by N pairs of IO ports
+  * Compare with SharedDelayPipe_old, the wptr -> rptr is pipelined, rptr is reg implemented
+  *
+  * @param width     data width
+  * @param maxDelay  total max delay cycles
+  * @param num       pairs of IO ports
+  */
+class SharedDelayPipe(width: Int, maxDelay: Int, num: Int) extends Module {
+  val cfgWidth = log2Ceil(maxDelay + 1)
+
+  val io = IO(new Bundle {
+    val en     = Input(Bool())
+    val config = Input(UInt((num * cfgWidth).W)) // packed per-port delays
+    val in     = Input(Vec(num, UInt(width.W)))
+    val out    = Output(Vec(num, UInt(width.W)))
+  })
+
+  // Params/state
+  val regNum   = maxDelay + num
+  val ptrWidth = log2Ceil(regNum)
+  val regs     = RegInit(VecInit(Seq.fill(regNum)(0.U(width.W))))
+  val wptr     = RegInit(VecInit(Seq.fill(num)(0.U(ptrWidth.W))))
+  val rptr     = RegInit(VecInit(Seq.fill(num)(0.U(ptrWidth.W)))) // <-- rptr is a Reg
+
+  // Unpack config
+  val cfg = Wire(Vec(num, UInt(cfgWidth.W)))
+  for (i <- 0 until num) {
+    cfg(i) := io.config((i + 1) * cfgWidth - 1, i * cfgWidth)
+  }
+
+  // Your existing offset for wptr load when !io.en
+  val offset = Wire(Vec(math.max(0, num - 1), UInt(cfgWidth.W)))
+  if (num > 1) {
+    offset(0) := cfg(1) + 1.U
+    for (i <- 1 until num - 1) {
+      offset(i) := offset(i - 1) + cfg(i + 1) + 1.U
+    }
+  }
+
+  // Helper: modulo add/sub (implemented as add with wrap)
+  def incMod(x: UInt, mod: Int): UInt 
+    = Mux(x === (mod - 1).U, 0.U, x + 1.U)
+  def subMod(x: UInt, y: UInt, mod: Int): UInt = {
+    val xz = x.zext(); val yz = y.zext(); val mz = mod.U.zext()
+    val diff = xz - yz
+    Mux(diff >= 0.S, diff.asUInt, (mz + diff).asUInt)(ptrWidth - 1, 0)
+  }
+
+  val alignEvent = !io.en
+
+  // Update pointers
+  for (i <- 0 until num) {
+    when (io.en) {
+      // streaming: advance both, preserving phase
+      wptr(i) := incMod(wptr(i), regNum)
+      rptr(i) := incMod(rptr(i), regNum)
+    } .otherwise {
+      // align/load phase
+      wptr(i) := (if (i == 0) 0.U else offset(i - 1))
+      // set rptr to wptr - cfg (one-time subtract, off critical path)
+      rptr(i) := subMod(wptr(i), cfg(i), regNum)
+    }
+  }
+
+  // Writes 
+  when (io.en) {
+    for (pi <- 0 until num) {
+      when (wptr(pi) < regNum.U) { regs(wptr(pi)) := io.in(pi) }
+    }
+  } .otherwise {
+    for (j <- 0 until regNum) { regs(j) := 0.U }
+  }
+
+  // Reads: use registered rptr (no wptr to rptr comb path)
+  for (i <- 0 until num) {
+    val readComb = (0 until regNum).map { j =>
+      Mux(rptr(i) === j.U, regs(j), 0.U(width.W))
+    }.reduce(_ | _)
+    io.out(i) := Mux(io.en, Mux(cfg(i) === 0.U, io.in(i), readComb), 0.U)
   }
 }
 
