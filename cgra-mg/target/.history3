@@ -91,3 +91,4 @@
 1761730538019:runMain tram.vitra.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
 1761749385448:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/vitrartl
 1761814333490:runMain tram.vitra.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+1761883839221:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/vitrartl

@@ -381,13 +381,12 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
     cgra.io.en(idx)           := tileState.io.exeEn
     cgra.io.iob_ens(idx)      := tileState.io.exeIobEn
     tile_cfg_done(idx)        := tileState.io.cfgDone
-    // println(reg_exe_done)
-    // println(reg_exe_done(idx/AxiLiteDataWidth))
-    // reg_exe_done(idx/AxiLiteDataWidth)(idx%AxiLiteDataWidth) := tileState.io.exeDone
+
     exeDoneBits(idx) := tileState.io.exeDone
 
     cgra.io.cfg_en(idx)       := cfg_en_tiles(idx) & cfgCtrl.io.cfg_en
-    tile_exe_run(idx)         := tileState.io.exeEn | tileState.io.exeStartP
+    // tile_exe_run(idx)         := tileState.io.exeEn | tileState.io.exeStartP
+    tile_exe_run(idx)         := ~tileState.io.exeDone | tileState.io.exeStartP
   }
 
 
