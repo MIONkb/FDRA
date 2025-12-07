@@ -154,12 +154,9 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     (smi_id("ALU")(0), "ALU", 0, smi_id("REG")(0), "REG", 0),
     (smi_id("REG")(0), "REG", 0, smi_id("This")(0), "This", 0)
   )
-  // delay_pipe.io.en := io.en
-  // alu.io.en := io.en
-  // dmr.io.en := io.en
-  delay_pipe.io.en := RegNext(io.en)
-  alu.io.en := RegNext(io.en)
-  dmr.io.en := RegNext(io.en)
+  delay_pipe.io.en := io.en
+  alu.io.en := io.en
+  dmr.io.en := io.en
   dmr.io.in(0) := alu.io.out
   alu.io.launch := dmr.io.launch
   io.out(0) := dmr.io.out(0)
@@ -182,8 +179,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     dmr.io.start := DontCare
     dmr.io.mode := DontCare
   } else {
-    // dmr.io.start := io.start
-    dmr.io.start := RegNext(io.start)
+    dmr.io.start := io.start
     dmr.io.mode := OpInfo.getAccMode(opc)
     if (hasCondAcc) { // do not record connections
       dmr.io.con_en := delay_pipe.io.out(1)(0)

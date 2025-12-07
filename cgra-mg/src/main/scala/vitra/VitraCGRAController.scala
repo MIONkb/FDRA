@@ -22,14 +22,16 @@ import org.chipsalliance.cde.config._
 import scala.collection.mutable 
 
 
-class TileStateCtrl(numIOB: Int) extends Module {
+class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
  val io = IO(new Bundle {
     // Inputs
     val cfgStartReq = Input(Bool())
     val cfgDoneIn   = Input(Bool())
     val exeStartReq = Input(Bool())
     val exeIobEnReq = Input(UInt(numIOB.W)) // will be saved when exeStartReq and can be changed to next after exeStartReq
-    val exeDoneIn   = Input(Bool())
+    val exeTileEnReq= Input(UInt(numIOB.W)) // will be saved when exeStartReq and can be changed to next after exeStartReq
+    // val exeDoneIn   = Input(Bool())
+    val exeDoneIn   = Input(UInt(numTiles.W))    
 
     // Outputs
     val cfgDone   = Output(Bool()) // state indictator: cfg done signal, default to be high
@@ -40,12 +42,12 @@ class TileStateCtrl(numIOB: Int) extends Module {
     val exeEn     = Output(Bool()) // exe enable signal to tile
   })
 
-  // val exeDoneReg  = RegInit(false.B)
   val exeIobEnReg = RegInit(0.U(numIOB.W))
+  val exeRelatedTileReg = RegInit(0.U(numIOB.W))
   //////////////////////////////////////
   ///// state machine
   //////////////////////////////////////
-  val s_idle::s_cfg_wait::s_cfg_run::s_exe_wait::s_exe_start::s_exe_run::s_exe_soft_run::Nil = Enum(7)
+  val s_idle::s_cfg_wait::s_cfg_run::s_exe_wait::s_exe_start::s_exe_run::Nil = Enum(6)
   //  s_exe_run : running, not interruptible
   //  s_exe_soft_run : running, interruptible
 
@@ -59,7 +61,7 @@ class TileStateCtrl(numIOB: Int) extends Module {
       .elsewhen(io.exeStartReq){
         tile_state  := s_exe_start
         exeIobEnReg := io.exeIobEnReq
-        // exeDoneReg  := false.B  
+        exeRelatedTileReg := io.exeTileEnReq
       }
     }
     is(s_cfg_wait){
@@ -71,6 +73,7 @@ class TileStateCtrl(numIOB: Int) extends Module {
       }
       .elsewhen(io.exeStartReq){
         exeIobEnReg := io.exeIobEnReq
+        exeRelatedTileReg := io.exeTileEnReq
         tile_state := s_exe_wait
       }
     }
@@ -85,24 +88,24 @@ class TileStateCtrl(numIOB: Int) extends Module {
       tile_state := s_exe_run
     }
     is(s_exe_run){
-      when(io.exeDoneIn & (io.exeIobEn === 0.U)){
-        tile_state := s_exe_soft_run
-      }
-      .elsewhen(io.exeDoneIn){ // indicate execution is running
+      // when((io.exeDoneIn & (io.exeIobEn === 0.U))){
+      //   tile_state := s_exe_soft_run
+      // }
+      // .elsewhen(io.exeDoneIn){ // indicate execution is running
+      when((exeRelatedTileReg & io.exeDoneIn).andR){
         tile_state := s_idle
-        // exeDoneReg := true.B
       } 
     }
-    is(s_exe_soft_run){
-      when(io.cfgStartReq){
-        tile_state    := s_cfg_wait
-      }
-      .elsewhen(io.exeStartReq){
-        tile_state  := s_exe_start
-        exeIobEnReg := io.exeIobEnReq
-        // exeDoneReg  := false.B  
-      }
-    }
+    // is(s_exe_soft_run){
+    //   when(io.cfgStartReq){
+    //     tile_state    := s_cfg_wait
+    //   }
+    //   .elsewhen(io.exeStartReq){
+    //     tile_state  := s_exe_start
+    //     exeIobEnReg := io.exeIobEnReq
+    //     exeRelatedTileReg := io.exeTileEnReq
+    //   }
+    // }
   }  
 
 
@@ -113,7 +116,8 @@ class TileStateCtrl(numIOB: Int) extends Module {
   io.exeDone    := tile_state=/=s_exe_wait && tile_state=/=s_exe_start && tile_state=/=s_exe_run
 
   io.exeStartP  := tile_state===s_exe_start
-  io.exeEn      := tile_state===s_exe_run || tile_state===s_exe_soft_run
+  io.exeEn      := tile_state===s_exe_run
+  // tile_state===s_exe_run || tile_state===s_exe_soft_run
   io.exeIobEn   := exeIobEnReg
 }
 
@@ -153,6 +157,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
                       addrBits = AxiLiteAddrWidth,
                       dataBits = AxiLiteDataWidth,
                       idBits   = 1) 
+  val ConfigMemBaseAddr = (1 << attrs("spad_bank_lg_size").asInstanceOf[Int]) * nTiles * nBanksIOB
 
   val io = IO(new Bundle {
     // val core = new CoreIF(idWidth) /// io.core should be re-placed by axi-lite 
@@ -220,6 +225,7 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   apply("axilite_addr_bit_with", AxiLiteAddrWidth)
   apply("tile_iob_bank_num", nBanksIOB)
   apply("tile_num", nTiles)
+  apply("cfgmem_baseaddr", ConfigMemBaseAddr)
   
   // apply("reg_cfg_base_addr", f"0x${regMap(reg_cfg_base_addr).litValue}%X")
   (0 until Num_regs_cfg_base_addr).map { i =>
@@ -369,13 +375,15 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
   ///// state ctrl for each tile
   //////////////////////////////////////
   val exeDoneBits = Wire(Vec(nTiles, Bool()))
-  val tileStates = Seq.fill(nTiles)(Module(new TileStateCtrl(nBanksIOB)))
+  val tileStates = Seq.fill(nTiles)(Module(new TileStateCtrl(nBanksIOB, nTiles)))
   tileStates.zipWithIndex.foreach { case (tileState, idx) =>
     tileState.io.cfgStartReq  := cfg_start & cfg_en_tiles(idx)
     tileState.io.cfgDoneIn    := cfgCtrl.io.done
     tileState.io.exeStartReq  := exe_start & exe_en_tiles(idx)
     tileState.io.exeIobEnReq  := iob_ens((idx + 1) * nBanksIOB - 1, idx * nBanksIOB)
-    tileState.io.exeDoneIn    := cgra.io.done(idx)
+    // tileState.io.exeDoneIn    := cgra.io.done(idx)
+    tileState.io.exeTileEnReq := exe_en_tiles
+    tileState.io.exeDoneIn    := cgra.io.done.asUInt
 
     cgra.io.start(idx)        := tileState.io.exeStartP // pulse signal, should be valid before latency 0, namely -1
     cgra.io.en(idx)           := tileState.io.exeEn

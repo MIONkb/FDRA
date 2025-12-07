@@ -119,8 +119,7 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   val connections = ListBuffer[(Int, String, Int, Int, String, Int)]()
 
   ioCtrl.io.sram <> io.sram
-  // ioCtrl.io.start := io.start
-  ioCtrl.io.start := RegNext(io.start)
+  ioCtrl.io.start := io.start
   io.done := ioCtrl.io.done
   io.out(0) := ioCtrl.io.out(0)
   connections.append((smi_id("IOController")(0), "IOController", 0, smi_id("This")(0), "This", 0))
@@ -132,8 +131,7 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
       connections.append((smi_id("This")(0), "This", offset+j, smi_id("Muxn")(i), "Muxn", j))
     }
     if(numDelayPipes > 0){
-      // delay_pipe.io.en := io.en
-      delay_pipe.io.en := RegNext(io.en)
+      delay_pipe.io.en := io.en
       delay_pipe.io.in(i) := imuxs(i).out
       ioCtrl.io.in(i) := delay_pipe.io.out(i)
       connections.append((smi_id("Muxn")(i), "Muxn", 0, smi_id("DelayPipe")(0), "DelayPipe", i))
