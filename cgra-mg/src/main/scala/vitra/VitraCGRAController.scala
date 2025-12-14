@@ -92,7 +92,7 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
       //   tile_state := s_exe_soft_run
       // }
       // .elsewhen(io.exeDoneIn){ // indicate execution is running
-      when((exeRelatedTileReg & io.exeDoneIn).andR){
+      when((io.exeDoneIn & exeRelatedTileReg) === exeRelatedTileReg){
         tile_state := s_idle
       } 
     }
