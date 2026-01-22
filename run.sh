@@ -12,6 +12,7 @@ runMain tram.axi.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/
 runMain tram.axi.VerilogGen -td /home/jhlou/projects/cocotb/IntVecAddNew
 runMain tram.vitra.VerilogGen -td /home/jhlou/chipyard/generators/fdra/cgra-mg/vitrartl
 runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI6X6X2
+runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/vitrartl
 runMain tram.vitra.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
 runMain tram.vitra.FirGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRAWithAXI8x16/src 
 

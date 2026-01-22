@@ -759,9 +759,9 @@ class FADD(val expWidth: Int, val precision: Int) extends Module {
     val rm = Input(UInt(3.W)) //@yuan: used to select rounding mode
     val result = Output(UInt((expWidth + precision).W))
 //    val fflags = Output(UInt(5.W))
-    val clock = Input(Clock()) // float signal for FPGA Floating Point IP
+    // val clock = Input(Bool()) // float signal for FPGA Floating Point IP
   })
-  dontTouch(io.clock)
+  // dontTouch(io.clock)
 
   val fcmaadd = Module(new FCMA_ADD(expWidth, precision, precision))
 

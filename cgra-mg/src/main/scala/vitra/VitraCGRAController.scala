@@ -68,7 +68,12 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
       tile_state := s_cfg_run
     }
     is(s_cfg_run){
-      when(io.cfgDoneIn){ // indicate config is running
+      when(io.cfgDoneIn & io.exeStartReq){ // indicate config is running
+        exeIobEnReg := io.exeIobEnReq
+        exeRelatedTileReg := io.exeTileEnReq
+        tile_state := s_exe_start
+      }
+      .elsewhen(io.cfgDoneIn){ // indicate config is running
         tile_state := s_idle
       }
       .elsewhen(io.exeStartReq){
