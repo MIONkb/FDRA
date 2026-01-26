@@ -39,10 +39,10 @@ case class GibSpec(
 /// Vitra: Virtual Architectura for Dynamic Adaptive Reconfigurable Tile
 /// AIM-DA : AI and More - Dynamic Adaptive
 object VitraSpec{
-  val system_bus_beat_bits = 128 // data width of the system bus
-  val spad_bank_lg_size = 13    // 14:16KB   13:8KB // log2(single scratchpad bank size in byts)
-  val spad_cfg_lg_size = 12     // 12:4KB 11:2KB 10:1KB // log2(config scratchpad size in byts)
-  val cgra_iob_sram_banks_coalesce = 8 // coalescing sram banks that CGRA IOB can access
+  val system_bus_beat_bits = 64 // data width of the system bus
+  val spad_bank_lg_size = 10    // 14:16KB   13:8KB // log2(single scratchpad bank size in byts)
+  val spad_cfg_lg_size = 10     // 12:4KB 11:2KB 10:1KB // log2(config scratchpad size in byts)
+  val cgra_iob_sram_banks_coalesce = 1 // coalescing sram banks that CGRA IOB can access
 //  val cgra_cfg_sram_banks_cascade = 2 // cascading sram banks that CGRA config controller can access
 //  val cgra_gib_connect_flexibility = mutable.Map(
 //    "num_itrack_per_ipin" -> 2, // ipin number = 2
@@ -54,30 +54,34 @@ object VitraSpec{
     // 1.1. CGRA Global parameters
     // "cgra_num_row" -> 8,    // number of PE rows //  adora: 8 fdra: 4 z7-p:6
     // "cgra_num_colum" -> 16,  // number of PE colums // adora: 16 fdra: 8 z7-p:10
-    "cgra_data_width" -> 32, // 32
+    "cgra_data_width" -> 16, // 32
     "cgra_cfg_data_width" -> 32, // config bus: data width
     "cgra_cfg_addr_width" -> 12, // adora: 12 fdra: 11 // config bus: address width
     "cgra_cfg_blk_offset" -> 3,  // config bus: block index offset in the address
 
     // tile parameters
-    "tile_num_row" -> 4,  
-    "tile_num_column" -> 2,  
-    "cgra_tile_num" -> 5,  
+    "tile_num_row" -> 1,  
+    "tile_num_column" -> 1,  
+    "cgra_tile_num" -> 1,  
 
     // 1.2. GPE attributes (default for all)
 //    "cgra_gpe_num_rf_reg" -> 1,
-    "cgra_gpe_operations" -> ListBuffer("PASS", 
-                                        "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "AND", "OR",
+    "cgra_gpe_operations" -> ListBuffer(
+                                        // "PASS", 
+                                        "ADD", 
+                                        // "SUB", "MUL", "SHL", "LSHR", "ASHR", 
+                                        // "ACC", 
+                                        // "ASUB", "AND", "OR",
                                         // /*"UDIV", "SDIV",*/
-                                        "SEL", 
-                                        "FMUL32", "FSUB32", "FADD32", "FACC32",
+                                        // "SEL", 
+                                        // // "FMUL32", "FSUB32", "FADD32", "FACC32",
                                         // // "FDIV32",
-                                        "FEQ32", "FOLT32", "FOLE32", "FUNO32",
+                                        // // // "FEQ32", "FOLT32", "FOLE32", "FUNO32",
                                         // "BFMUL16", "BFSUB16", "BFADD16", "BFACC16",
                                         // /*"BFDIV16",*/
                                         // "BFEQ16", "BFOLT16", "BFOLE16", "BFUNO16",                                        
-                                        "ISEL" ,"INTLV4" , "INTLV3", "INTLV2",
-                                        "DEINTLV4" , "DEINTLV3", "DEINTLV2",
+                                        // "ISEL" ,"INTLV4" , "INTLV3", "INTLV2",
+                                        // "DEINTLV4" , "DEINTLV3", "DEINTLV2",
                                         // "MAC", "FMAC32"
                                       ),
     // "cgra_gpe_operations" -> ListBuffer("PASS", "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", 
@@ -97,15 +101,15 @@ object VitraSpec{
                                         //  /*"FEQ32", "FOLT32", "FOLE32"*/)
     // ),/// To support heterogeneous pe design ///Map[(Int, Int), ListBuffer[String]] 
 
-    "cgra_gpe_max_delay" -> 10,
+    "cgra_gpe_max_delay" -> 1,
     "cgra_gpe_in_from_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST),
     // "cgra_gpe_in_from_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST),
     "cgra_gpe_out_to_dir" -> List(NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST),
     // "cgra_gpe_out_to_dir" -> List(NORTHWEST, SOUTHEAST),
     // 1.3. GIB attributes (default for all)
-    "cgra_gib_num_track" -> 2,   // init : 1
+    "cgra_gib_num_track" -> 1,   // init : 1
     "cgra_gib_track_reged_mode" -> 1,
-    "cgra_gib_connect_flexibility" -> List(2, 2, 4), // (track2IPinConnect, oPin2TrackConnect, oPin2IPinConnect) // init : List(2, 2, 4)
+    "cgra_gib_connect_flexibility" -> List(1, 1, 2), // (track2IPinConnect, oPin2TrackConnect, oPin2IPinConnect) // init : List(2, 2, 4)
     "cgra_gib_diag_iopin_connect" -> true, //default: true
     // 1.4. IOB attributes (default for all)
     "cgra_iob_num_sides" -> 2,   // now only support top/bottom side

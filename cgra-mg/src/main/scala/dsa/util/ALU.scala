@@ -10,7 +10,7 @@ import tram.op._
  * 
  * @param width   data width
  */
-class ALU(width: Int, ops: ListBuffer[String] ) extends Module {
+class ALU(width: Int, ops: ListBuffer[String]) extends Module {
   val op_info = OpInfo(width)
   val maxNumOperands  = ops.map(OpInfo(width).getALUOperandNum(_)).max
   val maxNumResults   = ops.map(OpInfo(width).getALUResultNum(_)).max

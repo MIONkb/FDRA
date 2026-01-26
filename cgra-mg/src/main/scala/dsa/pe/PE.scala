@@ -88,7 +88,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     val out = Output(Vec(1, UInt(width.W))) 
   })
   val aluOps = ops.map(OpInfo.getALUOp(_)).distinct
-  // println("aluOps: ", aluOps)
+  val alu_has_launch = hasInterleaverOp
   val alu = Module(new ALU(width, aluOps))
 //  val rf = Module(new RF(width, numRegRF, 1, 2))
   val dmr = Module(new DualModeReg(width, hasAcc, useDualDMRInput,lgMaxWI, lgMaxLat, lgMaxCycles, lgMaxRepeats,lgMaxII ,hasIACC))
@@ -161,7 +161,13 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
   alu.io.en := RegNext(io.en)
   dmr.io.en := RegNext(io.en)
   dmr.io.in(0) := alu.io.out
-  alu.io.launch := dmr.io.launch
+  if(hasAcc){
+    alu.io.launch := dmr.io.launch
+  }
+  else {
+    alu.io.launch := false.B
+  }
+
   io.out(0) := dmr.io.out(0)
   if(useDualDMRInput){
     dmr.io.in(1) := delay_pipe.io.out(1)

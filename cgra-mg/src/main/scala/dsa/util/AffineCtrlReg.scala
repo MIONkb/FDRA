@@ -286,6 +286,7 @@ class DualModeReg(width: Int, isAffine: Boolean,isDualIn: Boolean, lgMaxWI: Int,
     cfg_idx ++= acr.cfg_idx
   }else{
     io.out(0) := RegNext(io.in(0))
+    io.launch := DontCare
   }
 
 }
