@@ -52,7 +52,7 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
   //  s_exe_soft_run : running, interruptible
 
   val tile_state = RegInit(s_idle) /// cgra state
-
+  val prev_state = RegNext(tile_state)
   switch(tile_state){
     is(s_idle){
       when(io.cfgStartReq){
@@ -90,7 +90,10 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
     }
     is(s_exe_start){
       /// generate exe start pulse
-      tile_state := s_exe_run
+      when((io.exeDoneIn & exeRelatedTileReg) =/= exeRelatedTileReg){
+        // when done signal from last launch is cleaned by start pulse
+        tile_state := s_exe_run
+      }
     }
     is(s_exe_run){
       // when((io.exeDoneIn & (io.exeIobEn === 0.U))){
@@ -120,7 +123,8 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
   io.cfgDone    := tile_state=/=s_cfg_wait && tile_state=/=s_cfg_run
   io.exeDone    := tile_state=/=s_exe_wait && tile_state=/=s_exe_start && tile_state=/=s_exe_run
 
-  io.exeStartP  := tile_state===s_exe_start
+  io.exeStartP  := tile_state===s_exe_start && 
+                    (prev_state===s_exe_wait || prev_state===s_cfg_run || prev_state===s_idle)
   io.exeEn      := tile_state===s_exe_run
   // tile_state===s_exe_run || tile_state===s_exe_soft_run
   io.exeIobEn   := exeIobEnReg

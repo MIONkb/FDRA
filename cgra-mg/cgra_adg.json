@@ -21,20 +21,38 @@
   }, {
     "module_id" : 5,
     "cfg_blk_index" : 6,
-    "x" : 1,
+    "x" : 5,
     "tile" : 0,
-    "y" : 2,
+    "y" : 0,
     "id" : 6,
-    "track_reged" : true,
+    "track_reged" : false,
     "type" : "GIB"
   }, {
     "module_id" : 6,
-    "cfg_blk_index" : 7,
+    "cfg_blk_index" : 8,
+    "x" : 1,
+    "tile" : 0,
+    "y" : 2,
+    "id" : 8,
+    "track_reged" : true,
+    "type" : "GIB"
+  }, {
+    "module_id" : 7,
+    "cfg_blk_index" : 9,
     "x" : 3,
     "tile" : 0,
     "y" : 2,
-    "id" : 7,
+    "id" : 9,
     "track_reged" : false,
+    "type" : "GIB"
+  }, {
+    "module_id" : 8,
+    "cfg_blk_index" : 10,
+    "x" : 5,
+    "tile" : 0,
+    "y" : 2,
+    "id" : 10,
+    "track_reged" : true,
     "type" : "GIB"
   }, {
     "id" : 0,
@@ -49,10 +67,19 @@
     "id" : 3,
     "type" : "GPE"
   }, {
+    "module_id" : 2,
+    "cfg_blk_index" : 5,
+    "max_delay" : 1,
+    "x" : 4,
+    "tile" : 0,
+    "y" : 1,
+    "id" : 5,
+    "type" : "GPE"
+  }, {
     "iob_index" : 0,
     "module_id" : 1,
     "cfg_blk_index" : 1,
-    "max_delay" : 10,
+    "max_delay" : 3,
     "x" : 0,
     "tile" : 0,
     "y" : 1,
@@ -61,19 +88,19 @@
   }, {
     "iob_index" : 1,
     "module_id" : 1,
-    "cfg_blk_index" : 5,
-    "max_delay" : 10,
-    "x" : 4,
+    "cfg_blk_index" : 7,
+    "max_delay" : 3,
+    "x" : 6,
     "tile" : 0,
     "y" : 1,
-    "id" : 5,
+    "id" : 7,
     "type" : "IOB"
   } ],
-  "tile_num_row" : 1,
+  "tile_num_row" : 2,
   "cfg_spad_data_width" : 64,
   "data_width" : 16,
   "cfg_spad_size" : 1024,
-  "cfg_tile_offset" : 40,
+  "cfg_tile_offset" : 56,
   "cgra_tile_num" : 1,
   "tile_num_input" : 2,
   "iob_spad_bank_size" : 1024,
@@ -81,44 +108,62 @@
   "connection_format" : [ "src_id", "src_type", "src_out_idx", "dst_id", "dst_type", "dst_in_idx" ],
   "connections" : {
     "0" : [ 2, "GIB", 2, 1, "IOB", 0 ],
-    "5" : [ 5, "IOB", 0, 4, "GIB", 3 ],
+    "5" : [ 7, "IOB", 0, 6, "GIB", 3 ],
     "10" : [ 3, "GPE", 0, 2, "GIB", 3 ],
-    "14" : [ 6, "GIB", 2, 1, "IOB", 1 ],
+    "14" : [ 6, "GIB", 2, 5, "GPE", 2 ],
     "1" : [ 2, "GIB", 3, 1, "IOB", 2 ],
     "6" : [ 2, "GIB", 4, 3, "GPE", 0 ],
-    "9" : [ 4, "GIB", 3, 3, "GPE", 6 ],
-    "13" : [ 2, "GIB", 1, 4, "GIB", 0 ],
+    "9" : [ 4, "GIB", 4, 3, "GPE", 6 ],
     "2" : [ 1, "IOB", 0, 2, "GIB", 2 ],
-    "17" : [ 7, "GIB", 4, 5, "IOB", 1 ],
-    "12" : [ 4, "GIB", 0, 2, "GIB", 1 ],
+    "8" : [ 4, "GIB", 3, 3, "GPE", 2 ],
+    "4" : [ 6, "GIB", 5, 7, "IOB", 2 ],
+    "42" : [ 4, "GIB", 1, 9, "GIB", 0 ],
+    "24" : [ 1, "IOB", 0, 8, "GIB", 2 ],
+    "37" : [ 10, "GIB", 3, 5, "GPE", 7 ],
+    "25" : [ 10, "GIB", 4, 7, "IOB", 1 ],
+    "20" : [ 6, "GIB", 0, 4, "GIB", 2 ],
+    "46" : [ 9, "GIB", 1, 8, "GIB", 1 ],
+    "29" : [ 8, "GIB", 5, 3, "GPE", 5 ],
+    "21" : [ 4, "GIB", 2, 6, "GIB", 0 ],
+    "33" : [ 3, "GPE", 0, 9, "GIB", 3 ],
+    "28" : [ 8, "GIB", 4, 3, "GPE", 1 ],
+    "38" : [ 5, "GPE", 0, 9, "GIB", 4 ],
+    "13" : [ 4, "GIB", 6, 5, "GPE", 4 ],
+    "41" : [ 8, "GIB", 0, 2, "GIB", 0 ],
+    "45" : [ 10, "GIB", 0, 6, "GIB", 1 ],
+    "17" : [ 5, "GPE", 0, 6, "GIB", 2 ],
+    "32" : [ 3, "GPE", 0, 8, "GIB", 3 ],
+    "34" : [ 9, "GIB", 5, 5, "GPE", 1 ],
+    "22" : [ 8, "GIB", 2, 1, "IOB", 1 ],
+    "44" : [ 6, "GIB", 1, 10, "GIB", 0 ],
+    "27" : [ 7, "IOB", 0, 10, "GIB", 3 ],
+    "12" : [ 4, "GIB", 5, 5, "GPE", 0 ],
+    "49" : [ 9, "GIB", 2, 10, "GIB", 1 ],
     "7" : [ 2, "GIB", 5, 3, "GPE", 4 ],
-    "3" : [ 4, "GIB", 4, 5, "IOB", 0 ],
-    "18" : [ 7, "GIB", 5, 5, "IOB", 3 ],
-    "11" : [ 3, "GPE", 0, 4, "GIB", 2 ],
-    "8" : [ 4, "GIB", 2, 3, "GPE", 2 ],
-    "4" : [ 4, "GIB", 5, 5, "IOB", 2 ],
-    "15" : [ 6, "GIB", 3, 1, "IOB", 3 ],
-    "24" : [ 3, "GPE", 0, 6, "GIB", 3 ],
-    "25" : [ 3, "GPE", 0, 7, "GIB", 2 ],
-    "20" : [ 6, "GIB", 4, 3, "GPE", 1 ],
-    "29" : [ 7, "GIB", 0, 4, "GIB", 1 ],
-    "28" : [ 4, "GIB", 1, 7, "GIB", 0 ],
-    "21" : [ 6, "GIB", 5, 3, "GPE", 5 ],
-    "22" : [ 7, "GIB", 2, 3, "GPE", 3 ],
-    "27" : [ 6, "GIB", 0, 2, "GIB", 0 ],
-    "16" : [ 1, "IOB", 0, 6, "GIB", 2 ],
-    "31" : [ 6, "GIB", 1, 7, "GIB", 1 ],
-    "26" : [ 2, "GIB", 0, 6, "GIB", 0 ],
-    "23" : [ 7, "GIB", 3, 3, "GPE", 7 ],
-    "30" : [ 7, "GIB", 1, 6, "GIB", 1 ],
-    "19" : [ 5, "IOB", 0, 7, "GIB", 3 ]
+    "39" : [ 5, "GPE", 0, 10, "GIB", 2 ],
+    "3" : [ 6, "GIB", 4, 7, "IOB", 0 ],
+    "35" : [ 9, "GIB", 6, 5, "GPE", 5 ],
+    "48" : [ 10, "GIB", 1, 9, "GIB", 2 ],
+    "18" : [ 4, "GIB", 0, 2, "GIB", 1 ],
+    "16" : [ 5, "GPE", 0, 4, "GIB", 4 ],
+    "31" : [ 9, "GIB", 4, 3, "GPE", 7 ],
+    "11" : [ 3, "GPE", 0, 4, "GIB", 3 ],
+    "43" : [ 9, "GIB", 0, 4, "GIB", 1 ],
+    "40" : [ 2, "GIB", 0, 8, "GIB", 0 ],
+    "26" : [ 10, "GIB", 5, 7, "IOB", 3 ],
+    "23" : [ 8, "GIB", 3, 1, "IOB", 3 ],
+    "36" : [ 10, "GIB", 2, 5, "GPE", 3 ],
+    "30" : [ 9, "GIB", 3, 3, "GPE", 3 ],
+    "19" : [ 2, "GIB", 1, 4, "GIB", 0 ],
+    "47" : [ 8, "GIB", 1, 9, "GIB", 1 ],
+    "15" : [ 6, "GIB", 3, 5, "GPE", 6 ]
   },
   "iob_to_spad_banks" : {
     "0" : [ 0 ],
     "1" : [ 1 ]
   },
   "cfg_data_width" : 32,
-  "max_cfg_data_num" : 11,
+  "max_cfg_data_num" : 8,
   "tile_num_col" : 1,
   "sub_modules" : [ {
     "attributes" : {
@@ -152,13 +197,35 @@
     "type" : "GIB"
   }, {
     "attributes" : {
-      "num_input" : 4,
+      "sub_modules" : [ {
+        "id" : 1,
+        "type" : "Muxn"
+      } ],
+      "num_input" : 5,
       "instances" : [ {
         "id" : 0,
         "type" : "This",
         "module_id" : 0
+      }, {
+        "id" : 1,
+        "type" : "Muxn",
+        "module_id" : 1
+      }, {
+        "id" : 2,
+        "type" : "Muxn",
+        "module_id" : 1
+      }, {
+        "id" : 3,
+        "type" : "Muxn",
+        "module_id" : 1
       } ],
       "cfg_blk_index" : 4,
+      "configuration" : {
+        "0" : [ "This", 2, 0 ],
+        "1" : [ "Muxn", 0, 0 ],
+        "2" : [ "Muxn", 1, 1 ],
+        "3" : [ "Muxn", 2, 2 ]
+      },
       "num_iopin_list" : {
         "opin_sw" : 0,
         "ipin_ne" : 2,
@@ -170,12 +237,19 @@
         "ipin_sw" : 0
       },
       "track_reged" : true,
-      "num_output" : 6,
+      "num_output" : 7,
       "data_width" : 16,
       "connections" : {
-        "0" : [ 0, "This", 2, 0, "This", 5 ],
-        "1" : [ 0, "This", 1, 0, "This", 0 ],
-        "2" : [ 0, "This", 0, 0, "This", 1 ]
+        "0" : [ 0, "This", 3, 0, "This", 6 ],
+        "5" : [ 0, "This", 2, 2, "Muxn", 1 ],
+        "1" : [ 0, "This", 1, 1, "Muxn", 0 ],
+        "6" : [ 2, "Muxn", 0, 0, "This", 1 ],
+        "9" : [ 3, "Muxn", 0, 0, "This", 2 ],
+        "2" : [ 0, "This", 2, 1, "Muxn", 1 ],
+        "7" : [ 0, "This", 0, 3, "Muxn", 0 ],
+        "3" : [ 1, "Muxn", 0, 0, "This", 0 ],
+        "8" : [ 0, "This", 1, 3, "Muxn", 1 ],
+        "4" : [ 0, "This", 0, 2, "Muxn", 0 ]
       }
     },
     "id" : 4,
@@ -190,6 +264,36 @@
       } ],
       "cfg_blk_index" : 6,
       "num_iopin_list" : {
+        "opin_sw" : 0,
+        "ipin_ne" : 2,
+        "ipin_nw" : 0,
+        "opin_se" : 1,
+        "opin_ne" : 1,
+        "ipin_se" : 2,
+        "opin_nw" : 0,
+        "ipin_sw" : 0
+      },
+      "track_reged" : false,
+      "num_output" : 6,
+      "data_width" : 16,
+      "connections" : {
+        "0" : [ 0, "This", 2, 0, "This", 5 ],
+        "1" : [ 0, "This", 1, 0, "This", 0 ],
+        "2" : [ 0, "This", 0, 0, "This", 1 ]
+      }
+    },
+    "id" : 5,
+    "type" : "GIB"
+  }, {
+    "attributes" : {
+      "num_input" : 4,
+      "instances" : [ {
+        "id" : 0,
+        "type" : "This",
+        "module_id" : 0
+      } ],
+      "cfg_blk_index" : 8,
+      "num_iopin_list" : {
         "opin_sw" : 1,
         "ipin_ne" : 0,
         "ipin_nw" : 2,
@@ -208,17 +312,39 @@
         "2" : [ 0, "This", 0, 0, "This", 1 ]
       }
     },
-    "id" : 5,
+    "id" : 6,
     "type" : "GIB"
   }, {
     "attributes" : {
-      "num_input" : 4,
+      "sub_modules" : [ {
+        "id" : 1,
+        "type" : "Muxn"
+      } ],
+      "num_input" : 5,
       "instances" : [ {
         "id" : 0,
         "type" : "This",
         "module_id" : 0
+      }, {
+        "id" : 1,
+        "type" : "Muxn",
+        "module_id" : 1
+      }, {
+        "id" : 2,
+        "type" : "Muxn",
+        "module_id" : 1
+      }, {
+        "id" : 3,
+        "type" : "Muxn",
+        "module_id" : 1
       } ],
-      "cfg_blk_index" : 7,
+      "cfg_blk_index" : 9,
+      "configuration" : {
+        "0" : [ "This", 2, 0 ],
+        "1" : [ "Muxn", 0, 0 ],
+        "2" : [ "Muxn", 1, 1 ],
+        "3" : [ "Muxn", 2, 2 ]
+      },
       "num_iopin_list" : {
         "opin_sw" : 1,
         "ipin_ne" : 0,
@@ -230,6 +356,43 @@
         "ipin_sw" : 2
       },
       "track_reged" : false,
+      "num_output" : 7,
+      "data_width" : 16,
+      "connections" : {
+        "0" : [ 0, "This", 4, 0, "This", 4 ],
+        "5" : [ 0, "This", 2, 2, "Muxn", 1 ],
+        "1" : [ 0, "This", 1, 1, "Muxn", 0 ],
+        "6" : [ 2, "Muxn", 0, 0, "This", 1 ],
+        "9" : [ 3, "Muxn", 0, 0, "This", 2 ],
+        "2" : [ 0, "This", 2, 1, "Muxn", 1 ],
+        "7" : [ 0, "This", 0, 3, "Muxn", 0 ],
+        "3" : [ 1, "Muxn", 0, 0, "This", 0 ],
+        "8" : [ 0, "This", 1, 3, "Muxn", 1 ],
+        "4" : [ 0, "This", 0, 2, "Muxn", 0 ]
+      }
+    },
+    "id" : 7,
+    "type" : "GIB"
+  }, {
+    "attributes" : {
+      "num_input" : 4,
+      "instances" : [ {
+        "id" : 0,
+        "type" : "This",
+        "module_id" : 0
+      } ],
+      "cfg_blk_index" : 10,
+      "num_iopin_list" : {
+        "opin_sw" : 1,
+        "ipin_ne" : 0,
+        "ipin_nw" : 2,
+        "opin_se" : 0,
+        "opin_ne" : 0,
+        "ipin_se" : 0,
+        "opin_nw" : 1,
+        "ipin_sw" : 2
+      },
+      "track_reged" : true,
       "num_output" : 6,
       "data_width" : 16,
       "connections" : {
@@ -238,7 +401,7 @@
         "2" : [ 0, "This", 0, 0, "This", 1 ]
       }
     },
-    "id" : 6,
+    "id" : 8,
     "type" : "GIB"
   }, {
     "attributes" : {
@@ -328,19 +491,15 @@
       "iob_index" : 0,
       "num_input" : 4,
       "io_controller_cfg_id" : {
-        "II" : 14,
+        "II" : 10,
         "Cycles0" : 7,
-        "Cycles2" : 11,
         "Cycles1" : 9,
-        "UseAddr" : 17,
-        "Cycles3" : 13,
-        "Latency" : 15,
-        "Stride3" : 12,
-        "Stride2" : 10,
+        "UseAddr" : 13,
         "BaseAddr" : 5,
         "Stride1" : 8,
         "Stride0" : 6,
-        "IsStore" : 16
+        "IsStore" : 12,
+        "Latency" : 11
       },
       "instances" : [ {
         "id" : 1,
@@ -365,29 +524,25 @@
       } ],
       "cfg_blk_index" : 1,
       "configuration" : {
-        "0" : [ "This", 130, 0 ],
-        "2" : [ "DelayPipe", 128, 121 ],
-        "3" : [ "Muxn", 129, 129 ],
-        "4" : [ "Muxn", 130, 130 ],
+        "0" : [ "This", 44, 0 ],
+        "2" : [ "DelayPipe", 42, 39 ],
+        "3" : [ "Muxn", 43, 43 ],
+        "4" : [ "Muxn", 44, 44 ],
         "5" : [ "BaseAddr", 8, 0 ],
-        "6" : [ "Stride0", 21, 9 ],
-        "7" : [ "Cycles0", 33, 22 ],
-        "8" : [ "Stride1", 46, 34 ],
-        "9" : [ "Cycles1", 58, 47 ],
-        "10" : [ "Stride2", 71, 59 ],
-        "11" : [ "Cycles2", 83, 72 ],
-        "12" : [ "Stride3", 96, 84 ],
-        "13" : [ "Cycles3", 108, 97 ],
-        "14" : [ "II", 112, 109 ],
-        "15" : [ "Latency", 118, 113 ],
-        "16" : [ "IsStore", 119, 119 ],
-        "17" : [ "UseAddr", 120, 120 ]
+        "6" : [ "Stride0", 14, 9 ],
+        "7" : [ "Cycles0", 20, 15 ],
+        "8" : [ "Stride1", 26, 21 ],
+        "9" : [ "Cycles1", 32, 27 ],
+        "10" : [ "II", 34, 33 ],
+        "11" : [ "Latency", 36, 35 ],
+        "12" : [ "IsStore", 37, 37 ],
+        "13" : [ "UseAddr", 38, 38 ]
       },
-      "max_delay" : 10,
+      "max_delay" : 3,
       "num_operands" : 2,
       "num_output" : 1,
       "data_width" : 16,
-      "ag_nest_levels" : 4,
+      "ag_nest_levels" : 2,
       "sub_modules" : [ {
         "id" : 1,
         "type" : "IOController"
@@ -419,10 +574,10 @@
     "1" : "SRAM_MODE",
     "2" : "COND_LS_MODE"
   },
-  "iob_ag_nest_levels" : 4,
-  "tile_modules" : 5,
+  "iob_ag_nest_levels" : 2,
+  "tile_modules" : 7,
   "min_blk_cfg_bits" : 0,
   "cfg_blk_offset" : 3,
-  "max_blk_cfg_bits" : 131,
-  "sum_blk_cfg_bits" : 287
+  "max_blk_cfg_bits" : 45,
+  "sum_blk_cfg_bits" : 146
 }

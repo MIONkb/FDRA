@@ -109,3 +109,7 @@
 1769098696758:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/AXIFPGA/CGRA32bWithAXI5X4X2
 1769353910280:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/vitrartl
 1769442994183:runMain tram.vitra.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+1769444778521:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/vitrartl
+1769444850476:runMain tram.vitra.VerilogGenWithoutSRAM -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+1769445962776:runMain tram.dsa.PEVerilogGen -td /home/jhlou/chipyard/generators/fdra/cgra-mg/rtl
+1769617089670:runMain tram.vitra.VerilogGen -td /home/jhlou/CGRVOPT/MatrixMeld/vitrartl

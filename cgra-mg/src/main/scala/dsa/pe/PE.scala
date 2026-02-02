@@ -434,23 +434,23 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
 
 
 
-// object VerilogGen extends App {
-//   val attrs: mutable.Map[String, Any] = mutable.Map(
-//     "data_width" -> 32,
-//     "cfg_data_width" -> 32,
-//     "cfg_addr_width" -> 8,
-//     "cfg_blk_index" -> 1,
-//     "cfg_blk_offset" -> 4,
-//     "num_rf_reg" -> 1,
-//     "operations" -> ListBuffer(/*"ADD", "SUB", "ACC", "ASUB",*/ "INTLV4"),
-//     "num_input_per_operand" -> ListBuffer(4, 4, 4, 4),
-//     "max_delay" -> 7,
-//     "lg_max_lat" -> 8,
-//     "lg_max_repeats" -> 8,
-//     "lg_max_wi" -> 10,
-//     "lg_max_ii" -> 5, 
-//     "lg_max_cycles" -> 10,
-//   )
+object PEVerilogGen extends App {
+  val attrs: mutable.Map[String, Any] = mutable.Map(
+    "data_width" -> 16,
+    "cfg_data_width" -> 32,
+    "cfg_addr_width" -> 9,
+    "cfg_blk_index" -> 1,
+    "cfg_blk_offset" -> 4,
+    "num_rf_reg" -> 1,
+    "operations" -> ListBuffer("ADD"/*, "SUB", "ACC", "ASUB", "INTLV4"*/),
+    "num_input_per_operand" -> ListBuffer(1,1),
+    "max_delay" -> 7,
+    "lg_max_lat" -> 8,
+    "lg_max_repeats" -> 8,
+    "lg_max_wi" -> 10,
+    "lg_max_ii" -> 5, 
+    "lg_max_cycles" -> 10,
+  )
 
-//   (new chisel3.stage.ChiselStage).emitVerilog(new GPE(attrs),args)
-// }
+  (new chisel3.stage.ChiselStage).emitVerilog(new GPE(attrs),args)
+}
