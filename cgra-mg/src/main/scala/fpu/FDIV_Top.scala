@@ -105,7 +105,7 @@ class FDIVTop(val expWidth: Int, val precision: Int, lgMaxII: Int, latency: Int)
 
 
 class FPDiv16 extends FDIVTop(5, 11, 4, FPDIV_LATENCY) {}
-class FPDiv32 extends FDIVTop(8, 24, 4, FPDIV_LATENCY) {}
+// class FPDiv32 extends FDIVTop(8, 24, 4, FPDIV_LATENCY) {}
 class FPDiv64 extends FDIVTop(11, 53, 4, FPDIV_LATENCY) {}
 
 // BF 16 

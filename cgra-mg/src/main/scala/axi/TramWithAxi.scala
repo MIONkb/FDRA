@@ -81,7 +81,7 @@ class TramWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends Mo
   
   // println("lgSizeSpadCfg", lgSizeSpadCfg)
   // println("AxiLiteAddrWidth", AxiLiteAddrWidth)
-  require(AxiLiteAddrWidth >= lgSizeSpadCfg - 3)
+  require(AxiLiteAddrWidth >= (lgSizeSpadCfg - 3))
   val axiliteParam = new AXI4BundleParameters(
                       addrBits = AxiLiteAddrWidth,
                       dataBits = AxiLiteDataWidth,

@@ -133,7 +133,8 @@ object OpInfo {
 		// "FSUB32"-> ListBuffer(2, 1, 3, 0, 0),
 		"FADD32"-> ListBuffer(2, 1, 1, 1),
 		"FSUB32"-> ListBuffer(2, 1, 1, 0),
-		"FDIV32"-> ListBuffer(2, 1, 13, 0),
+		// "FDIV32"-> ListBuffer(2, 1, 13, 0),
+		"FDIV32"-> ListBuffer(2, 1, 6, 0),
 		"FSQRT" -> ListBuffer(2, 1, 17, 0), // not support yet
 		"FEQ32"  -> ListBuffer(2, 1, 1, 1),
 		"FOLT32" -> ListBuffer(2, 1, 1, 0),
@@ -835,13 +836,13 @@ object OpInfo {
 					lazy val op0 = ops.head.apply(31,0)
 					lazy val op1 = ops(1).apply(31,0)
 					
-					fDiv32_io.a := op0
-					fDiv32_io.b := op1
-					fDiv32_io.rm := 0.U
-					fDiv32_io.en := en
-					fDiv32_io.II := 13.U
-					fDiv32_io.mode := 0.U /// 0: div, 1: sqrt
-					Seq(fDiv32_io.result)
+					fDiv32_io.in1 := op0
+					fDiv32_io.in2 := op1
+					// fDiv32_io.rm := 0.U
+					// fDiv32_io.en := en
+					// fDiv32_io.II := 13.U
+					// fDiv32_io.mode := 0.U /// 0: div, 1: sqrt
+					Seq(fDiv32_io.out)
 				}
     		},
 
@@ -1266,9 +1267,10 @@ object OpInfo {
 		val fadd32Res = fAdd32Opt.map(_.result).getOrElse(0.U(32.W))
 
 		fDiv32Opt.foreach { d =>
-			d.a := f32a; d.b := f32b; d.rm := 0.U; d.en := en; d.II := 13.U; d.mode := 0.U
+			// d.a := f32a; d.b := f32b; d.rm := 0.U; d.en := en; d.II := 13.U; d.mode := 0.U
+			d.in1 := f32a; d.in2 := f32b
 		}
-		val fdiv32Res = fDiv32Opt.map(_.result).getOrElse(0.U(32.W))
+		val fdiv32Res = fDiv32Opt.map(_.out).getOrElse(0.U(32.W))
 
 		fCmp32Opt.foreach { c => c.a := f32a; c.b := f32b; c.cmpType := shareUnitsCfgBits}
 		val fcmp32Res = fCmp32Opt.map(_.result).getOrElse(0.U(1.W))		
