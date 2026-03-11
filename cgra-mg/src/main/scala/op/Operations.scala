@@ -134,7 +134,8 @@ object OpInfo {
 		"FADD32"-> ListBuffer(2, 1, 1, 1),
 		"FSUB32"-> ListBuffer(2, 1, 1, 0),
 		// "FDIV32"-> ListBuffer(2, 1, 13, 0),
-		"FDIV32"-> ListBuffer(2, 1, 6, 0),
+		// "FDIV32"-> ListBuffer(2, 1, 6, 0),// jrzhang: no reuse fp32mul 
+		"FDIV32"-> ListBuffer(2, 1, 7, 0), // jrzhang: reuse fp32mul 
 		"FSQRT" -> ListBuffer(2, 1, 17, 0), // not support yet
 		"FEQ32"  -> ListBuffer(2, 1, 1, 1),
 		"FOLT32" -> ListBuffer(2, 1, 1, 0),
@@ -1178,9 +1179,9 @@ object OpInfo {
 		val fAdd32Opt =
 			if (have("FADD32") || have("FSUB32") || have("FMA32")) Some(Module(new FPAdd32).io) else None
 		val fMul32Opt =
-			if (have("FMUL32") || have("FMA32")) Some(Module(new FPMult32).io) else None
-		val fDiv32Opt =
-			if (have("FDIV32")) Some(Module(new FPDiv32).io) else None
+			if (have("FMUL32") || have("FMA32") || have("FDIV32")) Some(Module(new FPMult32).io) else None
+		val fDivPrepOpt =
+			if (have("FDIV32")) Some(Module(new FPDiv32ToMul).io) else None
 		val fCmp32Opt =
 			if (have("FEQ32") || have("FOLT32") || have("FOLE32") || have("FUNO32"))
 			Some(Module(new FPCmp32).io) else None
@@ -1219,6 +1220,11 @@ object OpInfo {
 			"FSUB32"   ->  { /*fAdd32_io.subOp = */ 1.U},
 			"FMA"      ->  { /*fAdd32_io.subOp = */ 4.U},
 
+			// Reuse the shared fp32 multiplier (FPMult32) across FMUL32/FDIV32.
+			// 0.U: normal multiply (a*b), 6.U: division path (a * (1/b))
+			"FMUL32"   ->  { 0.U },
+			"FDIV32"   ->  { 6.U },
+
 			//// FEQ32 FOLT32 FOLE32 FUNO32 share the same ValExec_CompareRecFN
 			"FEQ32"    ->  { /*fCmp32_io.cmpType = */  0.U},
 	 		"FOLE32"   ->  { /*fCmp32_io.cmpType = */  1.U},
@@ -1255,7 +1261,25 @@ object OpInfo {
 		// FP32
 		val f32a = if(op0.getWidth < 32) op0 else op0(31,0)
 		val f32b = if(op1.getWidth < 32) op1 else op1(31,0)
-		fMul32Opt.foreach { m => m.a := f32a; m.b := f32b; m.rm := 0.U }
+
+		// FDIV32 operand preparation (reciprocal + exponent/sign fixup) for shared multiplier
+		fDivPrepOpt.foreach { p =>
+			p.in1 := f32a
+			p.in2 := f32b
+		}
+		val divMulA = fDivPrepOpt.map(_.mulA).getOrElse(0.U(32.W))
+		val divMulB = fDivPrepOpt.map(_.mulB).getOrElse(0.U(32.W))
+
+		val mulA = Wire(UInt(32.W))
+		val mulB = Wire(UInt(32.W))
+		mulA := f32a
+		mulB := f32b
+		when(shareUnitsCfgBits === 6.U) {
+			mulA := divMulA
+			mulB := divMulB
+		}
+
+		fMul32Opt.foreach { m => m.a := mulA; m.b := mulB; m.rm := 0.U }
 		val fmul32Res = fMul32Opt.map(_.result).getOrElse(0.U(32.W))
 
 		fAdd32Opt.foreach { a =>
@@ -1266,11 +1290,8 @@ object OpInfo {
 		}
 		val fadd32Res = fAdd32Opt.map(_.result).getOrElse(0.U(32.W))
 
-		fDiv32Opt.foreach { d =>
-			// d.a := f32a; d.b := f32b; d.rm := 0.U; d.en := en; d.II := 13.U; d.mode := 0.U
-			d.in1 := f32a; d.in2 := f32b
-		}
-		val fdiv32Res = fDiv32Opt.map(_.out).getOrElse(0.U(32.W))
+		// FDIV32 result comes from the shared multiplier output (via the div-prep MUX).
+		val fdiv32Res = fmul32Res
 
 		fCmp32Opt.foreach { c => c.a := f32a; c.b := f32b; c.cmpType := shareUnitsCfgBits}
 		val fcmp32Res = fCmp32Opt.map(_.result).getOrElse(0.U(1.W))		

@@ -364,26 +364,50 @@ class fpDivWithInvert(val w: Int) extends Module {
 class FPDiv32 extends fpDivWithInvert(32) {}
 
 
+/**
+  * FDIV32 "pre" stage for shared-multiplier reuse.
+  *
+  * It computes the reciprocal-based operand preparation (inverter + exponent/sign fixup),
+  * and outputs the two fp32 operands to be consumed by an external/shared `FPMult32`.
+  *
+  * Total FDIV latency = this module's internal pipeline (3) + `FPMult32` latency (3) = 6.
+  */
+class FPDiv32ToMul extends Module {
+  val io = IO(new Bundle {
+    val in1 = Input(UInt(32.W)) // dividend
+    val in2 = Input(UInt(32.W)) // divisor
+    val mulA = Output(UInt(32.W))
+    val mulB = Output(UInt(32.W))
+  })
 
+  val inverter = Module(new fpInverter(23))
+  inverter.io.in1 := io.in2(22, 0)
 
+  // delay dividend due to inverter pipeline
+  val in1Reg0 = RegNext(io.in1, 0.U)
+  val in1Reg1 = RegNext(in1Reg0, 0.U)
+  val in1Reg2 = RegNext(in1Reg1, 0.U)
+  val in1Reg3 = RegNext(in1Reg2, 0.U)
 
+  // delay divisor exponent/sign to match inverter pipeline
+  val in2ExpReg0 = RegNext(io.in2(30, 23), 0.U)
+  val in2SignReg0 = RegNext(io.in2(31), 0.U)
+  val in2ExpReg1 = RegNext(in2ExpReg0, 0.U)
+  val in2SignReg1 = RegNext(in2SignReg0, 0.U)
+  val in2ExpReg2 = RegNext(in2ExpReg1, 0.U)
+  val in2SignReg2 = RegNext(in2SignReg1, 0.U)
+  val in2ExpReg3 = RegNext(in2ExpReg2, 0.U)
+  val in2SignReg3 = RegNext(in2SignReg2, 0.U)
 
+  val invMantReg = RegNext(inverter.io.out(23, 0), 0.U)
 
+  val invMant = invMantReg
+  val negExpTmp = 254.U - in2ExpReg3
+  val negExp = Mux(invMant === 0.U, negExpTmp, negExpTmp - 1.U)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  io.mulA := in1Reg3
+  io.mulB := Cat(in2SignReg3, negExp, invMant(23, 1))
+}
 
 
 
