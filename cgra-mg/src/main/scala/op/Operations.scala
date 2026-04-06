@@ -154,7 +154,7 @@ object OpInfo {
 		// "FSUB32"-> ListBuffer(2, 1, 3, 0, 0),
 		"BFADD16"-> ListBuffer(2, 1, 1, 1),
 		"BFSUB16"-> ListBuffer(2, 1, 1, 0),
-		"BFDIV16"-> ListBuffer(2, 1, 13, 0),
+		"BFDIV16"-> ListBuffer(2, 1, 4, 0),
 		"BFSQRT" -> ListBuffer(2, 1, 17, 0), // not support yet
 		"BFEQ16"  -> ListBuffer(2, 1, 1, 1),
 		"BFOLT16" -> ListBuffer(2, 1, 1, 0),
@@ -989,13 +989,13 @@ object OpInfo {
 					lazy val op0 = ops.head.apply(15,0)
 					lazy val op1 = ops(1).apply(15,0)
 					
-					bfDiv16_io.a := op0
-					bfDiv16_io.b := op1
-					bfDiv16_io.rm := 0.U
-					bfDiv16_io.en := en
-					bfDiv16_io.II := 8.U
-					bfDiv16_io.mode := 0.U /// 0: div, 1: sqrt
-					Seq(bfDiv16_io.result)
+					bfDiv16_io.in1 := op0
+					bfDiv16_io.in2 := op1
+					// bfDiv16_io.rm := 0.U
+					// bfDiv16_io.en := en
+					// bfDiv16_io.II := 8.U
+					// bfDiv16_io.mode := 0.U /// 0: div, 1: sqrt
+					Seq(bfDiv16_io.out)
 				}
     		},
 
@@ -1321,9 +1321,10 @@ object OpInfo {
 		}
 
 		bfDiv16Opt.foreach { d =>
-			d.a := bf16a; d.b := bf16b; d.rm := 0.U; d.en := en; d.II := 8.U; d.mode := 0.U
+			// d.a := bf16a; d.b := bf16b; d.rm := 0.U; d.en := en; d.II := 8.U; d.mode := 0.U
+			d.in1 := bf16a; d.in2 := bf16b
 		}
-		val bfdiv16Res = bfDiv16Opt.map(_.result).getOrElse(0.U(16.W))
+		val bfdiv16Res = bfDiv16Opt.map(_.out).getOrElse(0.U(16.W))
 
 		bfCmp16Opt.foreach { c => c.a := bf16a; c.b := bf16b; c.cmpType := shareUnitsCfgBits }
 		val bfcmp16Res = bfCmp16Opt.map(_.result).getOrElse(0.U(1.W))
