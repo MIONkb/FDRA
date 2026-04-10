@@ -37,6 +37,7 @@ object VitraParam {
   val spec_dir = (
     if(FPGAImp == true) "/home/jhlou/CGRVOPT/AXIFPGA/spec"
     else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl/spec"
+    // else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl_6x6/spec"
     // else "/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/vitra_spec"
   )
 

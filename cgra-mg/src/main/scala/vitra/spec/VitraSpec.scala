@@ -67,11 +67,12 @@ object VitraSpec{
     // 1.2. GPE attributes (default for all)
 //    "cgra_gpe_num_rf_reg" -> 1,
     "cgra_gpe_operations" -> ListBuffer("PASS", 
-                                        "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "AND", "OR",
+                                        "ADD", "SUB", "MUL", "SHL", "LSHR", "ASHR", "ACC", "ASUB", "AND", "OR", 
+                                        "SLE", "SLT",
                                         // /*"UDIV", "SDIV",*/
                                         "SEL", 
-                                        // // "FMUL32", "FSUB32", "FADD32", "FACC32",
-                                        // // "FDIV32",
+                                        "FMUL32", "FSUB32", "FADD32", "FACC32",
+                                        // "FDIV32",
                                         // // // "FEQ32", "FOLT32", "FOLE32", "FUNO32",
                                         "BFMUL16", "BFSUB16", "BFADD16", "BFACC16",
                                         // /*"BFDIV16",*/
