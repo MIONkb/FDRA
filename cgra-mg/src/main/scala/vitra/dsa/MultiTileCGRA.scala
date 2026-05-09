@@ -243,7 +243,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           iob_attrs("num_input_per_operand") = iob_param.num_input_per_operand
           iob_attrs("max_delay") = iobsParam(i)(j).max_delay // do not affect type decision
           iobs += Module(new IOB(iob_attrs)).suggestName(s"iob_${index}")
-          println("iobsindex:", index)
+          // println("iobsindex:", index)
           if (!iob_type_modid.contains(iob_type)) { // new IOB type
             sm_id_offset += 1
             iob_type_modid += (iob_type -> sm_id_offset)
@@ -527,7 +527,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           val idx_w = i * (tile_cols) + j + (tile_rows + 1) * tile_cols * (tile - 1)
           val idx_e = i * (tile_cols) + (tile_rows + 1) * tile_cols * tile
           gibs(idx_e).io.itrackW.zipWithIndex.foreach { case (in, k) =>
-            println("connect with west, (westidx, eastidx), (westidx, eastidx)", idx_w, idx_e, gibs(idx_w).cfgBlkIndex, gibs(idx_e).cfgBlkIndex)
+            // println("connect with west, (westidx, eastidx), (westidx, eastidx)", idx_w, idx_e, gibs(idx_w).cfgBlkIndex, gibs(idx_e).cfgBlkIndex)
             in := gib.io.otrackE(k)
             val index1 = gibs(idx_e).iPortMap("itrackW" + k.toString)
             val index2 = gib.oPortMap("otrackE" + k.toString)
@@ -535,7 +535,7 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
           }
 
           gib.io.itrackE.zipWithIndex.foreach { case (in, k) =>
-            println("connect with east, (westidx, eastidx), (westidx, eastidx)", idx_w, idx_e, gibs(idx_w).cfgBlkIndex, gibs(idx_e).cfgBlkIndex)
+            // println("connect with east, (westidx, eastidx), (westidx, eastidx)", idx_w, idx_e, gibs(idx_w).cfgBlkIndex, gibs(idx_e).cfgBlkIndex)
             in := gibs(idx_e).io.otrackW(k)
             val index1 = gib.iPortMap("itrackE" + k.toString)
             val index2 = gibs(idx_e).oPortMap("otrackW" + k.toString)
@@ -1088,8 +1088,8 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
 
   } /// end of multi tile
   
-  println("sm_id:", sm_id)
-  println("smi_id:", smi_id)
+  // println("sm_id:", sm_id)
+  // println("smi_id:", smi_id)
 
   val sub_modules = sm_id.map{case (name, ids) =>
     ids.map{id => mutable.Map(
@@ -1120,6 +1120,14 @@ class MultiTileCGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
   blkCfgBits ++= pes.map(_.sumCfgWidth).toList
   blkCfgBits ++= gibs.map(_.cfgsBit).toList
   val maxCfgDataNum = blkCfgBits.map{ x => (x+cfgDataWidth-1)/cfgDataWidth }.sum
+  val cfgEntryBits = cfgDataWidth + attrs("cgra_cfg_addr_width_align").asInstanceOf[Int]
+  require(cfgEntryBits > 0, s"Invalid cfg entry width: $cfgEntryBits")
+  val cfgSpadCapacityBits = (BigInt(1) << attrs("spad_cfg_lg_size").asInstanceOf[Int]) * 8
+  val cfgSpadMaxEntries = (cfgSpadCapacityBits / cfgEntryBits).toInt
+  require(maxCfgDataNum <= cfgSpadMaxEntries,
+    s"Configuration scratchpad is too small: need $maxCfgDataNum entries, " +
+      s"but spad_cfg_lg_size=${attrs("spad_cfg_lg_size")} can hold only $cfgSpadMaxEntries entries " +
+      s"($cfgSpadCapacityBits bits total, $cfgEntryBits bits per entry).")
   //  println("Max cfg bits: " + blkCfgBits.max, ", Min cfg bits: " + blkCfgBits.min, ", Total cfg bits: " + blkCfgBits.sum)
   apply("max_blk_cfg_bits", blkCfgBits.max)
   apply("min_blk_cfg_bits", blkCfgBits.min)

@@ -45,7 +45,7 @@ class AXI4Scratchpad(
     if(lgSizeLastBlock <= lgSizeSpadBank) 1
     else 1 << (lgSizeLastBlock - lgSizeSpadBank)
   }
-  require(cfgSpadBanks == 1) /// now we only handle one cfg bank
+  val lgCfgSpadBanks = log2Ceil(cfgSpadBanks)
 
   val lgDepthLast = lgSizeLastBlock - log2Ceil(axiBeatBytes)
 
@@ -128,7 +128,7 @@ class AXI4Scratchpad(
   withClockAndReset(io.aclk, asyncReset) {
     val wrIE    = Module(new WriteEngine(axi4Param))
     val rdIE    = Module(new ReadEngine(axi4Param))
-    val arbiter = Module(new SramArbiter(spadBanksNum + 1))
+    val arbiter = Module(new SramArbiter(spadBanksNum + cfgSpadBanks))
 
     println("spadBanksNum:", spadBanksNum)
     println("lgDepthLast:", lgDepthLast)
@@ -196,11 +196,20 @@ class AXI4Scratchpad(
     // val wr_last_addr = wrIE.addr(SPMAddrWidth - 1, log2Ceil(axiBeatBytes))
     // val rd_last_addr = rdIE.addr(SPMAddrWidth - 1, log2Ceil(axiBeatBytes))
 
-    val en_last = (wr_csel === spadBanksNum.U & wrIE.ready) | (rd_csel === spadBanksNum.U & rdIE.ready)
-    val we_last = wrIE.ready & wrIE.valid & wr_csel === spadBanksNum.U
-    val re_last = rdIE.ready & rdIE.valid & wr_csel === spadBanksNum.U
+    val cfgCselMin = spadBanksNum.U
+    val cfgCselMax = (spadBanksNum + cfgSpadBanks - 1).U
+    val wrCfgSel = wr_csel >= cfgCselMin && wr_csel <= cfgCselMax
+    val rdCfgSel = rd_csel >= cfgCselMin && rd_csel <= cfgCselMax
+    val wrCfgBankOff = if(cfgSpadBanks == 1) 0.U(1.W) else (wr_csel - cfgCselMin)(lgCfgSpadBanks - 1, 0)
+    val rdCfgBankOff = if(cfgSpadBanks == 1) 0.U(1.W) else (rd_csel - cfgCselMin)(lgCfgSpadBanks - 1, 0)
+    val wr_last_addr_full = if(cfgSpadBanks == 1) wr_last_addr else Cat(wrCfgBankOff, wr_last_addr)
+    val rd_last_addr_full = if(cfgSpadBanks == 1) rd_last_addr else Cat(rdCfgBankOff, rd_last_addr)
+
+    val en_last = (wrCfgSel & wrIE.ready) | (rdCfgSel & rdIE.ready)
+    val we_last = wrIE.ready & wrIE.valid & wrCfgSel
+    val re_last = rdIE.ready & rdIE.valid & rdCfgSel
     when(en_last){
-      spad_last_bank_io.a.addr   := Mux(we_last, wr_last_addr, rd_last_addr)
+      spad_last_bank_io.a.addr   := Mux(we_last, wr_last_addr_full, rd_last_addr_full)
       spad_last_bank_io.a.en     := we_last | re_last
       spad_last_bank_io.a.din    := wrIE.data
       spad_last_bank_io.a.we     := {if(hasMask) wrIE.strb & Fill(wrIE.strb.getWidth, we_last) else we_last}

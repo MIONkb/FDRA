@@ -1,7 +1,9 @@
 # to the chipyard directory
 cd ../../..
+# Use a stable JDK for sbt to avoid vendor-wrapped old Java from PATH.
+JDK_HOME="${JDK_HOME:-/usr/lib/jvm/java-11-openjdk-amd64}"
 # generate verilog file
-sbt "project fdra; runMain tram.axi.VerilogGen -td ./verilog" -mem 4096
+sbt -java-home "$JDK_HOME" "project fdra; runMain tram.axi.VerilogGen -td ./verilog" -mem 4096
 
 #or
 
