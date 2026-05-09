@@ -105,13 +105,13 @@ class FDIVTop(val expWidth: Int, val precision: Int, lgMaxII: Int, latency: Int)
 
 
 class FPDiv16 extends FDIVTop(5, 11, 4, FPDIV_LATENCY) {}
-class FPDiv32 extends FDIVTop(8, 24, 4, FPDIV_LATENCY) {}
+// class FPDiv32 extends FDIVTop(8, 24, 4, FPDIV_LATENCY) {}
 class FPDiv64 extends FDIVTop(11, 53, 4, FPDIV_LATENCY) {}
 
 // BF 16 
 //TODO: 8-8 is wrong
 // class BFDiv16 extends FDIVTop(8, 8, 3, FPDIV_LATENCY) {}
-class BFDiv16 extends FDIVTop(7, 9, 3, FPDIV_LATENCY) {}
+// class BFDiv16 extends FDIVTop(7, 9, 3, FPDIV_LATENCY) {}
 
 object VerilogFDIVTopGen extends App {
   (new chisel3.stage.ChiselStage).emitVerilog(new FDIVTop(8,24, 5, 5), args)

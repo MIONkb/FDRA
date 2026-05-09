@@ -34,3 +34,12 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.2"
 )
 
+// Keep runMain stable for large elaboration (e.g. many CGRA tiles) on older JDKs.
+Compile / run / fork := true
+Compile / run / javaOptions ++= Seq(
+  "-Xms2G",
+  "-Xmx8G",
+  "-XX:-TieredCompilation",
+  "-XX:CICompilerCount=1"
+)
+

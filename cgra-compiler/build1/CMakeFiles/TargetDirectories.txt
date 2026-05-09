@@ -1,3 +1,0 @@
-/home/tianyi/chipyard/generators/fdra/cgra-compiler/build/CMakeFiles/cgra-compiler.dir
-/home/tianyi/chipyard/generators/fdra/cgra-compiler/build/CMakeFiles/edit_cache.dir
-/home/tianyi/chipyard/generators/fdra/cgra-compiler/build/CMakeFiles/rebuild_cache.dir
