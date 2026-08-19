@@ -1,0 +1,52 @@
+{
+  "schema_version" : 1,
+  "target" : "vitra-cstore",
+  "generator" : {
+    "entrypoint" : "tram.vitra.CStoreVerilogGen",
+    "vitra_commit" : "71e752a7cf2db485ed8ae86b9a4087d0bcad2bff",
+    "command" : "sbt -java-home /usr/lib/jvm/java-11-openjdk-amd64 -batch \"project fdra\" \"runMain tram.vitra.CStoreVerilogGen -td <fresh-output>\""
+  },
+  "environment" : {
+    "chipyard_commit" : "27981d26675e7fd2e41d772375b5632951ece968",
+    "fdra_commit" : "0cb9381fa231b4d26881779a80a5f0c78ec4c5ff",
+    "adora_commit" : "6b3d0e5fcfb36dc2a3cdbe4ed87092300c18ac1e"
+  },
+  "contract" : {
+    "cstore_opc" : 4,
+    "cstore_latency" : 1,
+    "iob_module_count" : 1,
+    "predicate_word_semantics" : "bit0",
+    "cload_supported" : false
+  },
+  "artifacts" : {
+    "CGRAWithAXI.v" : {
+      "sha256" : "96e709d80a6c8a007fd650af934ceab69df3d25fb99beb62315628993fc46752",
+      "checked_in" : false
+    },
+    "spec/axilite_spec.json" : {
+      "sha256" : "9c53819cad98bd2f3074eaeb26fba8ef9b2e7452703bdba064cd97acafa87502",
+      "semantic_sha256" : "3838802ab88628ccfa6bf732cc9517482af131e9a105e900af6ebc9a4712d21c",
+      "checked_in" : true
+    },
+    "spec/operations.json" : {
+      "sha256" : "0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d",
+      "semantic_sha256" : "d7f46580dd16fe3e4311f416a5795626ba54654a34a0f4d8ee2e208839cfb8bb",
+      "checked_in" : true
+    },
+    "spec/vitra_cgra_adg.json" : {
+      "sha256" : "e34fcef5b15f47718762812513d3cd7db35f06e60a17097e50429dfc41e26cf7",
+      "semantic_sha256" : "3ef93356ddc392938ca5f2db28edb8bd47b36d5b2225cef44fa2909fbde0029a",
+      "checked_in" : true
+    },
+    "spec/vitra_spec.json" : {
+      "sha256" : "3155ec148eee0efd4dbe8cae0c58359bd4deba4a140c9a64ed2bf5d0490d832d",
+      "semantic_sha256" : "ffa54e8f9196a17ba120dbc94496fe2b6459fb678928870ef781cc0113f84fc7",
+      "checked_in" : true
+    }
+  },
+  "consumer_compatibility" : {
+    "adora_mapper_parse" : "pass",
+    "trusted_capability_consumption" : "blocked",
+    "blocker" : "ADORA Mapper currently infers both CLOAD and CSTORE for every COND_LS_MODE IOB; the truthful VITRA artifact intentionally omits unimplemented CLOAD"
+  }
+}

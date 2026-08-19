@@ -1,13 +1,15 @@
 package tram.vitra
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, Paths}
 import java.security.MessageDigest
 
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.fasterxml.jackson.databind.node.{ArrayNode, ObjectNode}
 import tram.common.MacroVar.COND_LS_MODE
 import tram.op.OpInfo
+import tram.vitra.dsa.MultiTileCgraParam
+import tram.vitra.spec.VitraSpec
 
 import scala.jdk.CollectionConverters._
 
@@ -19,7 +21,18 @@ case class CStoreArtifactSummary(
   cstoreLatency: Int,
   iobModuleCount: Int)
 
+case class CStoreArtifactProvenance(
+  vitraCommit: String,
+  chipyardCommit: String,
+  fdraCommit: String,
+  adoraCommit: String,
+  adoraMapperParse: String)
+
 object CStoreArtifactAudit {
+  val generatorEntrypoint = "tram.vitra.CStoreVerilogGen"
+  val generationCommand =
+    "sbt -java-home /usr/lib/jvm/java-11-openjdk-amd64 -batch \"project fdra\" " +
+      "\"runMain tram.vitra.CStoreVerilogGen -td <fresh-output>\""
   val requiredRelativePaths: Seq[String] = Seq(
     "CGRAWithAXI.v",
     "spec/vitra_spec.json",
@@ -32,6 +45,10 @@ object CStoreArtifactAudit {
   private val mapper = new ObjectMapper()
 
   def validate(targetDir: Path): CStoreArtifactSummary = {
+    // Standalone audit/manifest processes have not elaborated a CGRA yet. Build
+    // the same parameter contract first so dynamic OPC and latency maps match
+    // the production generator instead of depending on ambient JVM state.
+    MultiTileCgraParam(VitraSpec.cstoreAttrs())
     val files = requiredRelativePaths.map(relative => relative -> targetDir.resolve(relative)).toMap
     val missing = files.collect { case (relative, path) if !Files.isRegularFile(path) => relative }.toSeq.sorted
     require(missing.isEmpty, s"incomplete CSTORE artifact bundle; missing: ${missing.mkString(", ")}")
@@ -97,6 +114,54 @@ object CStoreArtifactAudit {
       cstoreOpc = cstoreOpc,
       cstoreLatency = cstore.path("latency").asInt(),
       iobModuleCount = iobs.size)
+  }
+
+  def writeManifest(
+      summary: CStoreArtifactSummary,
+      provenance: CStoreArtifactProvenance,
+      output: Path): Unit = {
+    require(Set("pass", "fail", "not_run").contains(provenance.adoraMapperParse),
+      s"unsupported ADORA Mapper parse status: ${provenance.adoraMapperParse}")
+
+    val root = mapper.createObjectNode()
+    root.put("schema_version", 1)
+    root.put("target", "vitra-cstore")
+
+    val generator = root.putObject("generator")
+    generator.put("entrypoint", generatorEntrypoint)
+    generator.put("vitra_commit", provenance.vitraCommit)
+    generator.put("command", generationCommand)
+
+    val environment = root.putObject("environment")
+    environment.put("chipyard_commit", provenance.chipyardCommit)
+    environment.put("fdra_commit", provenance.fdraCommit)
+    environment.put("adora_commit", provenance.adoraCommit)
+
+    val contract = root.putObject("contract")
+    contract.put("cstore_opc", summary.cstoreOpc)
+    contract.put("cstore_latency", summary.cstoreLatency)
+    contract.put("iob_module_count", summary.iobModuleCount)
+    contract.put("predicate_word_semantics", "bit0")
+    contract.put("cload_supported", false)
+
+    val artifacts = root.putObject("artifacts")
+    summary.fileSha256.toSeq.sortBy(_._1).foreach { case (relative, fileHash) =>
+      val artifact = artifacts.putObject(relative)
+      artifact.put("sha256", fileHash)
+      summary.semanticJsonSha256.get(relative).foreach(artifact.put("semantic_sha256", _))
+      artifact.put("checked_in", relative.endsWith(".json"))
+    }
+
+    val compatibility = root.putObject("consumer_compatibility")
+    compatibility.put("adora_mapper_parse", provenance.adoraMapperParse)
+    compatibility.put("trusted_capability_consumption", "blocked")
+    compatibility.put(
+      "blocker",
+      "ADORA Mapper currently infers both CLOAD and CSTORE for every COND_LS_MODE IOB; " +
+        "the truthful VITRA artifact intentionally omits unimplemented CLOAD")
+
+    Option(output.getParent).foreach(parent => Files.createDirectories(parent))
+    mapper.writerWithDefaultPrettyPrinter().writeValue(output.toFile, root)
   }
 
   private def auditIob(module: JsonNode): Unit = {
@@ -180,4 +245,22 @@ object CStoreArtifactAudit {
 
   private def sha256(bytes: Array[Byte]): String =
     MessageDigest.getInstance("SHA-256").digest(bytes).map("%02x".format(_)).mkString
+}
+
+object CStoreArtifactManifestGen {
+  def main(args: Array[String]): Unit = {
+    require(args.length == 7,
+      "Usage: CStoreArtifactManifestGen <target-dir> <manifest-file> <vitra-commit> " +
+        "<chipyard-commit> <fdra-commit> <adora-commit> <adora-mapper-parse-status>")
+    val summary = CStoreArtifactAudit.validate(Paths.get(args(0)))
+    val output = Paths.get(args(1))
+    val provenance = CStoreArtifactProvenance(
+      vitraCommit = args(2),
+      chipyardCommit = args(3),
+      fdraCommit = args(4),
+      adoraCommit = args(5),
+      adoraMapperParse = args(6))
+    CStoreArtifactAudit.writeManifest(summary, provenance, output)
+    println(s"CSTORE_MANIFEST path=$output")
+  }
 }

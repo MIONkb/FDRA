@@ -1,0 +1,159 @@
+= Task 4 Reproducible CSTORE Artifacts and Regression Record
+:toc:
+
+== Scope and result
+
+Task 4 adds a separate production CSTORE generation entrypoint, checks in the four semantic JSON artifacts, and records the generated RTL by hash rather than committing it.
+The default `tram.vitra.VerilogGen` remains SRAM_MODE.
+No CLOAD hardware or capability is implemented or claimed.
+
+The generator checkpoint used for publication is `71e752a7cf2db485ed8ae86b9a4087d0bcad2bff` (`feat(vitra): add reproducible CSTORE generation target`).
+The artifacts were generated from an exact read-only export of that commit, not from a dirty working tree.
+
+== Environment and provenance
+
+[cols="1,3",options="header"]
+|===
+|Item |Observed value
+
+|VITRA generator commit
+|`71e752a7cf2db485ed8ae86b9a4087d0bcad2bff`
+
+|Lab Chipyard commit
+|`27981d26675e7fd2e41d772375b5632951ece968`
+
+|Lab fdra integration commit
+|`0cb9381fa231b4d26881779a80a5f0c78ec4c5ff`
+
+|ADORA Mapper checkout
+|`6b3d0e5fcfb36dc2a3cdbe4ed87092300c18ac1e`
+
+|Build copy
+|`/tmp/vitra-task1-chipyard-isolated-20260819`
+
+|External lab checkout policy
+|`/home/jhlou/chipyard` remained read-only; `test ! -w /home/jhlou/chipyard` passed
+
+|Toolchain
+|sbt 1.8.2, OpenJDK 11.0.27 selected with `-java-home /usr/lib/jvm/java-11-openjdk-amd64`
+|===
+
+The Task 1 preflight had already verified that `sbt projects` lists `fdra` and that the README VITRA generation flow works in the isolated build copy.
+
+== Production target and command
+
+`tram.vitra.CStoreVerilogGen` passes an instance-local `VitraSpec.cstoreAttrs()` map into `VitraWithAxi`.
+It does not mutate the global/default SRAM spec.
+The same elaboration emits `CGRAWithAXI.v`, `vitra_spec.json`, `operations.json`, `vitra_cgra_adg.json`, and `axilite_spec.json`, then runs `CStoreArtifactAudit` over that complete bundle.
+
+The following command was run twice, changing only the fresh target directory:
+
+[source,shell]
+----
+env \
+  XDG_RUNTIME_DIR=/tmp/vitra-task1-sbt/runtime \
+  TMPDIR=/tmp/vitra-task1-sbt/runtime \
+  COURSIER_CACHE=/tmp/vitra-task1-sbt/coursier \
+  JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=/tmp/vitra-task1-sbt/runtime -Dsbt.global.base=/tmp/vitra-task1-sbt/global -Dsbt.boot.directory=/tmp/vitra-task1-sbt/boot -Dsbt.ivy.home=/tmp/vitra-task1-sbt/ivy -Dsbt.coursier.home=/tmp/vitra-task1-sbt/coursier -Dsbt.server.autostart=false -Dsbt.server.forcestart=true' \
+  /home/jhlou/chipyard/.conda-env/bin/sbt \
+  -java-home /usr/lib/jvm/java-11-openjdk-amd64 \
+  -batch \
+  "project fdra" \
+  "runMain tram.vitra.CStoreVerilogGen -td <fresh-output>"
+----
+
+The two fresh outputs were `/tmp/vitra-task4-cstore-a.wvxREs` and `/tmp/vitra-task4-cstore-b.ZngPQq`.
+Both commands exited 0 (97 seconds and 88 seconds).
+`cmp` found all five generated files byte-identical, which also proves semantic JSON equality.
+
+[cols="2,4",options="header"]
+|===
+|Generated artifact |SHA-256
+
+|`CGRAWithAXI.v`
+|`96e709d80a6c8a007fd650af934ceab69df3d25fb99beb62315628993fc46752`
+
+|`spec/vitra_spec.json`
+|`3155ec148eee0efd4dbe8cae0c58359bd4deba4a140c9a64ed2bf5d0490d832d`
+
+|`spec/operations.json`
+|`0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d`
+
+|`spec/vitra_cgra_adg.json`
+|`e34fcef5b15f47718762812513d3cd7db35f06e60a17097e50429dfc41e26cf7`
+
+|`spec/axilite_spec.json`
+|`9c53819cad98bd2f3074eaeb26fba8ef9b2e7452703bdba064cd97acafa87502`
+|===
+
+The four JSON files are checked in at `cgra-mg/src/main/vitra_spec/cstore`.
+`manifest.json` records the raw and canonical semantic hashes, commits, generation command, contract values, consumer status, and the policy that generated RTL is not checked in.
+
+== Machine-checkable contract
+
+`CStoreArtifactAudit` rejects incomplete or empty bundles and verifies all of the following from structured JSON and emitted RTL:
+
+* portable metadata filenames with no developer-specific output path;
+* operation capabilities exactly `INPUT`, `OUTPUT`, `LOAD`, `STORE`, and `CSTORE`, with no CLOAD;
+* generated CSTORE `OPC=4`, three operands, zero results, and latency 1, all matched against the current generator's initialized `OpInfo` contract;
+* conditional IOB mode 2, three logical operands, six physical inputs, and explicit capability metadata;
+* `IsStore`, `UseAddr`, and `UseEn` configuration IDs 17, 18, and 19, with `UseEn` at aggregate bit 127;
+* each physical input pair -> operand mux -> three-lane SharedDelayPipe -> IOController input 0/1/2;
+* top-level connectivity to all six IOB input ports;
+* emitted RTL traces `io_in_2[0]` through `runtimePredicate`, `writeAllowed`, `writeEnable`, SRAM enable, and the registered write mask.
+
+The generation test creates two independent bundles and compares the canonical hash of all four JSON contracts.
+It also verifies that every checked-in JSON raw hash equals both the manifest entry and the fresh generated summary.
+
+The default `tram.vitra.VerilogGen` was separately rerun into `/tmp/vitra-task4-default-sram.VGXx52` and exited 0 in 86 seconds.
+Structured queries confirmed mode 1, two logical operands, four physical IOB inputs, no `UseEn`, no CSTORE/CLOAD, and the legacy `INPUT/OUTPUT/LOAD/STORE` capability set.
+
+== Hardware and legacy regressions
+
+Before the generator checkpoint, the complete fdra test command was:
+
+[source,shell]
+----
+sbt -java-home /usr/lib/jvm/java-11-openjdk-amd64 -batch \
+  "project fdra" \
+  "set Test / parallelExecution := false" \
+  test
+----
+
+It completed 33 tests in 5 suites with 33 successes and zero failures in 247 seconds.
+This includes the Task 3 memory oracle:
+
+* predicate 0: old memory value preserved, `sram.en=0`, `sram.we=0`, and `done=1`;
+* predicate 1: exactly one `sram.en=1`, `sram.we=0b11` write replaces OLD with NEW;
+* alternating predicates at II=1 write only true iterations while counters and completion progress;
+* `UseEn=0` normal STORE ignores operand 2;
+* normal LOAD remains independent of predicate;
+* independently delayed data/address/predicate streams realign at the IOB controller;
+* active FIFO STORE/LOAD and default SRAM routed-address STORE/LOAD smoke tests pass.
+
+The final post-documentation regression completed 35 tests in the same 5 suites with 35 successes and zero failures in 233 seconds.
+It includes the manifest writer and the checked-in JSON/generation hash binding in addition to every checkpoint test above.
+
+== ADORA read-only parse smoke and blocker
+
+The checked generator output was passed directly to the existing ADORA Mapper without modifying either repository:
+
+[source,shell]
+----
+printf 'module {}\n' | \
+  /home/jyhu/adora-compiler/build/bin/cgra-mapper \
+  --adg=<fresh-output>/spec/vitra_cgra_adg.json \
+  --op-file=<fresh-output>/spec/operations.json \
+  --output-type=pytest --obj-opt=false \
+  /dev/stdin --output=/dev/null
+----
+
+The command exited 0 and reported `Parse Operations`, `Parse ADG`, 240 GPE nodes, 48 IOB nodes, and 8 tiles.
+This establishes schema/read compatibility only.
+
+Trusted capability consumption is explicitly *blocked* in the current external ADORA checkout.
+`mapper/src/ir/adg_ir.cpp:148-154` ignores the artifact's precise IOB `operations` array for `COND_LS_MODE` and injects both `CLOAD` and `CSTORE`.
+The smoke output consequently printed `operations: CLOAD, CSTORE, INPUT, LOAD, OUTPUT, STORE` even though VITRA's truthful generated operation catalog and IOB attribute intentionally omit CLOAD.
+
+Task 4 does not modify ADORA and does not implement CLOAD to mask this consumer defect.
+The artifacts remain suitable for schema parsing and for a future ADORA reader that trusts the explicit capability metadata.

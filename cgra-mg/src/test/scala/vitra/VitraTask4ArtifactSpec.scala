@@ -1,6 +1,7 @@
 package tram.vitra
 
-import java.nio.file.Files
+import java.nio.file.{Files, Path, Paths}
+import java.security.MessageDigest
 
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import org.scalatest.OptionValues
@@ -55,6 +56,42 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
 
     error.getMessage should include("CGRAWithAXI.v")
     error.getMessage should include("operations.json")
+  }
+
+  it should "write machine-readable provenance without claiming trusted ADORA consumption" in {
+    val targetDir = Files.createTempDirectory("vitra-task4-manifest-source-")
+    val output = Files.createTempFile("vitra-task4-manifest-", ".json")
+    val summary = CStoreArtifactSummary(
+      targetDir = targetDir,
+      fileSha256 = Map(
+        "CGRAWithAXI.v" -> "a" * 64,
+        "spec/operations.json" -> "b" * 64),
+      semanticJsonSha256 = Map("spec/operations.json" -> "c" * 64),
+      cstoreOpc = 4,
+      cstoreLatency = 1,
+      iobModuleCount = 8)
+    val provenance = CStoreArtifactProvenance(
+      vitraCommit = "vitra-sha",
+      chipyardCommit = "chipyard-sha",
+      fdraCommit = "fdra-sha",
+      adoraCommit = "adora-sha",
+      adoraMapperParse = "pass")
+
+    CStoreArtifactAudit.writeManifest(summary, provenance, output)
+
+    val manifest = readJson(output)
+    manifest.path("schema_version").asInt() shouldBe 1
+    manifest.path("generator").path("entrypoint").asText() shouldBe "tram.vitra.CStoreVerilogGen"
+    manifest.path("generator").path("vitra_commit").asText() shouldBe "vitra-sha"
+    manifest.path("environment").path("chipyard_commit").asText() shouldBe "chipyard-sha"
+    manifest.path("environment").path("fdra_commit").asText() shouldBe "fdra-sha"
+    manifest.path("environment").path("adora_commit").asText() shouldBe "adora-sha"
+    manifest.path("artifacts").path("CGRAWithAXI.v").path("checked_in").asBoolean() shouldBe false
+    manifest.path("artifacts").path("spec/operations.json").path("checked_in").asBoolean() shouldBe true
+    manifest.path("artifacts").path("spec/operations.json").path("semantic_sha256").asText() shouldBe "c" * 64
+    manifest.path("consumer_compatibility").path("adora_mapper_parse").asText() shouldBe "pass"
+    manifest.path("consumer_compatibility").path("trusted_capability_consumption").asText() shouldBe "blocked"
+    manifest.path("consumer_compatibility").path("blocker").asText() should include("CLOAD")
   }
 
   it should "generate one complete audited bundle from the explicit CSTORE entrypoint" in {
@@ -120,6 +157,24 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
     rtl should include regex "(?s)if \\(writeEnable\\).*io_sram_we_REG <= 2'h3".r
   }
 
+  it should "bind every checked-in JSON to the generated bundle and provenance manifest" in {
+    val referenceDir = checkedInReferenceDir
+    val manifest = readJson(referenceDir.resolve("manifest.json"))
+    val generated = firstGeneration._2
+
+    CStoreArtifactAudit.jsonRelativePaths.foreach { relative =>
+      val filename = Paths.get(relative).getFileName.toString
+      val checkedIn = referenceDir.resolve(filename)
+      val manifestEntry = manifest.path("artifacts").path(relative)
+      val checkedInHash = sha256(Files.readAllBytes(checkedIn))
+
+      manifestEntry.path("checked_in").asBoolean() shouldBe true
+      manifestEntry.path("sha256").asText() shouldBe checkedInHash
+      generated.fileSha256(relative) shouldBe checkedInHash
+    }
+    manifest.path("artifacts").path("CGRAWithAXI.v").path("checked_in").asBoolean() shouldBe false
+  }
+
   it should "reproduce all four semantic JSON contracts in a second fresh directory" in {
     firstGeneration._2.semanticJsonSha256 shouldBe secondGeneration._2.semanticJsonSha256
   }
@@ -133,6 +188,18 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
   }
 
   private def readJson(path: java.nio.file.Path): JsonNode = new ObjectMapper().readTree(path.toFile)
+
+  private def checkedInReferenceDir: Path = {
+    val candidates = Seq(
+      Paths.get("src/main/vitra_spec/cstore"),
+      Paths.get("cgra-mg/src/main/vitra_spec/cstore"),
+      Paths.get("generators/fdra/cgra-mg/src/main/vitra_spec/cstore"))
+    candidates.find(path => Files.isRegularFile(path.resolve("manifest.json")))
+      .getOrElse(fail(s"cannot locate checked-in CSTORE reference from ${Paths.get(".").toAbsolutePath}"))
+  }
+
+  private def sha256(bytes: Array[Byte]): String =
+    MessageDigest.getInstance("SHA-256").digest(bytes).map("%02x".format(_)).mkString
 
   private def iobModes(attrs: scala.collection.mutable.Map[String, Any]): Seq[Int] =
     attrs("cgra_iobs")
