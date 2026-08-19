@@ -78,7 +78,7 @@ project fdra
 runMain tram.vitra.VerilogGen -td /path/to/output
 ```
 
-The `-td` option selects the target directory for generated files. Use a fresh output directory when testing a new architecture spec so older generated RTL is not overwritten by accident.
+The `-td` option selects the target directory for generated files. The VITRA metadata files (`vitra_spec.json`, `operations.json`, `vitra_cgra_adg.json`, and `axilite_spec.json`) are written under `<target-dir>/spec`. Use a fresh output directory when testing a new architecture spec so older generated RTL is not overwritten by accident.
 
 ## Modify The VITRA Spec
 

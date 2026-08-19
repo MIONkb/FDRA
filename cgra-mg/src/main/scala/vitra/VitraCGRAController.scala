@@ -135,7 +135,12 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
   * CGRA control is achieved by some registers,
   * AXI Lite is controlled by independent state machine
   */
-class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with IR{
+class VitraCGRAController(
+  attrs: mutable.Map[String, Any],
+  axilRegSpecFilename: String = VitraParam
+    .metadataPathsFor(VitraParam.defaultTargetDir)
+    .axiLiteSpec
+    .toString) extends Module with IR{
   import VitraParam._
   
   val idWidth = attrs("id_width").asInstanceOf[Int]
@@ -265,8 +270,8 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
     apply(f"reg_exe_done_${i}", f"0x${regMap(reg_exe_done(i)).litValue}%X")
   }
 
-  printIR(axil_reg_spec_filename)
-  println(s"axilite reg spec path: $axil_reg_spec_filename")
+  printIR(axilRegSpecFilename)
+  println(s"axilite reg spec path: $axilRegSpecFilename")
   // println(regMap, "regMap")
   ////////////////////////////////
   //// End of registers address map defination
@@ -607,5 +612,8 @@ class VitraCGRAController(attrs: mutable.Map[String, Any]) extends Module with I
 
 
 object VerilogGenWithoutSRAM extends App {
- (new chisel3.stage.ChiselStage).emitVerilog(new VitraCGRAController(VitraSpec.attrs), args)
+  val metadataPaths = VitraParam.metadataPathsFor(VitraParam.targetDirFromArgs(args.toIndexedSeq))
+  (new chisel3.stage.ChiselStage).emitVerilog(
+    new VitraCGRAController(VitraSpec.attrs, metadataPaths.axiLiteSpec.toString),
+    args)
 }

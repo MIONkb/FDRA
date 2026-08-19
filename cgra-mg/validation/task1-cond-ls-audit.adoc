@@ -1,0 +1,219 @@
+= Task 1 SRAM Baseline and COND_LS Audit
+:toc:
+
+== Scope and status
+
+This record captures Task 1 on 2026-08-19 from branch `feature/cstore-hardware`, source commit `36c9f541ff2ecf2ab1dec9b8fa8e6542eafe2012` before the uncommitted Task 1 changes.
+Task 1 removes the developer-specific metadata output path, preserves the SRAM_MODE baseline, and records the current COND_LS_MODE elaboration failure.
+It does not add a conditional controller lane, `UseEn`, predication semantics, opcodes, or load/store behavior.
+
+`CLOAD` is *not claimed working* by this task.
+
+== Environment and preflight
+
+[cols="1,3",options="header"]
+|===
+|Item |Observed value
+
+|Repository under test
+|`/home/jyhu/VITRA-CGRA`
+
+|Read-only external Chipyard source
+|`/home/jhlou/chipyard`; `test ! -w /home/jhlou/chipyard` passed
+
+|Chipyard revision
+|`27981d26675e7fd2e41d772375b5632951ece968`, 2025-07-26T17:21:06+08:00, `merge is implemented`
+
+|Lab fdra revision
+|`0cb9381fa231b4d26881779a80a5f0c78ec4c5ff`, 2026-05-09T14:43:09+08:00, `fix readme for vitra cgra.`
+
+|Writable build copy
+|`/tmp/vitra-task1-chipyard-isolated-20260819`
+
+|sbt
+|`/home/jhlou/chipyard/.conda-env/bin/sbt`, version 1.8.2
+
+|Java
+|OpenJDK 11.0.27 from `/usr/lib/jvm/java-11-openjdk-amd64`
+
+|Task-owned caches
+|`/tmp/vitra-task1-sbt/{boot,coursier,global,ivy,runtime}`
+|===
+
+The preflight `sbt projects` command exited 0 and explicitly listed both `adorafdra` and `fdra`; Task 1 selected `fdra`.
+The repository was synchronized only into `generators/fdra` in the writable copy; no build wrote under `/home/jhlou/chipyard`.
+
+Every recorded sbt command used the following explicit environment. The `-java-home` option is required because the lab conda sbt launcher otherwise selects its bundled Java 8 instead of `JAVA_HOME`.
+
+[source,shell]
+----
+env \
+  XDG_RUNTIME_DIR=/tmp/vitra-task1-sbt/runtime \
+  TMPDIR=/tmp/vitra-task1-sbt/runtime \
+  COURSIER_CACHE=/tmp/vitra-task1-sbt/coursier \
+  JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=/tmp/vitra-task1-sbt/runtime -Dsbt.global.base=/tmp/vitra-task1-sbt/global -Dsbt.boot.directory=/tmp/vitra-task1-sbt/boot -Dsbt.ivy.home=/tmp/vitra-task1-sbt/ivy -Dsbt.coursier.home=/tmp/vitra-task1-sbt/coursier -Dsbt.server.autostart=false -Dsbt.server.forcestart=true' \
+  /home/jhlou/chipyard/.conda-env/bin/sbt \
+  -java-home /usr/lib/jvm/java-11-openjdk-amd64 \
+  -batch <sbt-command> -mem 4096
+----
+
+The launcher reported `sbt 1.8.2 (Ubuntu Java 11.0.27)` with this invocation.
+
+== Pre-change SRAM_MODE baseline
+
+The README generator invocation, run in the isolated Chipyard copy before the Task 1 fix, exited 1 before Chisel elaboration.
+The exact blocking exception was:
+
+[source,text]
+----
+java.io.FileNotFoundException: /home/jhlou/CGRVOPT/MatrixMeld/vitrartl_10x24/spec/vitra_spec.json (Read-only file system)
+----
+
+The first user-code frames were:
+
+* `VitraSpec.dumpSpec(VitraSpec.scala:315)`
+* `VitraWithAxi.<init>(VitraWithAxi.scala:58)`
+* `VerilogGen(...)(VitraWithAxi.scala:206)`
+
+This establishes that the baseline blocker was the developer-specific metadata path, not SRAM hardware elaboration.
+
+== Post-fix SRAM_MODE baseline
+
+From `/tmp/vitra-task1-chipyard-isolated-20260819`:
+
+[source,shell]
+----
+env XDG_RUNTIME_DIR=/tmp/vitra-task1-sbt/runtime \
+  TMPDIR=/tmp/vitra-task1-sbt/runtime \
+  COURSIER_CACHE=/tmp/vitra-task1-sbt/coursier \
+  JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=/tmp/vitra-task1-sbt/runtime -Dsbt.global.base=/tmp/vitra-task1-sbt/global -Dsbt.boot.directory=/tmp/vitra-task1-sbt/boot -Dsbt.ivy.home=/tmp/vitra-task1-sbt/ivy -Dsbt.coursier.home=/tmp/vitra-task1-sbt/coursier -Dsbt.server.autostart=false -Dsbt.server.forcestart=true' \
+  /home/jhlou/chipyard/.conda-env/bin/sbt \
+  -java-home /usr/lib/jvm/java-11-openjdk-amd64 \
+  -batch \
+  "project fdra; runMain tram.vitra.VerilogGen -td /tmp/vitra-task1-sram-baseline-20260819" \
+  -mem 4096
+----
+
+With the Java and task-owned cache environment above, the command exited 0 in 87 seconds.
+It produced `CGRAWithAXI.v` in the target directory and all four metadata files in `/tmp/vitra-task1-sram-baseline-20260819/spec`.
+
+[cols="2,1,4",options="header"]
+|===
+|Artifact |Bytes |SHA-256
+
+|`CGRAWithAXI.v`
+|12842435
+|`1ca0d2f1a1ec1847b869602f3844e1134eeafe4708a5aaada2ac1a8f5d96a40d`
+
+|`spec/vitra_spec.json`
+|14705
+|`eb87c4669d02a43907b355cff5f6b72780f4e5f641b3b190fadd776caecbdf84`
+
+|`spec/operations.json`
+|5000
+|`94e61057cb447475379c355c4ec6897d8bf93fdd12c5be56014b70caaeb34665`
+
+|`spec/vitra_cgra_adg.json`
+|491875
+|`d33fbaba2e939589d503356e111a487b425b6069c90bb5da1b9b3c2524598c98`
+
+|`spec/axilite_spec.json`
+|402
+|`9c53819cad98bd2f3074eaeb26fba8ef9b2e7452703bdba064cd97acafa87502`
+|===
+
+== Current SRAM cycle path
+
+The complete current STORE ingress/request path is:
+
+[source,text]
+----
+IOB routed inputs
+  -> one Muxn per operand
+  -> two-lane SharedDelayPipe
+  -> IOController io.in(0=data, 1=byte address)
+  -> wData / selected affine-or-routed addr / wValid / realEn
+  -> optional SRAM request registers selected by addRegSram
+  -> sram.en / sram.we / sram.addr / sram.din
+----
+
+`IOB` connects the mux outputs to `SharedDelayPipe`, then its two outputs to `IOController`; the controller's SRAM interface is connected back through the IOB to the VITRA scratchpad banks.
+The SRAM_MODE IOB controller decodes `BaseAddr`, nested `Stride`/`Cycles`, `II`, `Latency`, `IsStore`, and `UseAddr` from its configuration word.
+`start` moves the controller through `s_idle`, optionally `s_pre_lat`, and then `s_data`; the II and nested cycle counters qualify store data or a load address.
+
+For a store, `io.in(0)` supplies data and either the generated address or `io.in(1)` supplies the byte address when `UseAddr` is set.
+For a load, the generated address or `io.in(0)` supplies the byte address when `UseAddr` is set; SRAM `dout` returns through `io.out(0)`.
+`realEn` qualifies the SRAM request, while `IsStore` selects a nonzero write enable.
+
+The supported `addRegSram` latency contract is:
+
+[cols="1,1,1,3",options="header"]
+|===
+|`addRegSram` |Store latency |Load latency |RTL staging
+
+|0
+|0
+|1
+|Combinational request path; SRAM response goes directly to `io.out(0)`.
+
+|1
+|1
+|2
+|Request enable, write enable, address, and store data are registered.
+
+|2
+|1
+|3
+|The request is registered and the load response receives one additional register.
+|===
+
+The architecture metadata computes `load_latency = addRegSram + 1` and `store_latency = 0` only for `addRegSram == 0`, otherwise 1.
+
+== COND_LS_MODE audit
+
+`VitraTask1AuditSpec` shallow-clones `VitraSpec.attrs`, installs replacement IOB-spec rows whose modes are `COND_LS_MODE`, disables ADG and operation-set dumps, elaborates `MultiTileCGRA`, and restores the global map in `finally`.
+
+The present parameter, IOB, controller, generator, and artifact discontinuities are:
+
+* `IobParam` assigns three operand groups to COND_LS_MODE: data, address, and enable/predicate.
+* `IOB.numInCtrl` assigns only two controller inputs to every non-FIFO mode. Both the mux instance-ID list and emitted ADG `num_operands` are derived from that two-input count.
+* `IOB.numDelayPipes` creates only two delay-pipe lanes for every non-FIFO mode.
+* `IOController.numIn` exposes only two inputs for every non-FIFO mode.
+* `IOController` configuration contains `IsStore` and `UseAddr` but no `UseEn`; `wValid`, `realEn`, and the final `sram.we` path do not consume a runtime predicate.
+* The conditional operation-list skeleton advertises `CINPUT`, `COUTPUT`, `CLOAD`, and `CSTORE`, even though elaboration fails before a matching three-operand IOB/ADG can be emitted. In particular this is not evidence that CLOAD works.
+* Production `VitraSpec` remains `SRAM_MODE`. Checked-in metadata remains mode 1 with two-operand IOBs; checked-in operations contain only `INPUT`, `OUTPUT`, `LOAD`, and `STORE`, with no CSTORE capability.
+
+Elaboration therefore reaches the third COND_LS operand while the `Muxn` instance-ID list contains only two entries.
+The observed exception is `java.lang.IndexOutOfBoundsException: 2`.
+The real first user-code frame from the focused run is:
+
+[source,text]
+----
+tram.dsa.IOB.$anonfun$new$6(IOB.scala:132)
+----
+
+Predicate representation is *TO VERIFY*: the current structure suggests a third operand group, but Task 1 does not establish whether the predicate is a one-bit Boolean, a data-width lane, or another encoded control representation.
+Until the controller lane and representation are specified and implemented in later work, conditional operations including `CLOAD` remain unsupported.
+
+== Focused audit command
+
+[source,shell]
+----
+env XDG_RUNTIME_DIR=/tmp/vitra-task1-sbt/runtime \
+  TMPDIR=/tmp/vitra-task1-sbt/runtime \
+  COURSIER_CACHE=/tmp/vitra-task1-sbt/coursier \
+  JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=/tmp/vitra-task1-sbt/runtime -Dsbt.global.base=/tmp/vitra-task1-sbt/global -Dsbt.boot.directory=/tmp/vitra-task1-sbt/boot -Dsbt.ivy.home=/tmp/vitra-task1-sbt/ivy -Dsbt.coursier.home=/tmp/vitra-task1-sbt/coursier -Dsbt.server.autostart=false -Dsbt.server.forcestart=true' \
+  /home/jhlou/chipyard/.conda-env/bin/sbt \
+  -java-home /usr/lib/jvm/java-11-openjdk-amd64 \
+  -batch \
+  "project fdra" \
+  "testOnly tram.vitra.VitraTask1AuditSpec" \
+  -mem 4096
+----
+
+The final focused run completed seven tests with seven successes and zero failures. This includes an integration check that `VerilogGenWithoutSRAM -td <target-dir>` writes `axilite_spec.json` under `<target-dir>/spec`.
+The primary-agent verification rerun on 2026-08-20 explicitly reported `sbt 1.8.2 (Ubuntu Java 11.0.27)` and completed in 58 seconds with the same 7/7 result.
+
+An independent README-command rerun to fresh directory `/tmp/vitra-task1-sram-final.OqAu35` exited 0 in 108 seconds.
+Its RTL, operation-set, ADG, and AXI-lite hashes exactly matched the table above.
+`vitra_spec.json` differed only in its two intentionally embedded absolute target filenames (`operation_set_filename` and `cgra_adg_filename`), because the rerun used a different fresh target directory.

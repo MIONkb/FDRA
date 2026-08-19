@@ -20,48 +20,64 @@ import freechips.rocketchip.amba.axi4._
 import freechips.rocketchip.amba.axi4.{AXI4BundleParameters, AXI4Bundle}
 // import freechips.rocketchip.diplomacy._
 
-import java.io.File
+import java.nio.file.{Files, Path, Paths}
+
+case class VitraMetadataPaths(
+  specDirectory: Path,
+  vitraSpec: Path,
+  operationSet: Path,
+  cgraAdg: Path,
+  axiLiteSpec: Path)
 
 object VitraParam {
   val dumpSpec : Boolean = true
   val loadSpec : Boolean = false
   val dumpOperationSet : Boolean = true
   val dumpADG : Boolean = true
-  // val rootDirPath = (new File("")).getAbsolutePath()
-  val rootDirPath = "/home/jhlou/chipyard"
-  // val vitra_spec_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/vitra_spec.json"
-  // val operation_set_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/operations.json"
-  // val cgra_adg_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/vitra_cgra_adg.json"
-  // val axil_reg_spec_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/vitra_spec/axilite_spec.json"
   val FPGAImp = false
-  val spec_dir = (
-    if(FPGAImp == true) "/home/jhlou/CGRVOPT/AXIFPGA/spec"
-    // else "/home/jhlou/chipyard/verilog"
-    // else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl_8x16/spec"
-    else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl_10x24/spec"
-    // else "/home/jhlou/CGRVOPT/MatrixMeld/vitrartl_6x6/spec"
-    // else "/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/vitra_spec"
-  )
+  val defaultTargetDir: Path = Paths.get(".")
 
-  val vitra_spec_filename = spec_dir + "/vitra_spec.json"
-  val operation_set_filename = spec_dir + "/operations.json"
-  val cgra_adg_filename = spec_dir + "/vitra_cgra_adg.json"
-  val axil_reg_spec_filename = spec_dir + "/axilite_spec.json"
+  def targetDirFromArgs(args: Seq[String]): Path = {
+    args.zipWithIndex.collectFirst {
+      case (option, index)
+          if (option == "-td" || option == "--target-dir") && index + 1 < args.length =>
+        Paths.get(args(index + 1))
+    }.getOrElse(defaultTargetDir)
+  }
+
+  def metadataPathsFor(targetDir: Path): VitraMetadataPaths = {
+    val specDirectory = targetDir.resolve("spec")
+    Files.createDirectories(specDirectory)
+    VitraMetadataPaths(
+      specDirectory = specDirectory,
+      vitraSpec = specDirectory.resolve("vitra_spec.json"),
+      operationSet = specDirectory.resolve("operations.json"),
+      cgraAdg = specDirectory.resolve("vitra_cgra_adg.json"),
+      axiLiteSpec = specDirectory.resolve("axilite_spec.json"))
+  }
+
+  def configureMetadata(
+    paths: VitraMetadataPaths,
+    operationSetEnabled: Boolean,
+    adgEnabled: Boolean): Unit = {
+    VitraSpec.attrs("dumpOperationSet") = operationSetEnabled
+    VitraSpec.attrs("operation_set_filename") = paths.operationSet.toString
+    VitraSpec.attrs("dumpADG") = adgEnabled
+    VitraSpec.attrs("cgra_adg_filename") = paths.cgraAdg.toString
+  }
 
 }
 
-class VitraWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends Module  {
+class VitraWithAxi(targetDir: Path = VitraParam.defaultTargetDir) extends Module  {
   override def desiredName = "CGRAWithAXI"
   // override def desiredName = "vitra"
   import VitraParam._
+  val metadataPaths = metadataPathsFor(targetDir)
+  configureMetadata(metadataPaths, dumpOperationSet, dumpADG)
   // println(tram_spec_filename)
-  if(dumpSpec){ VitraSpec.dumpSpec(vitra_spec_filename) }
-  if(loadSpec){ VitraSpec.loadSpec(vitra_spec_filename) }
-  VitraSpec.attrs("dumpOperationSet") = dumpOperationSet
-  if(dumpOperationSet){ VitraSpec.attrs("operation_set_filename") = operation_set_filename }
-  VitraSpec.attrs("dumpOperationSet") = dumpADG
-  if(dumpADG){ VitraSpec.attrs("cgra_adg_filename") = cgra_adg_filename }
-  println(s"adg path: $cgra_adg_filename")
+  if(dumpSpec){ VitraSpec.dumpSpec(metadataPaths.vitraSpec.toString) }
+  if(loadSpec){ VitraSpec.loadSpec(metadataPaths.vitraSpec.toString) }
+  println(s"adg path: ${metadataPaths.cgraAdg}")
   // scratchpad banks used for IOB
   val lgSizeSpadBank = VitraSpec.attrs("spad_bank_lg_size").asInstanceOf[Int]
   val nSpadBanksEachTile = VitraSpec.attrs("tile_spad_num_banks").asInstanceOf[Int]
@@ -144,7 +160,7 @@ class VitraWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends M
     hasMask       = hasMask
   ))
 
-  val cgra = Module(new VitraCGRAController(VitraSpec.attrs))
+  val cgra = Module(new VitraCGRAController(VitraSpec.attrs, metadataPaths.axiLiteSpec.toString))
 
   io.s_axi          <> spad.io.s_axi
   io.s_axilite      <> cgra.io.s_axilite
@@ -169,9 +185,10 @@ class VitraWithAxi(/*opcodes: OpcodeSet*/)/*(implicit p: Parameters)*/ extends M
 import chisel3.stage.ChiselStage
 
 object FirGen extends App {
+  val stageArgs = Array("--target-dir", "build_ir")
   (new ChiselStage).emitFirrtl(
-    new VitraWithAxi(),
-    Array("--target-dir", "build_ir")
+    new VitraWithAxi(VitraParam.targetDirFromArgs(stageArgs.toSeq)),
+    stageArgs
   )
 }
 
@@ -203,7 +220,9 @@ object FirGen extends App {
 
 
 object VerilogGen extends App {
- (new chisel3.stage.ChiselStage).emitVerilog(new VitraWithAxi(), args)
+ (new chisel3.stage.ChiselStage).emitVerilog(
+   new VitraWithAxi(VitraParam.targetDirFromArgs(args.toSeq)),
+   args)
 }
 
 
