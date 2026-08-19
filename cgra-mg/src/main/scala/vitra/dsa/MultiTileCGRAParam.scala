@@ -4,6 +4,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import chisel3.util._
 import tram.common.MacroVar._
+import tram.common.IobMode
 // import tram.spec._
 import tram.vitra.spec._
 import tram.op._
@@ -37,11 +38,7 @@ case class IobParam(
 ) {
 
   val num_input_per_operand = {
-    val numOperand = {
-      if (mode == FIFO_MODE) 1 // data
-      else if (mode == SRAM_MODE) 2 // data, addr
-      else 3 // data, addr, en
-    }
+    val numOperand = IobMode.numOperands(mode)
     ListBuffer.fill(numOperand){2}
   }
 
@@ -171,7 +168,7 @@ case class MultiTileCgraParam(attrs: mutable.Map[String, Any]){
   val iob_modes = iobsSpec.flatten.map(_.mode).distinct
   val iob_operations = ListBuffer[String]()
   if (iob_modes.contains(COND_LS_MODE)) {
-    iob_operations ++= ListBuffer("INPUT", "OUTPUT", "LOAD", "STORE", "CINPUT", "COUTPUT", "CLOAD", "CSTORE" )
+    iob_operations ++= ListBuffer("INPUT", "OUTPUT", "LOAD", "STORE", "CSTORE")
   } else if (iob_modes.contains(SRAM_MODE)) {
     iob_operations ++= ListBuffer("INPUT", "OUTPUT", "LOAD", "STORE")
   } else {

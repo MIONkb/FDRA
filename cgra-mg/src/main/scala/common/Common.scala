@@ -25,6 +25,17 @@ object MacroVar {
 	val COND_LS_MODE = 2
 }
 
+object IobMode {
+	import MacroVar._
+
+	def numOperands(mode: Int): Int = mode match {
+		case FIFO_MODE => 1
+		case SRAM_MODE => 2
+		case COND_LS_MODE => 3
+		case _ => throw new IllegalArgumentException(s"Unsupported IOB mode: $mode")
+	}
+}
+
 
 /**
 	* Compile Macro Variables
@@ -42,5 +53,4 @@ object CompileMacroVar {
 	var TARGET_TYPE = TARGET_SIM
 	// var TARGET_TYPE = TARGET_ASIC
 }
-
 

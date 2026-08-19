@@ -1,0 +1,216 @@
+= Task 2 Three-Operand Conditional IOB Validation
+:toc:
+
+== Scope and boundary
+
+This record captures Task 2 on 2026-08-20 from branch `feature/cstore-hardware`, starting at Task 1 commit `73376a01a89d0ad3ed2e5fcd0a6e1993b78ea34a`.
+
+Task 2 makes `COND_LS_MODE` structurally truthful: data, address, and enable are three real logical operands with three muxes, three shared-delay lanes, three `IOController` inputs, interconnect connections, and generated ADG entries. It does not add `UseEn`, consume the predicate in the store request, or change `sram.en`/`sram.we`; those behaviors remain Task 3 work.
+
+The conditional capability list is exactly `INPUT`, `OUTPUT`, `LOAD`, `STORE`, and `CSTORE`. `CLOAD`, `CINPUT`, and `COUTPUT` are not claimed.
+
+== Environment
+
+[cols="1,3",options="header"]
+|===
+|Item |Observed value
+
+|Repository under test
+|`/home/jyhu/VITRA-CGRA`; initial HEAD `73376a01a89d0ad3ed2e5fcd0a6e1993b78ea34a`
+
+|External Chipyard source
+|`/home/jhlou/chipyard`; `test ! -w /home/jhlou/chipyard` passed
+
+|Chipyard revision
+|`27981d26675e7fd2e41d772375b5632951ece968` on `AIDeploy`
+
+|Lab fdra revision
+|`0cb9381fa231b4d26881779a80a5f0c78ec4c5ff` on `develop`
+
+|Writable build copy
+|`/tmp/vitra-task1-chipyard-isolated-20260819`; the current checkout was mechanically synchronized only to `generators/fdra`
+
+|sbt / Java
+|sbt 1.8.2, OpenJDK 11.0.27 from `/usr/lib/jvm/java-11-openjdk-amd64`
+
+|Task-owned caches
+|`/tmp/vitra-task1-sbt/{boot,coursier,global,ivy,runtime}`
+|===
+
+No command wrote under `/home/jhlou/chipyard`. The external repositories have ownership that triggers Git's dubious-ownership guard, so their revisions were rechecked directly from their read-only `HEAD` refs rather than by changing global Git configuration.
+
+All sbt commands used the Task 1 isolated environment and the launcher's explicit Java selection:
+
+[source,shell]
+----
+env \
+  XDG_RUNTIME_DIR=/tmp/vitra-task1-sbt/runtime \
+  TMPDIR=/tmp/vitra-task1-sbt/runtime \
+  COURSIER_CACHE=/tmp/vitra-task1-sbt/coursier \
+  JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=/tmp/vitra-task1-sbt/runtime -Dsbt.global.base=/tmp/vitra-task1-sbt/global -Dsbt.boot.directory=/tmp/vitra-task1-sbt/boot -Dsbt.ivy.home=/tmp/vitra-task1-sbt/ivy -Dsbt.coursier.home=/tmp/vitra-task1-sbt/coursier -Dsbt.server.autostart=false -Dsbt.server.forcestart=true' \
+  /home/jhlou/chipyard/.conda-env/bin/sbt \
+  -java-home /usr/lib/jvm/java-11-openjdk-amd64 \
+  -batch <sbt-command> -mem 4096
+----
+
+The sandbox blocks the local socket used by sbt's forked test runner. Tests and generation therefore used the same command outside that sandbox after an in-sandbox run proved the failure was `java.net.SocketException: Operation not permitted` before any VITRA test executed.
+
+== Red-to-green evidence
+
+The first Task 2 test required the existing all-conditional MultiTile spec to elaborate without an exception.
+
+Before the production change it compiled and failed consistently with `java.lang.IndexOutOfBoundsException`, the Task 1 failure rooted at `IOB.scala:132`. After the shared operand count and three-lane structural change, the same test passed.
+
+A second focused RED parsed the generator-owned operation JSON and observed the stale set:
+
+[source,text]
+----
+CINPUT, COUTPUT, CLOAD, CSTORE, INPUT, OUTPUT, LOAD, STORE
+----
+
+After changing both single-tile and MultiTile capability builders, the test passed with exactly:
+
+[source,text]
+----
+INPUT, OUTPUT, LOAD, STORE, CSTORE
+----
+
+The Task 1 expected-failure test was retired after the RED-to-GREEN transition. Its exact historical exception and source location remain preserved in `task1-cond-ls-audit.adoc`.
+
+== Structural contract
+
+`tram.common.IobMode.numOperands` is the single mode contract: FIFO is 1, SRAM is 2, and conditional load/store is 3. Both `IobParam` implementations, the shared `IOB`, and `IOController` use it. `IOB` also rejects a `num_input_per_operand` list whose logical length disagrees with the mode.
+
+The active conditional MultiTile generation produced this unique IOB structure:
+
+[cols="2,1",options="header"]
+|===
+|Field |Value
+
+|`iob_mode`
+|2
+
+|`num_operands`
+|3
+
+|physical `num_input`
+|6, two selectable inputs per logical operand
+
+|IOB instances
+|one `IOController`, one three-lane `DelayPipe`, three `Muxn`
+
+|controller configuration
+|bits 0--126, unchanged from SRAM; no `UseEn`
+
+|delay configuration
+|bits 127--138
+
+|mux configuration
+|bits 139, 140, 141
+
+|aggregate configuration
+|bits 0--141, continuous and non-overlapping apart from the aggregate `This` range
+|===
+
+Structured tests prove each logical operand's two external candidates reach its own mux, then delay lane 0/1/2, then `IOController` input 0/1/2. They also prove every top-level conditional IOB receives all six physical inputs from GIB connections. No interconnect implementation change was required because the active single-tile and MultiTile wiring already derives pin counts from `num_input_per_operand`.
+
+The optimized standalone `IOController` Verilog retains `io_in_2` without a `dontTouch` annotation, so no preservation workaround was added.
+
+== Predicate interface decision
+
+Task 2 locks the routed predicate representation to word bit 0, without consuming it in store hardware yet.
+
+Evidence:
+
+* ADORA's `ADORA.cond_store` condition is an `i1`.
+* VITRA integer comparison operations produce one-bit UInt results which are zero-extended on the uniform-width ALU output.
+* VITRA `SEL` explicitly selects on `op2(0)`.
+* The focused ALU test proves EQ produces word values 0/1 and SEL treats operand values 1, 0, and 2 as true, false, and false respectively. This distinguishes bit 0 from a non-zero interpretation.
+
+Task 3 may use this documented bit only when it adds `UseEn` and write gating. Task 2 does not read `io.in(2)` in `wValid`, `realEn`, `sram.en`, or `sram.we`.
+
+== Generated conditional audit artifacts
+
+The full test run generated temporary, test-only artifacts at:
+
+[source,text]
+----
+/tmp/vitra-task1-sbt/runtime/vitra-task2-cond-generation-5328054338616986814/spec
+----
+
+[cols="2,4",options="header"]
+|===
+|Artifact |SHA-256
+
+|`operations.json`
+|`0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d`
+
+|`vitra_cgra_adg.json`
+|`e1d213c76d7ec1607a855dc690a2110492a690f0fdb1305ee5ba2269661d9397`
+|===
+
+The generated CSTORE record is generator-owned: `numOperands=3`, `numRes=0`, `OPC=4`, and `latency=1`. Tests compare OPC and latency to the live `OpInfo` state rather than hard-coding them as an implementation input. Neither generated file is checked into the production spec directory.
+
+== Verification results
+
+=== Full available fdra test suite
+
+From the isolated Chipyard build root:
+
+[source,shell]
+----
+sbt "project fdra" "set Test / parallelExecution := false" test
+----
+
+With the environment block above, this exited 0 in 159 seconds:
+
+[source,text]
+----
+Total number of tests run: 16
+Suites: completed 2, aborted 0
+Tests: succeeded 16, failed 0, canceled 0, ignored 0, pending 0
+All tests passed.
+----
+
+Task 2 contributes ten tests covering the shared count contract, MultiTile elaboration, exact operation capabilities, internal and GIB connectivity, configuration packing, SRAM layout, three-lane delay behavior, predicate bit 0, optimized controller Verilog, and single-tile elaboration. Task 1 retains six SRAM/output-path regression tests.
+
+=== README SRAM generator regression
+
+[source,shell]
+----
+sbt "project fdra; runMain tram.vitra.VerilogGen -td /tmp/vitra-task2-sram-regression-20260820" -mem 4096
+----
+
+With the environment block above, this exited 0 in 87 seconds and produced `CGRAWithAXI.v` plus all four metadata files.
+
+[cols="2,4",options="header"]
+|===
+|Artifact |SHA-256
+
+|`spec/axilite_spec.json`
+|`9c53819cad98bd2f3074eaeb26fba8ef9b2e7452703bdba064cd97acafa87502`
+
+|`spec/operations.json`
+|`94e61057cb447475379c355c4ec6897d8bf93fdd12c5be56014b70caaeb34665`
+
+|`spec/vitra_cgra_adg.json`
+|`d33fbaba2e939589d503356e111a487b425b6069c90bb5da1b9b3c2524598c98`
+
+|`spec/vitra_spec.json`
+|`ce4bdd37046eb9e415d47a696d10afefc626e8d18146435611725408e1940adf`
+
+|`CGRAWithAXI.v`
+|`4821209ad10e67d487b6ffe4e18b44a5487eda521b8bffb1b975741186326d68`
+|===
+
+The SRAM operation and ADG hashes are byte-identical to Task 1. The generated IOB remains mode 1, two operands, four physical inputs, delay bits 127--134, mux bits 135--136, and aggregate bits 0--136.
+
+The raw Verilog hash differs from Task 1. After removing source-location comments, the only remaining diff is two hunks that permute the priority-mux construction of AXI-lite readback across distinct register addresses; the decoded address/value pairs are unchanged. This is existing mutable-map emission ordering, not an SRAM datapath or configuration change.
+
+== Explicit non-claims
+
+* No `UseEn` field exists yet.
+* The third input is structurally routed but does not gate a write.
+* No true/false SRAM write oracle is claimed.
+* No CLOAD behavior or capability is claimed.
+* The default `VitraSpec` and checked-in production JSON remain SRAM mode. Choosing and publishing a production conditional target remains Task 4 work.

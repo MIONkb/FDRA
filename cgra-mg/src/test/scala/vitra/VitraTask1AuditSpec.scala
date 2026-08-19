@@ -5,12 +5,9 @@ import java.nio.file.{Files, Paths}
 import chisel3.stage.ChiselStage
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import tram.common.MacroVar.{COND_LS_MODE, SRAM_MODE}
+import tram.common.MacroVar.SRAM_MODE
 import tram.dsa.IOController
-import tram.vitra.dsa.MultiTileCGRA
-import tram.vitra.spec.{IobSpec, VitraSpec}
-
-import scala.collection.mutable.ListBuffer
+import tram.vitra.spec.VitraSpec
 
 class VitraTask1AuditSpec extends AnyFlatSpec with Matchers {
   behavior of "Vitra metadata output routing"
@@ -92,45 +89,6 @@ class VitraTask1AuditSpec extends AnyFlatSpec with Matchers {
       Array("--target-dir", targetDir.toString))
 
     chirrtl should include("module IOController")
-  }
-
-  it should "record the current COND_LS_MODE elaboration failure without claiming support" in {
-    val savedAttrs = VitraSpec.attrs.clone()
-    val targetDir = Files.createTempDirectory("vitra-task1-cond-ls-")
-
-    try {
-      val currentIobs = VitraSpec.attrs("cgra_iobs")
-        .asInstanceOf[ListBuffer[ListBuffer[IobSpec]]]
-      val conditionalIobs = currentIobs.map { row =>
-        row.map(spec => spec.copy(mode = COND_LS_MODE))
-      }
-
-      VitraSpec.attrs("cgra_iob_mode") = COND_LS_MODE
-      VitraSpec.attrs("cgra_iobs") = conditionalIobs
-      VitraSpec.attrs("dumpOperationSet") = false
-      VitraSpec.attrs("dumpADG") = false
-
-      val failure = intercept[Throwable] {
-        (new ChiselStage).emitChirrtl(
-          new MultiTileCGRA(VitraSpec.attrs),
-          Array("--target-dir", targetDir.toString))
-      }
-      val firstUserFrame = failure.getStackTrace.find { frame =>
-        frame.getClassName.startsWith("tram.") &&
-          !frame.getClassName.startsWith("tram.vitra.VitraTask1AuditSpec")
-      }
-
-      withClue(s"COND_LS_MODE first user-code frame was $firstUserFrame; CLOAD is not claimed working: ") {
-        failure.getClass shouldBe classOf[IndexOutOfBoundsException]
-        failure.getMessage shouldBe "2"
-        firstUserFrame.map(_.getClassName) shouldBe Some("tram.dsa.IOB")
-        firstUserFrame.map(_.getMethodName) shouldBe Some("$anonfun$new$6")
-        firstUserFrame.map(_.getFileName) shouldBe Some("IOB.scala")
-        firstUserFrame.map(_.getLineNumber) shouldBe Some(132)
-      }
-    } finally {
-      restoreAttrs(savedAttrs)
-    }
   }
 
   private def restoreAttrs(savedAttrs: scala.collection.mutable.Map[String, Any]): Unit = {

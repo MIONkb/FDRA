@@ -6,6 +6,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import tram.ir._
 import tram.common.MacroVar._
+import tram.common.IobMode
 
 
 /** IO Block
@@ -35,7 +36,9 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   val numInList = attrs("num_input_per_operand").asInstanceOf[ListBuffer[Int]] // the internal in port may connect to multiple external inputs
   val numIn = numInList.sum
   val numOut = 1
-  val numInCtrl = { if(mode == FIFO_MODE) 1 else 2 }
+  val numInCtrl = IobMode.numOperands(mode)
+  require(numInList.size == numInCtrl,
+    s"IOB mode $mode requires $numInCtrl operands, but num_input_per_operand has ${numInList.size}")
   // max delay cycles of the DelayPipe
   val maxDelay = attrs("max_delay").asInstanceOf[Int]
   apply("data_width", width)
@@ -65,7 +68,7 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
     val sram = Flipped(new SRAMIO(width, addrWidthSram, hasMaskSram))
   })
 
-  val numDelayPipes = { if(mode == FIFO_MODE) 0 else 2 } // FIFO mode, no DelayPipe
+  val numDelayPipes = { if(mode == FIFO_MODE) 0 else numInCtrl } // FIFO mode, no DelayPipe
   val ioCtrl = Module(new IOController(width, addrWidthSram, hasMaskSram, mode, lgMaxII, lgMaxLat, lgMaxStride, lgMaxCycles, agNestLevels, addRegSram))
   val delay_pipe: SharedDelayPipe = {if(numDelayPipes > 0) Module(new SharedDelayPipe(width, maxDelay, numDelayPipes)) else null}
 //  val delay_pipes = Array.fill(numDelayPipes){ Module(new DelayPipe(width, maxDelay)).io }

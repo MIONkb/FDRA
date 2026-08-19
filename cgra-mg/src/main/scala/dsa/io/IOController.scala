@@ -5,6 +5,7 @@ import chisel3.util._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import tram.common.MacroVar._
+import tram.common.IobMode
 
 
 
@@ -23,7 +24,7 @@ import tram.common.MacroVar._
  */
 class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, lgMaxII: Int,
                    lgMaxLat: Int, lgMaxStride: Int, lgMaxCycles: Int, agNestLevels: Int, addRegSram: Int) extends Module {
-  val numIn = { if(mode == FIFO_MODE) 1 else 2 }
+  val numIn = IobMode.numOperands(mode)
   val cfgWidth = addrWidth + (lgMaxStride + lgMaxCycles) * agNestLevels + lgMaxII + lgMaxLat + 1 + { if(mode == FIFO_MODE) 0 else 1 }
   // ----------- base_addr --- stride --- cycles ---- latency ----- II ---- isStore ----- useAddr -----
   val io = IO(new Bundle{
@@ -31,7 +32,7 @@ class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, 
     val start = Input(Bool()) // pulse signal, should be valid before latency 0, namely -1
     val done = Output(Bool()) // transfer done, keep true until next start
     val config = Input(UInt(cfgWidth.W))
-    val in = Vec(numIn, Input(UInt(dataWidth.W))) // FIFO: 0->data; SRAM: 0->data, 1->address in bytes
+    val in = Vec(numIn, Input(UInt(dataWidth.W))) // FIFO: data; SRAM: data/address; conditional: data/address/enable
     val out = Vec(1, Output(UInt(dataWidth.W)))
   })
 
