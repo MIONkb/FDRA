@@ -34,6 +34,13 @@ object IobMode {
 		case COND_LS_MODE => 3
 		case _ => throw new IllegalArgumentException(s"Unsupported IOB mode: $mode")
 	}
+
+	def operationCapabilities(mode: Int): List[String] = mode match {
+		case FIFO_MODE => List("INPUT", "OUTPUT")
+		case SRAM_MODE => List("INPUT", "OUTPUT", "LOAD", "STORE")
+		case COND_LS_MODE => List("INPUT", "OUTPUT", "LOAD", "STORE", "CSTORE")
+		case _ => throw new IllegalArgumentException(s"Unsupported IOB mode: $mode")
+	}
 }
 
 
@@ -53,4 +60,3 @@ object CompileMacroVar {
 	var TARGET_TYPE = TARGET_SIM
 	// var TARGET_TYPE = TARGET_ASIC
 }
-

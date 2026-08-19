@@ -147,13 +147,7 @@ case class CgraParam(attrs: mutable.Map[String, Any]){
   }
   val iob_modes = iobsSpec.flatten.map(_.mode).distinct
   val iob_operations = ListBuffer[String]()
-  if (iob_modes.contains(COND_LS_MODE)) {
-    iob_operations ++= ListBuffer("INPUT", "OUTPUT", "LOAD", "STORE", "CSTORE")
-  } else if (iob_modes.contains(SRAM_MODE)) {
-    iob_operations ++= ListBuffer("INPUT", "OUTPUT", "LOAD", "STORE")
-  } else {
-    iob_operations ++= ListBuffer("INPUT", "OUTPUT")
-  }
+  iob_operations ++= iob_modes.flatMap(IobMode.operationCapabilities).distinct
 
   // set operation set and data width
   OpInfo.apply(dataWidth).apply(gpe_operations ++ iob_operations)

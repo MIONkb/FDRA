@@ -21,6 +21,7 @@ import freechips.rocketchip.amba.axi4.{AXI4BundleParameters, AXI4Bundle}
 // import freechips.rocketchip.diplomacy._
 
 import java.nio.file.{Files, Path, Paths}
+import scala.collection.mutable
 
 case class VitraMetadataPaths(
   specDirectory: Path,
@@ -57,37 +58,54 @@ object VitraParam {
   }
 
   def configureMetadata(
+    attrs: mutable.Map[String, Any],
     paths: VitraMetadataPaths,
     operationSetEnabled: Boolean,
     adgEnabled: Boolean): Unit = {
-    VitraSpec.attrs("dumpOperationSet") = operationSetEnabled
-    VitraSpec.attrs("operation_set_filename") = paths.operationSet.toString
-    VitraSpec.attrs("dumpADG") = adgEnabled
-    VitraSpec.attrs("cgra_adg_filename") = paths.cgraAdg.toString
+    attrs("dumpOperationSet") = operationSetEnabled
+    attrs("operation_set_filename") = paths.operationSet.toString
+    attrs("dumpADG") = adgEnabled
+    attrs("cgra_adg_filename") = paths.cgraAdg.toString
+  }
+
+  def configureMetadata(
+    paths: VitraMetadataPaths,
+    operationSetEnabled: Boolean,
+    adgEnabled: Boolean): Unit =
+    configureMetadata(VitraSpec.attrs, paths, operationSetEnabled, adgEnabled)
+
+  def portableSpecAttrs(attrs: mutable.Map[String, Any]): mutable.Map[String, Any] = {
+    val portable = attrs.clone()
+    portable("operation_set_filename") = "operations.json"
+    portable("cgra_adg_filename") = "vitra_cgra_adg.json"
+    portable
   }
 
 }
 
-class VitraWithAxi(targetDir: Path = VitraParam.defaultTargetDir) extends Module  {
+class VitraWithAxi(
+  targetDir: Path = VitraParam.defaultTargetDir,
+  baseAttrs: mutable.Map[String, Any] = VitraSpec.attrs) extends Module  {
   override def desiredName = "CGRAWithAXI"
   // override def desiredName = "vitra"
   import VitraParam._
+  private val attrs = baseAttrs.clone()
   val metadataPaths = metadataPathsFor(targetDir)
-  configureMetadata(metadataPaths, dumpOperationSet, dumpADG)
+  configureMetadata(attrs, metadataPaths, dumpOperationSet, dumpADG)
   // println(tram_spec_filename)
-  if(dumpSpec){ VitraSpec.dumpSpec(metadataPaths.vitraSpec.toString) }
+  if(dumpSpec){ VitraSpec.dumpSpec(portableSpecAttrs(attrs), metadataPaths.vitraSpec.toString) }
   if(loadSpec){ VitraSpec.loadSpec(metadataPaths.vitraSpec.toString) }
   println(s"adg path: ${metadataPaths.cgraAdg}")
   // scratchpad banks used for IOB
-  val lgSizeSpadBank = VitraSpec.attrs("spad_bank_lg_size").asInstanceOf[Int]
-  val nSpadBanksEachTile = VitraSpec.attrs("tile_spad_num_banks").asInstanceOf[Int]
-  val nTiles = VitraSpec.attrs("cgra_tile_num").asInstanceOf[Int]
+  val lgSizeSpadBank = attrs("spad_bank_lg_size").asInstanceOf[Int]
+  val nSpadBanksEachTile = attrs("tile_spad_num_banks").asInstanceOf[Int]
+  val nTiles = attrs("cgra_tile_num").asInstanceOf[Int]
   val nSpadBanksTotal = nSpadBanksEachTile * nTiles
 
   // scratchpad block used for Config
-  val spadDataWidth = VitraSpec.attrs("spad_data_width").asInstanceOf[Int]
-  val cgraDataWidth = VitraSpec.attrs("cgra_data_width").asInstanceOf[Int]
-  val lgSizeSpadCfg = VitraSpec.attrs("spad_cfg_lg_size").asInstanceOf[Int]
+  val spadDataWidth = attrs("spad_data_width").asInstanceOf[Int]
+  val cgraDataWidth = attrs("cgra_data_width").asInstanceOf[Int]
+  val lgSizeSpadCfg = attrs("spad_cfg_lg_size").asInstanceOf[Int]
   val cfgSpadBanks = {
     if(lgSizeSpadCfg <= lgSizeSpadBank) 1
     else 1 << (lgSizeSpadCfg - lgSizeSpadBank)
@@ -97,19 +115,19 @@ class VitraWithAxi(targetDir: Path = VitraParam.defaultTargetDir) extends Module
   // println("spadAddrWidth", spadAddrWidth)
 
   val lgMaxDataLen = spadAddrWidth
-  val spadAddrNum = VitraSpec.attrs("spad_addr_num").asInstanceOf[Int]
-  val hasMask = VitraSpec.attrs("cgra_iob_sram_has_mask").asInstanceOf[Boolean] //true // spadDataWidth != cgraDataWidth
+  val spadAddrNum = attrs("spad_addr_num").asInstanceOf[Int]
+  val hasMask = attrs("cgra_iob_sram_has_mask").asInstanceOf[Boolean] //true // spadDataWidth != cgraDataWidth
 
-  val idWidth = VitraSpec.attrs("id_width").asInstanceOf[Int]
-  val nReqInflight = VitraSpec.attrs("dma_num_req_in_flight").asInstanceOf[Int]
-  val maxLgSizeTL = VitraSpec.attrs("dma_lg_max_burst_size").asInstanceOf[Int]
-  val nWaysOfTLB = VitraSpec.attrs("tlb_num_ways").asInstanceOf[Int]
-  val useSharedTLB = VitraSpec.attrs("tlb_is_shared").asInstanceOf[Boolean]
+  val idWidth = attrs("id_width").asInstanceOf[Int]
+  val nReqInflight = attrs("dma_num_req_in_flight").asInstanceOf[Int]
+  val maxLgSizeTL = attrs("dma_lg_max_burst_size").asInstanceOf[Int]
+  val nWaysOfTLB = attrs("tlb_num_ways").asInstanceOf[Int]
+  val useSharedTLB = attrs("tlb_is_shared").asInstanceOf[Boolean]
 
 
   ///// AXI LITE Parameters
-  val AxiLiteAddrSpace = VitraSpec.attrs("axilite_addrspace").asInstanceOf[Int] // Bytes
-  val AxiLiteDataWidth = VitraSpec.attrs("axilite_datawidth").asInstanceOf[Int]   // Byte
+  val AxiLiteAddrSpace = attrs("axilite_addrspace").asInstanceOf[Int] // Bytes
+  val AxiLiteDataWidth = attrs("axilite_datawidth").asInstanceOf[Int]   // Byte
   val AxiLiteAddrWidth = log2Ceil(AxiLiteAddrSpace)
 
 //  val cmdQueDepth = VitraSpec.attrs("rs_cmd_queue_depth").asInstanceOf[Int]
@@ -160,7 +178,7 @@ class VitraWithAxi(targetDir: Path = VitraParam.defaultTargetDir) extends Module
     hasMask       = hasMask
   ))
 
-  val cgra = Module(new VitraCGRAController(VitraSpec.attrs, metadataPaths.axiLiteSpec.toString))
+  val cgra = Module(new VitraCGRAController(attrs, metadataPaths.axiLiteSpec.toString))
 
   io.s_axi          <> spad.io.s_axi
   io.s_axilite      <> cgra.io.s_axilite
@@ -223,6 +241,26 @@ object VerilogGen extends App {
  (new chisel3.stage.ChiselStage).emitVerilog(
    new VitraWithAxi(VitraParam.targetDirFromArgs(args.toSeq)),
    args)
+}
+
+object CStoreVerilogGen {
+  def generate(targetDir: Path): CStoreArtifactSummary =
+    generate(Array("-td", targetDir.toString))
+
+  def generate(stageArgs: Array[String]): CStoreArtifactSummary = {
+    val targetDir = VitraParam.targetDirFromArgs(stageArgs.toSeq)
+    (new chisel3.stage.ChiselStage).emitVerilog(
+      new VitraWithAxi(targetDir, VitraSpec.cstoreAttrs()),
+      stageArgs)
+    CStoreArtifactAudit.validate(targetDir)
+  }
+
+  def main(args: Array[String]): Unit = {
+    val summary = generate(args)
+    summary.fileSha256.toSeq.sortBy(_._1).foreach { case (path, hash) =>
+      println(s"CSTORE_ARTIFACT sha256=$hash path=$path")
+    }
+  }
 }
 
 

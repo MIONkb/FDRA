@@ -48,6 +48,7 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   apply("cfg_blk_index", cfgBlkIndex)
   apply("iob_index", iobIndex)
   apply("iob_mode", mode)
+  apply("operations", IobMode.operationCapabilities(mode))
   apply("ag_nest_levels", agNestLevels)
   if(mode != FIFO_MODE){ apply("max_delay", maxDelay) }
   // println("[mion]In IOB, hasMaskSram:", hasMaskSram)

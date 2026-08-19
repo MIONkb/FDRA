@@ -66,6 +66,8 @@ class VitraTask2StructuralSpec extends AnyFlatSpec with Matchers with OptionValu
       attrs.path("iob_mode").asInt() shouldBe COND_LS_MODE
       attrs.path("num_operands").asInt() shouldBe 3
       attrs.path("num_input").asInt() shouldBe 6
+      attrs.path("operations").elements().asScala.map(_.asText()).toSet shouldBe
+        Set("INPUT", "OUTPUT", "LOAD", "STORE", "CSTORE")
 
       val instances = attrs.path("instances").elements().asScala.toSeq
       instances.count(_.path("type").asText() == "Muxn") shouldBe 3

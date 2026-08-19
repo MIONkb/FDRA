@@ -222,6 +222,18 @@ object VitraSpec{
   setDefaultTileGpesSpec()
   setDefaultTileIobsSpec()
   setDefaultTileGibsSpec()
+
+  /** Build the production CSTORE target without mutating the default SRAM spec. */
+  def cstoreAttrs(): mutable.Map[String, Any] = {
+    val conditional = attrs.clone()
+    val currentIobs = attrs("cgra_iobs")
+      .asInstanceOf[ListBuffer[ListBuffer[IobSpec]]]
+    conditional("cgra_iob_mode") = COND_LS_MODE
+    conditional("cgra_iobs") = currentIobs.map { row =>
+      row.map(spec => spec.copy(mode = COND_LS_MODE))
+    }
+    conditional
+  }
   
   def loadSpec(jsonFile : String): Unit ={
 //     val jsonMap = IRHandler.loadIR(jsonFile)
@@ -311,8 +323,12 @@ object VitraSpec{
 // //    }
   }
 
+  def dumpSpec(specAttrs: mutable.Map[String, Any], jsonFile: String): Unit = {
+    IRHandler.dumpIR(specAttrs, jsonFile)
+  }
+
   def dumpSpec(jsonFile : String): Unit={
-    IRHandler.dumpIR(attrs, jsonFile)
+    dumpSpec(attrs, jsonFile)
     // IRHandler.dumpIR(attrs, "/home/jhlou/chipyard/generators/fdra/cgra-mg/src/main/resources/tram_spec.json")
   }
 
