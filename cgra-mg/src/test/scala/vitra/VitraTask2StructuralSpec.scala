@@ -100,9 +100,10 @@ class VitraTask2StructuralSpec extends AnyFlatSpec with Matchers with OptionValu
     }
   }
 
-  it should "pack conditional configuration ranges without overlap or a premature UseEn field" in {
+  it should "append UseEn to the conditional configuration without disturbing packed ranges" in {
     modulesOfType(conditionalGeneration.adg, "IOB").foreach { module =>
-      val configuration = module.path("attributes").path("configuration")
+      val attrs = module.path("attributes")
+      val configuration = attrs.path("configuration")
       val ranges = configuration.fields().asScala.map { entry =>
         ConfigRange(entry.getValue.path(0).asText(), entry.getValue.path(1).asInt(), entry.getValue.path(2).asInt())
       }.toSeq
@@ -115,9 +116,13 @@ class VitraTask2StructuralSpec extends AnyFlatSpec with Matchers with OptionValu
       }
       packed.last.high shouldBe aggregate.high
       aggregate.low shouldBe 0
-      ranges.map(_.name) should not contain "UseEn"
+      val useEnId = attrs.path("io_controller_cfg_id").path("UseEn").asInt(-1)
+      useEnId should be >= 0
+      configuration.path(useEnId.toString).elements().asScala.map(_.asText()).toSeq shouldBe
+        Seq("UseEn", "127", "127")
       ranges.count(_.name == "Muxn") shouldBe 3
-      ranges.find(_.name == "DelayPipe").value shouldBe ConfigRange("DelayPipe", 138, 127)
+      ranges.find(_.name == "DelayPipe").value shouldBe ConfigRange("DelayPipe", 139, 128)
+      aggregate shouldBe ConfigRange("This", 142, 0)
     }
   }
 

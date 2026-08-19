@@ -25,8 +25,9 @@ import tram.common.IobMode
 class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, lgMaxII: Int,
                    lgMaxLat: Int, lgMaxStride: Int, lgMaxCycles: Int, agNestLevels: Int, addRegSram: Int) extends Module {
   val numIn = IobMode.numOperands(mode)
-  val cfgWidth = addrWidth + (lgMaxStride + lgMaxCycles) * agNestLevels + lgMaxII + lgMaxLat + 1 + { if(mode == FIFO_MODE) 0 else 1 }
-  // ----------- base_addr --- stride --- cycles ---- latency ----- II ---- isStore ----- useAddr -----
+  val cfgWidth = addrWidth + (lgMaxStride + lgMaxCycles) * agNestLevels + lgMaxII + lgMaxLat +
+    1 + { if(mode == FIFO_MODE) 0 else 1 } + { if(mode == COND_LS_MODE) 1 else 0 }
+  // ----------- base_addr --- stride --- cycles ---- latency ----- II ---- isStore ----- useAddr ----- useEn -----
   val io = IO(new Bundle{
     val sram = Flipped(new SRAMIO(dataWidth, addrWidth, hasMask))
     val start = Input(Bool()) // pulse signal, should be valid before latency 0, namely -1
@@ -78,6 +79,14 @@ class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, 
     } else {
       ioc_cfg_idx += "UseAddr" -> (id+1, offset+1, offset+1)
       io.config(offset+1).asBool // whether use io.in(1) as address
+    }
+  }
+  val useEn = {
+    if(mode == COND_LS_MODE) {
+      ioc_cfg_idx += "UseEn" -> (id+2, offset+2, offset+2)
+      io.config(offset+2).asBool // whether operand 2 gates store requests
+    } else {
+      false.B
     }
   }
 
@@ -154,6 +163,8 @@ class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, 
   // in -> sram
   val wValid = isStore && launch && (iiCnt === 0.U)
   val wData = io.in(0) // { if(mode == FIFO_MODE) io.in(0) else io.in(1) }
+  val runtimePredicate = { if(mode == COND_LS_MODE) io.in(2)(0) else true.B }
+  val writeAllowed = !useEn || runtimePredicate
   // sram -> out
   val raValid = !isStore && launch && (iiCnt === 0.U)// read address valid
   val addr = Wire(UInt(addrWidth.W))
@@ -168,7 +179,11 @@ class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, 
     }
   }
 
-  val realEn = (wValid && (wRealValid || useAddr)) || (raValid && (rRealValid || useAddr))
+  val writeRequest = wValid && (wRealValid || useAddr)
+  val readIssue = raValid && (rRealValid || useAddr)
+  val writeIssue = writeRequest && writeAllowed
+  val realEn = writeIssue || readIssue
+  val writeEnable = { if(mode == COND_LS_MODE) writeIssue else wValid }
 
   when(!launch){
     genAddrReg := Cat(0.S(1.W), baseAddr).asSInt
@@ -198,13 +213,13 @@ class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, 
     when(wValid){
       wDataReg := wData
     }
-    io.sram.en := RegNext(realEn)  // RegNext(wValid || raValid)
-    io.sram.we := RegNext(Mux(wValid, ((1 << weWidth) - 1).U, 0.U))
+    io.sram.en := RegNext(realEn)
+    io.sram.we := RegNext(Mux(writeEnable, ((1 << weWidth) - 1).U, 0.U))
     io.sram.addr := addrReg
     io.sram.din := wDataReg
   }else{ // not add reg, write/read latency is 0/1
-    io.sram.en := realEn // wValid || raValid
-    io.sram.we := Mux(wValid, ((1 << weWidth) - 1).U, 0.U)
+    io.sram.en := realEn
+    io.sram.we := Mux(writeEnable, ((1 << weWidth) - 1).U, 0.U)
     io.sram.addr := addr
     io.sram.din := wData
   }

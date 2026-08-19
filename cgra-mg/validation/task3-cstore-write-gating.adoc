@@ -1,0 +1,263 @@
+= Task 3 CSTORE Write-Gating Validation
+:toc:
+
+== Scope and boundary
+
+This record captures Task 3 on 2026-08-20 from branch `feature/cstore-hardware`, starting at Task 2 commit `b60139bd080808c160dba24db26210fb00bbcd0e`.
+
+Task 3 adds the static `UseEn` configuration field and consumes routed operand 2 bit 0 as the per-iteration CSTORE predicate. A false predicate suppresses both SRAM request enable and byte write mask. It does not gate `wValid`, the FSM, II/cycle counters, address generation, or `done`.
+
+This task does not implement or advertise CLOAD. It also does not switch the default `VitraSpec` from SRAM mode or check generated conditional artifacts into the production spec directory; those remain Task 4 decisions.
+
+== Environment
+
+[cols="1,3",options="header"]
+|===
+|Item |Observed value
+
+|Repository under test
+|`/home/jyhu/VITRA-CGRA`; initial HEAD `b60139bd080808c160dba24db26210fb00bbcd0e`
+
+|Branch / fetched feature HEAD
+|`feature/cstore-hardware`; local `HEAD` and fetched `FETCH_HEAD` both `b60139bd080808c160dba24db26210fb00bbcd0e`
+
+|External Chipyard source
+|`/home/jhlou/chipyard`; `test ! -w /home/jhlou/chipyard` passed
+
+|Chipyard / lab fdra revisions
+|Chipyard `27981d26675e7fd2e41d772375b5632951ece968` (`AIDeploy`); fdra `0cb9381fa231b4d26881779a80a5f0c78ec4c5ff` (`develop`)
+
+|Writable build copy
+|`/tmp/vitra-task1-chipyard-isolated-20260819`; only `generators/fdra` was mechanically synchronized
+
+|sbt / Java
+|sbt 1.8.2; OpenJDK 11.0.27 selected with `-java-home /usr/lib/jvm/java-11-openjdk-amd64`
+
+|Task-owned caches
+|`/tmp/vitra-task1-sbt/{boot,coursier,global,ivy,runtime}`
+|===
+
+No command wrote under `/home/jhlou/chipyard`. All commands used the isolated environment documented in the Task 1 and Task 2 records. The restricted sandbox cannot open the local socket used by the forked sbt test runner, so the same narrowly scoped sbt commands ran with execution approval after that environmental limitation had already been established.
+
+== Red-to-green evidence
+
+=== Configuration structure
+
+The first RED changed the existing structured conditional ADG assertion to require `UseEn` and the shifted packed ranges. Before production code changed, the focused Task 2 suite compiled and failed only that assertion:
+
+[source,text]
+----
+UseEn id: -1 was not greater than or equal to 0
+Tests: succeeded 9, failed 1
+----
+
+After appending the conditional-only config bit, the same suite passed 10/10. No write behavior had been changed at that point.
+
+=== False-predicate behavior
+
+The second RED instantiated the real `IOController` with `mode=COND_LS_MODE`, `addRegSram=2`, `UseEn=1`, and predicate 0. It failed on the actual SRAM request:
+
+[source,text]
+----
+io_sram_en=true did not equal expected=false
+Tests: succeeded 0, failed 1
+----
+
+After introducing `writeIssue`, that exact test passed with `done=1`, `sram.en=0`, and `sram.we=0`.
+
+== Hardware contract
+
+=== Configuration layout
+
+`UseEn` is appended only for `COND_LS_MODE`. FIFO and SRAM config widths and legacy field positions are unchanged.
+
+[cols="2,2",options="header"]
+|===
+|Conditional field |Generated range
+
+|`IsStore`
+|125
+
+|`UseAddr`
+|126
+
+|`UseEn`
+|127
+
+|three-lane `DelayPipe`
+|128--139
+
+|three input muxes
+|140, 141, 142
+
+|aggregate IOB config
+|0--142
+|===
+
+The generated `io_controller_cfg_id` maps `UseEn` to configuration ID 19, whose structured configuration entry is exactly `["UseEn", 127, 127]`. The SRAM-mode regression remains two operands with aggregate bits 0--136 and no `UseEn`.
+
+=== Write permission and legacy behavior
+
+The controller keeps scheduling and side-effect permission separate:
+
+[source,text]
+----
+writeRequest = wValid && (wRealValid || useAddr)
+writeAllowed = !useEn || io.in(2)(0)
+writeIssue   = writeRequest && writeAllowed
+----
+
+For conditional mode, `writeIssue` controls both SRAM `en` and `we`. For FIFO/SRAM modes, the legacy `wValid` write-mask behavior and address/data capture conditions are retained. Reads use their independent request path and never consume operand 2.
+
+The predicate true rule is word bit 0. Predicate words 0 and 2 are false; word 1 is true. This matches the Task 2 ALU/SEL evidence and is explicitly distinguished from a non-zero interpretation.
+
+== Cycle timing
+
+[cols="1,2,2",options="header"]
+|===
+|Path |Issue cycle N |SRAM observation
+
+|`addRegSram=0`
+|data/address/predicate are evaluated together
+|`en`, `we`, address, and data are visible in cycle N
+
+|`addRegSram=2`
+|the legacy address/data registers capture the scheduled transaction; `writeIssue` and mask enter the existing SRAM interface register
+|the corresponding `en`/`we` and registered address/data are visible in cycle N+1
+
+|false predicate
+|FSM, II, cycle counters, address/data capture, and `done` continue normally
+|`en=0` and `we=0`; address/data values are don't-care because no request exists
+|===
+
+The final alternating-predicate trace used four distinct data/address pairs at II=1:
+
+[source,text]
+----
+issue=0 data=0x1011 byte_addr=0 pred=1 wValid=true expected_write=true  sram_en=true  sram_we=0x3 sram_addr=0 sram_din=0x1011 done=false
+issue=1 data=0x2022 byte_addr=2 pred=0 wValid=true expected_write=false sram_en=false sram_we=0x0 sram_addr=1 sram_din=0x2022 done=false
+issue=2 data=0x3033 byte_addr=4 pred=1 wValid=true expected_write=true  sram_en=true  sram_we=0x3 sram_addr=2 sram_din=0x3033 done=false
+issue=3 data=0x4044 byte_addr=6 pred=0 wValid=true expected_write=false sram_en=false sram_we=0x0 sram_addr=3 sram_din=0x4044 done=true
+----
+
+All four schedule slots advance. Only iterations 0 and 2 create write requests, and the final false iteration reaches `done` at the same expected completion point rather than stalling execution.
+
+== Memory and IOB oracles
+
+The masked 16-bit memory oracle initializes word address 3 to `OLD=0x0bad` and supplies `NEW=0x55aa`:
+
+[cols="1,1,2,2",options="header"]
+|===
+|UseEn |Predicate |Observed write requests |Final memory
+
+|1
+|1
+|exactly one: `en=1`, `we=0b11`, address 3, data `0x55aa`
+|`0x55aa`
+
+|1
+|0
+|zero: `en=0`, `we=0`
+|`0x0bad`
+
+|0
+|0
+|exactly one normal STORE request
+|updated normally
+|===
+
+The IOB integration test programs the real config port with mux select 0 and delay lanes 2/1/0. It sends data `0x5a5a` two upstream cycles early, byte address 10 one cycle early, and predicate 1 in the controller issue cycle. The top-level IOB SRAM interface produces one aligned registered request: `en=1`, `we=0b11`, word address 5, data `0x5a5a`, with `done=1`. The test observes only stable top-level interfaces; no `dontTouch` annotation or production debug port was added.
+
+== Test results
+
+=== Focused Task 3 suite
+
+The final focused suite exited 0 in 14 seconds:
+
+[source,text]
+----
+Total number of tests run: 8
+Tests: succeeded 8, failed 0
+All tests passed.
+----
+
+It covers registered false/true memory oracles, normal STORE, alternating predicates, the predicate-word-2 edge, the `addRegSram=0` path, normal LOAD, and end-to-end IOB delay alignment.
+
+After the legacy compatibility cleanup, the combined Task 2+3 focused run exited 0 with 18/18 passing.
+
+=== Full available fdra suite
+
+The final command was:
+
+[source,shell]
+----
+sbt "project fdra" "set Test / parallelExecution := false" test
+----
+
+With the isolated environment block, it exited 0 in 154 seconds:
+
+[source,text]
+----
+Total number of tests run: 24
+Suites: completed 3, aborted 0
+Tests: succeeded 24, failed 0, canceled 0, ignored 0, pending 0
+All tests passed.
+----
+
+== Generated-artifact audit
+
+=== Test-only conditional artifacts
+
+The final full run generated temporary conditional artifacts at:
+
+[source,text]
+----
+/tmp/vitra-task1-sbt/runtime/vitra-task2-cond-generation-16719884521458284770/spec
+----
+
+[cols="2,4",options="header"]
+|===
+|Artifact |SHA-256
+
+|`operations.json`
+|`0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d`
+
+|`vitra_cgra_adg.json`
+|`be93af55849461371912f56a7dac94bff8a720cab772f8cb4c37bd795c8efb6c`
+|===
+
+The CSTORE record remains generator-owned: `numOperands=3`, `numRes=0`, `OPC=4`, and `latency=1`. No CLOAD record is present. The ADG hash changes from Task 2 because it now truthfully contains `UseEn` and the shifted config ranges.
+
+=== README SRAM_MODE regression
+
+The final README generation command targeted `/tmp/vitra-task3-sram-final-20260820.2y2EzT` and exited 0 in 81 seconds, producing RTL and all four metadata files.
+
+[cols="2,4",options="header"]
+|===
+|Artifact |SHA-256
+
+|`spec/axilite_spec.json`
+|`9c53819cad98bd2f3074eaeb26fba8ef9b2e7452703bdba064cd97acafa87502`
+
+|`spec/operations.json`
+|`94e61057cb447475379c355c4ec6897d8bf93fdd12c5be56014b70caaeb34665`
+
+|`spec/vitra_cgra_adg.json`
+|`d33fbaba2e939589d503356e111a487b425b6069c90bb5da1b9b3c2524598c98`
+
+|`spec/vitra_spec.json`
+|`ea17be3239ed4608d08b31e36b8292ea9fe8557a8b9cb27810df6646916b8dc7`
+
+|`CGRAWithAXI.v`
+|`665e148fc3d05d43a2f3115f9251d773a34741dcc15cca58a23e88a3e1e5792f`
+|===
+
+The SRAM operation, ADG, and AXI-lite hashes are byte-identical to Task 2. The SRAM ADG remains mode 1, two operands, four physical inputs, aggregate config bits 0--136, and no CSTORE/UseEn capability. Raw `vitra_spec.json` and Verilog hashes are not treated as deterministic cross-run identities because existing mutable-map/source-location emission changes ordering and annotations; structured SRAM assertions and the full regression establish the compatibility contract.
+
+== Explicit non-claims
+
+* No CLOAD behavior or capability is implemented.
+* No opcode is hand-coded in the controller.
+* The default production spec remains SRAM mode.
+* No checked-in production RTL or JSON is regenerated in Task 3.
+* Publishing a production conditional target remains Task 4 work.
