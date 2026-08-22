@@ -1,0 +1,7 @@
+{
+  "case": "external-config-smoke",
+  "iob_mask": 140996260266504,
+  "memory_loads": [],
+  "memory_readbacks": [],
+  "tile_mask": 255
+}

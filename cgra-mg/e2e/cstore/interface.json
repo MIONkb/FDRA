@@ -1,0 +1,77 @@
+{
+  "axi": {
+    "address_width_bits": 19,
+    "data_width_bits": 128,
+    "id_width_bits": 6,
+    "prefix": "axi"
+  },
+  "axi_lite": {
+    "address_width_bits": 10,
+    "data_width_bits": 32,
+    "prefix": "axil"
+  },
+  "clock": {
+    "period_ns": 2,
+    "signal": "clk"
+  },
+  "configuration": {
+    "address_unit": "configuration-register address",
+    "address_width_bits": 16,
+    "configuration_start_register": "reg_cfg_en",
+    "data_width_bits": 32,
+    "external_format": "ADORA config.bit: hexadecimal address data per line",
+    "packet_byte_order": "little-endian within each 16-bit word",
+    "packet_word_order": [
+      "data[15:0]",
+      "data[31:16]",
+      "address[15:0]"
+    ],
+    "packet_word_width_bits": 16,
+    "tile_enable_register": "reg_cfg_en_tile_0",
+    "transaction_order": "file order, loaded contiguously at cfgmem_baseaddr"
+  },
+  "execution": {
+    "done_register": "reg_exe_done_0",
+    "iob_enable_registers": [
+      "reg_exe_iob_ens_0",
+      "reg_exe_iob_ens_1"
+    ],
+    "start_register": "reg_exe_start",
+    "tile_enable_register": "reg_exe_tile_ens_0"
+  },
+  "reset": {
+    "polarity": "active-high",
+    "sequence": "assert for four rising edges; deassert; wait two rising edges",
+    "signal": "rst"
+  },
+  "runtime": {
+    "cocotb": "1.9.2",
+    "cocotbext_axi": "0.1.28",
+    "model": "vendored-minimum",
+    "python": "3.12.13",
+    "reference_commit": "e9560326ee307f2a456c65ea3a7a71e91846d019",
+    "reference_repository": "https://github.com/theElysia/CGRA-Cocotb-Sim",
+    "source": "cgra-mg/e2e/cstore",
+    "verilator": "5.044"
+  },
+  "schema_version": 1,
+  "sram": {
+    "element_width_bits": 16,
+    "input_loading": "AXI writes to the physical scratchpad bank address map",
+    "output_readback": "AXI reads from the physical scratchpad bank address map",
+    "write_mask_width_bits": 2
+  },
+  "sram_write_trace": {
+    "address_units": {
+      "byte_address": "word_address * 2",
+      "word_address": "16-bit elements"
+    },
+    "bank_count": 48,
+    "request_path": "core.cgra_io_srams_iob_<bank>_en",
+    "word_address_path": "core.cgra_io_srams_iob_<bank>_addr",
+    "write_data_path": "core.cgra_io_srams_iob_<bank>_din",
+    "write_mask_path": "core.cgra_io_srams_iob_<bank>_we"
+  },
+  "top_module": "CStoreTraceWrapper",
+  "wrapped_core": "CGRAWithAXI"
+}

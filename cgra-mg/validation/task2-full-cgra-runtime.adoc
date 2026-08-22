@@ -1,0 +1,109 @@
+= Task 2 full-CGRA external-configuration runtime
+
+== Outcome
+
+Task 2 uses the vendored-minimum runtime model.  The auditable runtime is in
+`cgra-mg/e2e/cstore`; it instantiates an unmodified, fresh-generated
+`CGRAWithAXI` beneath the simulation-only `CStoreTraceWrapper`.  The wrapper
+only renames the generated AXI ports and exports all 48 physical SRAM request,
+write-mask, address, and data paths.  It does not implement CSTORE behavior.
+
+The external input is the ADORA Mapper's existing `config.bit` format.  The
+adapter preserves packet order and deterministically packs each hexadecimal
+`address data` pair as three little-endian 16-bit words: data low, data high,
+then address.  Placement and configuration bits are never reconstructed in
+the cocotb test.
+
+== Provenance and versions
+
+* VITRA repository: `https://github.com/MIONkb/VITRA-CGRA.git`
+* VITRA branch and source commit: `feature/cstore-hardware`,
+  `f202931859cd198ace3e418d7a87fb31458c2294`
+* ADORA read-only commit: `ab70915a039a36bf949e41e536d785508ba97fa9`
+* Runtime model: Model B, vendored minimum source
+* Reference runtime: `https://github.com/theElysia/CGRA-Cocotb-Sim`, commit
+  `e9560326ee307f2a456c65ea3a7a71e91846d019`
+* Python: 3.12.13
+* cocotb: 1.9.2
+* cocotbext-axi: 0.1.28
+* Verilator: 5.044 (conda-forge build)
+
+The executable interface, reset sequence, register names, widths, packet
+layout, physical SRAM geometry, and observability paths are pinned in
+`cgra-mg/e2e/cstore/interface.json`.
+
+== Fresh production command
+
+[source,shell]
+----
+scripts/run-adora-cstore-e2e.sh \
+  --config /home/jyhu/adora-compiler-scheduletasks-h/test/cgra-mapper/cstore_contract/Output/mapped_routes.mlir.tmp/cstore-seed-7/cstore_route_map_result/config.bit \
+  --case cgra-mg/e2e/cstore/smoke-case.json \
+  --result /tmp/vitra-task2-production/smoke-result.json \
+  --trace /tmp/vitra-task2-production/smoke-trace.json \
+  --work-dir /tmp/vitra-task2-production \
+  --chipyard-root /tmp/vitra-cstore-closeout-chipyard.xiZnMy \
+  --sbt-cache-root /tmp/vitra-cstore-closeout-sbt
+----
+
+The runner first proves that the isolated Chipyard FDRA source is byte-for-byte
+identical to this checkout, then runs `tram.vitra.CStoreVerilogGen` in a fresh
+directory.  It consumes and hashes all six same-generation artifacts, adapts
+the external config, compiles the 615-module core, configures it through real
+AXI/AXI-Lite transactions, observes busy-to-done, and writes a physical SRAM
+trace.  Missing result or trace files are a nonzero failure.
+
+== Artifact audit
+
+[cols="1,1"]
+|===
+|Artifact |SHA256
+
+|`CGRAWithAXI.v`
+|`96e709d80a6c8a007fd650af934ceab69df3d25fb99beb62315628993fc46752`
+
+|`vitra_spec.json`
+|`3155ec148eee0efd4dbe8cae0c58359bd4deba4a140c9a64ed2bf5d0490d832d`
+
+|`operations.json`
+|`0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d`
+
+|`vitra_cgra_adg.json`
+|`e34fcef5b15f47718762812513d3cd7db35f06e60a17097e50429dfc41e26cf7`
+
+|`axilite_spec.json`
+|`9c53819cad98bd2f3074eaeb26fba8ef9b2e7452703bdba064cd97acafa87502`
+
+|`loop_index_contract.json`
+|`c3d358639ef9470f5abb5c3a8146e75c6920c6055e28dfba780868073312489e`
+|===
+
+The validator requires `iob_mode=2`, the declared register widths/masks, real
+ACC and CSTORE operations, and the loop-index contract.  It rejects physical
+FOR or CLOAD declarations and any manifest/payload hash mismatch.
+
+The external config contained 121 packets.  Its SHA256 is
+`dd1ce4f4244e81cfc0e7b76e3970e480ec4331ff6f540b00a4b1db2e6f1d44e9`;
+the deterministic packed form is
+`9e45ab0e096aa84a31b3eaabbf2fcf85ce650af255f86dd0308143e308fbc6ff`.
+The generated wrapper SHA256 is
+`969e994a382f0bae6d31a9255e886cc156eabec7e9ed82985b14392fa415edc0`.
+
+== Verification result
+
+The fresh full-CGRA smoke passed with simulation exit code 0.  Configuration
+became idle within the bounded 516-cycle window, execution produced a real
+busy-to-done transition (`done_cycle=3`), and the machine-readable trace
+contained seven physical SRAM request events.  This smoke establishes runtime
+loading, compilation, start/done, and observability; Task 3 supplies the
+CSTORE true/false/normal-STORE behavioral oracle.
+
+Five focused Python tests pass.  They cover valid packet parsing/packing,
+malformed/duplicate/out-of-range rejection, same-generation hash enforcement,
+FOR/CLOAD rejection, complete 48-bank wrapper observability, and the complete
+machine-readable interface.  `py_compile`, `bash -n`, interface regeneration,
+and `git diff --check` also pass.
+
+The ADORA checkout remained read-only at its baseline: tracked `.gitignore`
+was already modified, `TODO-cstore-mapper-adora.md` was already untracked, and
+the Git index remained clean.  Task 2 made no ADORA changes.
