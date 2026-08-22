@@ -252,6 +252,10 @@ object CStoreVerilogGen {
     (new chisel3.stage.ChiselStage).emitVerilog(
       new VitraWithAxi(targetDir, VitraSpec.cstoreAttrs()),
       stageArgs)
+    LoopIndexContract.write(
+      operationsPath = targetDir.resolve("spec/operations.json"),
+      adgPath = targetDir.resolve("spec/vitra_cgra_adg.json"),
+      output = targetDir.resolve(LoopIndexContract.relativePath))
     CStoreArtifactAudit.validate(targetDir)
   }
 

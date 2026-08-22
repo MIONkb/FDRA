@@ -56,6 +56,7 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
 
     error.getMessage should include("CGRAWithAXI.v")
     error.getMessage should include("operations.json")
+    error.getMessage should include("loop_index_contract.json")
   }
 
   it should "write machine-readable provenance without claiming trusted ADORA consumption" in {
@@ -89,6 +90,9 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
     manifest.path("artifacts").path("CGRAWithAXI.v").path("checked_in").asBoolean() shouldBe false
     manifest.path("artifacts").path("spec/operations.json").path("checked_in").asBoolean() shouldBe true
     manifest.path("artifacts").path("spec/operations.json").path("semantic_sha256").asText() shouldBe "c" * 64
+    manifest.path("contract").path("loop_index_contract").asText() shouldBe LoopIndexContract.relativePath
+    manifest.path("contract").path("acc_backpressure_supported").asBoolean() shouldBe false
+    manifest.path("contract").path("physical_for_supported").asBoolean() shouldBe false
     manifest.path("consumer_compatibility").path("adora_mapper_parse").asText() shouldBe "pass"
     manifest.path("consumer_compatibility").path("trusted_capability_consumption").asText() shouldBe "blocked"
     manifest.path("consumer_compatibility").path("blocker").asText() should include("CLOAD")
@@ -103,7 +107,8 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
       "spec/vitra_spec.json",
       "spec/operations.json",
       "spec/vitra_cgra_adg.json",
-      "spec/axilite_spec.json")
+      "spec/axilite_spec.json",
+      "spec/loop_index_contract.json")
     summary.fileSha256.values.foreach(_.length shouldBe 64)
 
     val vitraSpec = readJson(targetDir.resolve("spec/vitra_spec.json"))
@@ -111,6 +116,11 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
     vitraSpec.path("cgra_adg_filename").asText() shouldBe "vitra_cgra_adg.json"
     vitraSpec.path("cgra_iob_mode").asInt() shouldBe COND_LS_MODE
     VitraSpec.attrs("cgra_iob_mode") shouldBe SRAM_MODE
+
+    val loopIndex = readJson(targetDir.resolve("spec/loop_index_contract.json"))
+    loopIndex.path("operations").path("ACC").path("opcode").asInt() shouldBe OpInfo.OPCMap("ACC")
+    loopIndex.path("configuration_formula").path("Cycles").asText() shouldBe "trip_count"
+    loopIndex.path("backpressure_supported").asBoolean() shouldBe false
   }
 
   it should "audit truthful generated CSTORE operations and IOB capabilities" in {
@@ -175,7 +185,7 @@ class VitraTask4ArtifactSpec extends AnyFlatSpec with Matchers with OptionValues
     manifest.path("artifacts").path("CGRAWithAXI.v").path("checked_in").asBoolean() shouldBe false
   }
 
-  it should "reproduce all four semantic JSON contracts in a second fresh directory" in {
+  it should "reproduce all five semantic JSON contracts in a second fresh directory" in {
     firstGeneration._2.semanticJsonSha256 shouldBe secondGeneration._2.semanticJsonSha256
   }
 

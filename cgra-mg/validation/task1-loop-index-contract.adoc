@@ -1,0 +1,106 @@
+= Task 1: ACC loop-index hardware contract
+
+== Scope and boundary
+
+This checkpoint locks the existing physical `ACC` path for a future ADORA
+`affine.for` lowering. It does not modify ADORA, add a physical `FOR`, implement
+`CLOAD`, or move element-byte scaling into the accumulator.
+
+The inspected production target is the 16-bit, eight-tile CSTORE configuration.
+Before this checkpoint the repository had no focused ACC/GPE simulation.
+
+== Proven hardware path
+
+`ACC` is a one-logical-operand accumulative operation. Its dynamically generated
+opcode is 33 in this production operation set and its ALU base is `ADD`; `ASUB`
+is opcode 34 with ALU base `SUB`. The contract and tests obtain these values from
+`OpInfo` and generated metadata rather than encoding them as test constants.
+
+For an accumulative operation, `DualModeReg.out(1)` feeds `ALU.in(0)`, routed
+operand zero feeds `ALU.in(1)`, the ALU result enters `DualModeReg.in(0)`, and
+the public GPE output is `DualModeReg.out(0)`. `SkipFirst=1` publishes `InitVal`
+on the first update; later updates publish the ALU result.
+
+The supported v1 formula is:
+
+[source,text]
+----
+operation       = ACC
+InitVal         = lower_bound mod 2^16
+routed operand0 = positive_step mod 2^16
+WI              = 1
+Latency         = 0
+Cycles          = trip_count
+Repeats         = 1
+SkipFirst       = 1
+----
+
+`WI=1` updates on every data-state cycle. `Latency` is the affine controller's
+pre-data control delay, not the ALU output latency. `Cycles` counts update
+opportunities in one repeat group, and `Repeats=1` requests one such group.
+The registered GPE start path makes the first public value visible two clock
+edges after start assertion. The final value is
+`lower_bound + (trip_count - 1) * positive_step`; the controller returns idle
+and the public output holds that value while execution enable remains high.
+
+The arithmetic hardware retains the low 16 bits. The guaranteed ADORA subset
+therefore uses unsigned lower bounds, positive nonzero steps, trip counts 1
+through 4095, and no logical wrap before the final iteration. Negative-step
+lowering is not claimed; `ASUB` is characterized only as an existing subtract
+feedback operation.
+
+`AffineCtrlReg.io.en=0` is not stall, pause, or conventional backpressure. It
+returns the sequence controller to idle and zeros both visible and feedback
+state after the registered GPE enable path. The machine contract records
+`backpressure_supported=false` and `abort_reset_suppress` semantics.
+
+ACC produces a logical element index. The existing ADORA CDFG/GPE arithmetic
+remains responsible for explicit multiplication by element byte width before a
+CSTORE byte address is formed.
+
+== Machine-readable contract
+
+`CStoreVerilogGen` now emits `spec/loop_index_contract.json` from the same
+fresh `operations.json` and `vitra_cgra_adg.json` used by the production RTL.
+`CStoreArtifactAudit` checks its operation encodings and affine field ranges
+against those files and rejects a physical `FOR`, backpressure claim, or field
+drift. The checked reference is byte-identical to the fresh generator output:
+
+[source,text]
+----
+sha256 c3d358639ef9470f5abb5c3a8146e75c6920c6055e28dfba780868073312489e
+semantic sha256 aae85d021ed3412e684bc4ec1b5f3c42fcca975e120aafd6f6efc97653814a7e
+----
+
+== Verification record
+
+All commands used SBT 1.8.2, OpenJDK 11.0.27, and task-owned SBT, Ivy,
+Coursier, runtime, and temporary directories under `/tmp`. Source was copied
+from the VITRA checkout into an isolated Chipyard tree; the lab Chipyard and
+ADORA source trees remained read-only.
+
+[cols="3,1,1,1"]
+|===
+|Command |Exit |Result |Elapsed
+
+|`testOnly tram.vitra.VitraLoopIndexAccSpec`
+|0
+|7 tests, 7 passed
+|20 s
+
+|`runMain tram.vitra.CStoreVerilogGen -td /tmp/vitra-task1-contract.ZCIZsV`
+|0
+|six-file audited bundle generated
+|93 s
+
+|`set Test / parallelExecution := false; test`
+|0
+|42 tests in 6 suites, 42 passed
+|282 s
+|===
+
+The full run includes every pre-existing GPE/IOB structural test, normal
+STORE/LOAD and conditional CSTORE regression, legacy FIFO/SRAM behavior,
+artifact reproducibility, and the new real-GPE simulations for `0..15`, exact
+first/last timing, a nonzero lower bound with step two, abort/restart behavior,
+16-bit wraparound, and ASUB feedback characterization.

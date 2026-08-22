@@ -38,7 +38,8 @@ object CStoreArtifactAudit {
     "spec/vitra_spec.json",
     "spec/operations.json",
     "spec/vitra_cgra_adg.json",
-    "spec/axilite_spec.json")
+    "spec/axilite_spec.json",
+    LoopIndexContract.relativePath)
   val jsonRelativePaths: Seq[String] = requiredRelativePaths.filter(_.endsWith(".json"))
   val expectedIobOperations: Set[String] = Set("INPUT", "OUTPUT", "LOAD", "STORE", "CSTORE")
 
@@ -90,6 +91,10 @@ object CStoreArtifactAudit {
     require(iobs.nonEmpty, "ADG must contain at least one IOB module")
     iobs.foreach(auditIob)
     auditTopLevelIobInputs(adg, iobs)
+    auditLoopIndexContract(
+      readJson(files(LoopIndexContract.relativePath)),
+      operationEntries,
+      adg)
 
     val rtl = Files.readString(files("CGRAWithAXI.v"), StandardCharsets.UTF_8)
     val rtlRequirements = Seq(
@@ -143,6 +148,9 @@ object CStoreArtifactAudit {
     contract.put("iob_module_count", summary.iobModuleCount)
     contract.put("predicate_word_semantics", "bit0")
     contract.put("cload_supported", false)
+    contract.put("loop_index_contract", LoopIndexContract.relativePath)
+    contract.put("acc_backpressure_supported", false)
+    contract.put("physical_for_supported", false)
 
     val artifacts = root.putObject("artifacts")
     summary.fileSha256.toSeq.sortBy(_._1).foreach { case (relative, fileHash) =>
@@ -223,6 +231,51 @@ object CStoreArtifactAudit {
       require(inputPorts == (0 until 6).toSet,
         s"IOB instance $instanceId top-level input ports are $inputPorts")
     }
+  }
+
+  private def auditLoopIndexContract(
+      contract: JsonNode,
+      operationEntries: Seq[JsonNode],
+      adg: JsonNode): Unit = {
+    require(contract.path("schema_version").asInt(-1) == 1,
+      "loop_index_contract.json schema_version must be 1")
+    require(contract.path("data_width_bits").asInt(-1) == 16,
+      "loop_index_contract.json must describe the 16-bit production datapath")
+    require(!contract.path("backpressure_supported").asBoolean(true),
+      "ACC enable must not be described as backpressure")
+    require(contract.path("enable_semantics").asText() == "abort_reset_suppress",
+      "ACC enable semantics must be abort/reset/suppress")
+    require(!contract.path("physical_for_supported").asBoolean(true),
+      "physical FOR must remain unsupported")
+
+    Seq("ACC", "ASUB").foreach { name =>
+      val operation = operationEntries.find(_.path("name").asText() == name)
+        .getOrElse(throw new IllegalArgumentException(s"operations.json is missing $name"))
+      val contractOperation = contract.path("operations").path(name)
+      require(contractOperation.path("opcode").asInt(-1) == operation.path("OPC").asInt(-2),
+        s"$name opcode differs between loop-index contract and operations.json")
+      require(contractOperation.path("logical_operands").asInt(-1) == 1,
+        s"$name loop-index contract must expose one logical operand")
+    }
+
+    val gpeAttrs = adg.path("sub_modules").elements().asScala
+      .filter(_.path("type").asText() == "GPE")
+      .map(_.path("attributes"))
+      .find(_.path("operations").elements().asScala.exists(_.asText() == "ACC"))
+      .getOrElse(throw new IllegalArgumentException("ADG has no ACC-capable GPE"))
+    val ids = gpeAttrs.path("affine_ctrl_reg_cfg_id")
+    val configuration = gpeAttrs.path("configuration")
+    Seq("InitVal", "WI", "Latency", "Cycles", "Repeats", "SkipFirst").foreach { name =>
+      val range = configuration.path(ids.path(name).asInt(-1).toString)
+      val contractRange = contract.path("configuration_fields").path(name)
+      require(range.isArray && range.path(0).asText() == name,
+        s"ADG is missing affine field $name")
+      require(contractRange.path("high").asInt(-1) == range.path(1).asInt(-2) &&
+        contractRange.path("low").asInt(-1) == range.path(2).asInt(-2),
+        s"$name range differs between loop-index contract and ADG")
+    }
+    require(contract.path("configuration_formula").path("Cycles").asText() == "trip_count",
+      "loop-index Cycles formula must be trip_count")
   }
 
   private def readJson(path: Path): JsonNode = mapper.readTree(path.toFile)

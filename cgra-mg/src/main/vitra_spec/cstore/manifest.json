@@ -3,20 +3,23 @@
   "target" : "vitra-cstore",
   "generator" : {
     "entrypoint" : "tram.vitra.CStoreVerilogGen",
-    "vitra_commit" : "71e752a7cf2db485ed8ae86b9a4087d0bcad2bff",
+    "vitra_commit" : "15e432f83427fc3121c50e2d4832a76b86d7a64f",
     "command" : "sbt -java-home /usr/lib/jvm/java-11-openjdk-amd64 -batch \"project fdra\" \"runMain tram.vitra.CStoreVerilogGen -td <fresh-output>\""
   },
   "environment" : {
     "chipyard_commit" : "27981d26675e7fd2e41d772375b5632951ece968",
     "fdra_commit" : "0cb9381fa231b4d26881779a80a5f0c78ec4c5ff",
-    "adora_commit" : "6b3d0e5fcfb36dc2a3cdbe4ed87092300c18ac1e"
+    "adora_commit" : "ab70915a039a36bf949e41e536d785508ba97fa9"
   },
   "contract" : {
     "cstore_opc" : 4,
     "cstore_latency" : 1,
     "iob_module_count" : 1,
     "predicate_word_semantics" : "bit0",
-    "cload_supported" : false
+    "cload_supported" : false,
+    "loop_index_contract" : "spec/loop_index_contract.json",
+    "acc_backpressure_supported" : false,
+    "physical_for_supported" : false
   },
   "artifacts" : {
     "CGRAWithAXI.v" : {
@@ -31,6 +34,11 @@
     "spec/operations.json" : {
       "sha256" : "0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d",
       "semantic_sha256" : "d7f46580dd16fe3e4311f416a5795626ba54654a34a0f4d8ee2e208839cfb8bb",
+      "checked_in" : true
+    },
+    "spec/loop_index_contract.json" : {
+      "sha256" : "c3d358639ef9470f5abb5c3a8146e75c6920c6055e28dfba780868073312489e",
+      "semantic_sha256" : "aae85d021ed3412e684bc4ec1b5f3c42fcca975e120aafd6f6efc97653814a7e",
       "checked_in" : true
     },
     "spec/vitra_cgra_adg.json" : {
