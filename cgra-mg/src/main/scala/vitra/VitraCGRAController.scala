@@ -29,7 +29,7 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
     val cfgDoneIn   = Input(Bool())
     val exeStartReq = Input(Bool())
     val exeIobEnReq = Input(UInt(numIOB.W)) // will be saved when exeStartReq and can be changed to next after exeStartReq
-    val exeTileEnReq= Input(UInt(numIOB.W)) // will be saved when exeStartReq and can be changed to next after exeStartReq
+    val exeTileEnReq= Input(UInt(numTiles.W)) // will be saved when exeStartReq and can be changed to next after exeStartReq
     // val exeDoneIn   = Input(Bool())
     val exeDoneIn   = Input(UInt(numTiles.W))    
 
@@ -43,7 +43,7 @@ class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
   })
 
   val exeIobEnReg = RegInit(0.U(numIOB.W))
-  val exeRelatedTileReg = RegInit(0.U(numIOB.W))
+  val exeRelatedTileReg = RegInit(0.U(numTiles.W))
   //////////////////////////////////////
   ///// state machine
   //////////////////////////////////////
