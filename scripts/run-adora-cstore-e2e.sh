@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 --config FILE --case FILE --result FILE --trace FILE --work-dir DIR --chipyard-root DIR [--adora-root DIR] [--python FILE] [--sbt FILE] [--sbt-cache-root DIR]" >&2
+  echo "usage: $0 --config FILE --case FILE --result FILE --trace FILE [--iob-trace FILE] --work-dir DIR --chipyard-root DIR [--adora-root DIR] [--python FILE] [--sbt FILE] [--sbt-cache-root DIR]" >&2
 }
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
@@ -10,6 +10,7 @@ config=
 case_file=
 result=
 trace=
+iob_trace=
 work_dir=
 chipyard_root=
 adora_root=/home/jyhu/adora-compiler-scheduletasks-h
@@ -23,6 +24,7 @@ while (($#)); do
     --case) case_file=$2; shift 2 ;;
     --result) result=$2; shift 2 ;;
     --trace) trace=$2; shift 2 ;;
+    --iob-trace) iob_trace=$2; shift 2 ;;
     --work-dir) work_dir=$2; shift 2 ;;
     --chipyard-root) chipyard_root=$2; shift 2 ;;
     --adora-root) adora_root=$2; shift 2 ;;
@@ -50,6 +52,8 @@ config=$(realpath "$config")
 case_file=$(realpath "$case_file")
 result=$(realpath -m "$result")
 trace=$(realpath -m "$trace")
+iob_trace=${iob_trace:-${trace%.json}-iob.json}
+iob_trace=$(realpath -m "$iob_trace")
 work_dir=$(realpath -m "$work_dir")
 chipyard_root=$(realpath "$chipyard_root")
 adora_root=$(realpath "$adora_root")
@@ -74,7 +78,7 @@ adora_commit=$(git -C "$adora_root" rev-parse HEAD)
 [[ $vitra_commit =~ ^[0-9a-f]{40}$ ]] || { echo "error: VITRA commit is not a full SHA" >&2; exit 2; }
 [[ $adora_commit =~ ^[0-9a-f]{40}$ ]] || { echo "error: ADORA commit is not a full SHA" >&2; exit 2; }
 
-mkdir -p "$work_dir" "$(dirname "$result")" "$(dirname "$trace")"
+mkdir -p "$work_dir" "$(dirname "$result")" "$(dirname "$trace")" "$(dirname "$iob_trace")"
 bundle=$work_dir/fresh-bundle
 runtime_work=$work_dir/runtime
 rm -rf "$bundle" "$runtime_work"
@@ -99,10 +103,14 @@ runtime=$repo_root/cgra-mg/e2e/cstore/runtime.py
   --bundle "$bundle" \
   --vitra-commit "$vitra_commit" \
   --adora-commit "$adora_commit"
-"$python" "$runtime" prepare --bundle "$bundle" --config "$config" --output "$runtime_work"
+"$python" "$runtime" prepare \
+  --bundle "$bundle" \
+  --config "$config" \
+  --case "$case_file" \
+  --output "$runtime_work"
 
 python_bin=$(dirname "$python")
-rm -f "$result" "$trace"
+rm -f "$result" "$trace" "$iob_trace"
 env \
   PATH="$python_bin:$PATH" \
   PYTHONPATH="$repo_root/cgra-mg/e2e/cstore${PYTHONPATH:+:$PYTHONPATH}" \
@@ -110,6 +118,7 @@ env \
   E2E_WORK="$runtime_work" \
   E2E_CASE="$case_file" \
   E2E_TRACE="$trace" \
+  E2E_IOB_TRACE="$iob_trace" \
   E2E_RESULT="$result" \
   make -C "$repo_root/cgra-mg/e2e/cstore" \
     E2E_BUNDLE="$bundle" \
@@ -118,3 +127,5 @@ env \
 
 [[ -s $result ]] || { echo "error: simulator did not produce result JSON" >&2; exit 1; }
 [[ -s $trace ]] || { echo "error: simulator did not produce trace JSON" >&2; exit 1; }
+[[ -s $iob_trace ]] || { echo "error: simulator did not produce target IOB trace JSON" >&2; exit 1; }
+"$python" -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))["status"] == "pass" else 1)' "$result"

@@ -1,0 +1,233 @@
+# Normal STORE root-cause and ownership report
+
+## Step 1 result
+
+```text
+STEP 1 RESULT
+OWNER: VITRA
+FIRST DIVERGENCE: TileStateCtrl deasserts target IOB execution enable at cycle 11,
+                  nine cycles before STORE data reaches the target IOB at cycle 20.
+EVIDENCE: the 8-bit selected-tile mask is stored in a 6-bit register; tile 7 is
+          truncated, so its DelayPipe is disabled before data arrives. A TEST-ONLY
+          normal STORE control on tile 5 keeps enable asserted and writes 0x4567.
+NEXT ACTION: in Step 2, make exeTileEnReq/exeRelatedTileReg numTiles bits wide and
+             add a high-tile-index full-CGRA regression before rerunning all oracles.
+```
+
+No production Scala source was changed during Step 1.
+
+## Provenance and safety gate
+
+- Repository: `MIONkb/VITRA-CGRA`
+- Branch: `feature/cstore-hardware`
+- VITRA HEAD: `d299ec28219f53f8ea69562478f0bcc9b1b89c87`
+- Remote branch HEAD checked on 2026-08-23: same SHA as local HEAD.
+- ADORA checkout (read-only): branch `scheduletasks-h`, HEAD
+  `ab70915a039a36bf949e41e536d785508ba97fa9`.
+- ADORA pre-existing state: modified `.gitignore`, untracked
+  `TODO-cstore-mapper-adora.md`; neither was edited.
+- Pre-existing VITRA Task 3 state included modified
+  `cocotb_full_cgra.py`, `interface.json`, `runtime.py`, and `test_runtime.py`, plus
+  untracked workload JSON files. It was preserved and extended.
+- Pre-edit snapshot: `/tmp/vitra-cstore-step1-snapshot.AUQQ1k` contains status,
+  HEAD, binary worktree/index patches, and copies of untracked workloads.
+
+Fresh generated artifact hashes used by the final runs:
+
+| Artifact | SHA256 |
+|---|---|
+| `CGRAWithAXI.v` | `96e709d80a6c8a007fd650af934ceab69df3d25fb99beb62315628993fc46752` |
+| `vitra_cgra_adg.json` | `e34fcef5b15f47718762812513d3cd7db35f06e60a17097e50429dfc41e26cf7` |
+| `operations.json` | `0eee215afdbed65fed6bd7773f40a783189d67a66accb6e7bc86aaac582bae8d` |
+
+## Reproduction
+
+The unchanged pre-instrumentation baseline was run with:
+
+```bash
+COCOTB_LOG_LEVEL=INFO scripts/run-adora-cstore-e2e.sh \
+  --config /home/jyhu/adora-compiler-scheduletasks-h/test/cgra-mapper/cstore_contract/Output/mapped_routes.mlir.tmp/normal-store/store_block_arg_map_result/config.bit \
+  --case /tmp/vitra-task3/cases/normal-store.json \
+  --result /tmp/vitra-cstore-step1-baseline.AUQQ1k/result.json \
+  --trace /tmp/vitra-cstore-step1-baseline.AUQQ1k/trace.json \
+  --work-dir /tmp/vitra-cstore-step1-baseline.AUQQ1k/work \
+  --chipyard-root /tmp/vitra-cstore-closeout-chipyard.xiZnMy \
+  --sbt-cache-root /tmp/vitra-cstore-closeout-sbt
+```
+
+It exited 1 at the strict readback oracle: expected little-endian `6745`, got
+`0000`. The original two-cycle drain ended before the delayed IOB write, so the
+final diagnostic rerun deliberately used `E2E_POST_DONE_DRAIN_CYCLES=32` to
+capture the complete target-I/O transaction. That rerun produced exactly one
+write to bank 42, byte offset 0, mask 3, but data `0x0000`; readback remained
+`0x0000`, so the nonzero-data oracle was not weakened.
+
+Reproducible diagnostic invocation:
+
+```bash
+E2E_POST_DONE_DRAIN_CYCLES=32 COCOTB_LOG_LEVEL=INFO \
+scripts/run-adora-cstore-e2e.sh \
+  --config /home/jyhu/adora-compiler-scheduletasks-h/test/cgra-mapper/cstore_contract/Output/mapped_routes.mlir.tmp/normal-store/store_block_arg_map_result/config.bit \
+  --case /tmp/vitra-task3/cases/normal-store.json \
+  --result /tmp/vitra-cstore-step1-runs/normal-final-result.json \
+  --trace /tmp/vitra-cstore-step1-runs/normal-final-sram-trace.json \
+  --iob-trace /tmp/vitra-cstore-step1-runs/normal-final-iob-trace.json \
+  --work-dir /tmp/vitra-cstore-step1-runs/normal-work \
+  --chipyard-root /tmp/vitra-cstore-closeout-chipyard.xiZnMy \
+  --sbt-cache-root /tmp/vitra-cstore-closeout-sbt
+```
+
+Normal result SHA256: `aac1ba3bac8a67078b958f857a210a4f6bb29079ebd96ef5f476a34b6cd8cc76`.
+Normal IOB trace SHA256: `61df1c031b2b4119889771429079ada2a4f64f8a2ad0e2434763a098c57129f7`.
+
+## Failing ADORA config decode
+
+- Config SHA256: `1a85dc659a7d25c725639d9197c14e0470c5e87b8c579edbcb3534c8e82b2caf`
+- Logical output: `STORE store1`
+- Target ADG IOB: 484; IOB/controller index: 42; tile: 7
+- Coalesced SRAM group: `[42, 43, 44]`; selected physical bank: 42
+- Target: byte offset 0 / word address 0
+- Controller: `IsStore=1`, `UseAddr=1`, `UseEn=0`
+- Lane mux selects: `[0, 0, 0]`
+- Selected raw inputs by logical lane: `[0, 2, 4]`
+- DelayPipe delays by lane: `[3, 0, 0]`
+
+The mapper's `mapped_routes.tsv` independently states:
+
+| Logical edge | Producer | Raw IOB input | Source latency | Route latency | Delay | Arrival/target |
+|---|---:|---:|---:|---:|---:|---:|
+| STORE data / operand 0 | DFG 2 | 0 (lane 0) | 3 | 8 | 3 | 14 / 14 |
+| STORE byte address / operand 1 | DFG 3 | 2 (lane 1) | 3 | 11 | 0 | 14 / 14 |
+
+Thus ADORA selected the intended data/address lanes and aligned both to target
+latency 14. The observed raw lane 0 value `0x4567` confirms that the routed data
+producer and endpoint are correct.
+
+## Cycle-aligned first divergence
+
+All values below were observed from wrapper-only hierarchical ports on the
+unmodified fresh `CGRAWithAXI.v`.
+
+| Cycle | IOB en | Delay en | State | Raw lane 0 | Mux lane 0 | Delay/controller lane 0 | Write issue | SRAM en/mask/data |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 7 | 0 | 0 | idle | 0 | 0 | 0 | 0 | `0/0/0` |
+| 8 | 1 | 0 | idle | 0 | 0 | 0 | 0 | `0/0/0` |
+| 9 | 1 | 1 | latency | 0 | 0 | 0 | 0 | `0/0/0` |
+| 10 | 1 | 1 | latency | 0 | 0 | 0 | 0 | `0/0/0` |
+| **11** | **0** | 1 | latency | 0 | 0 | 0 | 0 | `0/0/0` |
+| 12 | 0 | **0** | latency | 0 | 0 | 0 | 0 | `0/0/0` |
+| 20 | 0 | 0 | latency | **0x4567** | **0x4567** | **0** | 0 | `0/0/0` |
+| 23 | 0 | 0 | launch | `0x4567` | `0x4567` | **0** | **1** | `0/0/0` |
+| 24 | 0 | 0 | idle/done | `0x4567` | `0x4567` | 0 | 0 | **`1/3/0x0000`** |
+
+Address lane 1 and unused lane 2 are both zero as intended for this case. The
+first incorrect event is not the data route or mux: it is VITRA deasserting IOB
+execution enable at cycle 11. SharedDelayPipe clears/gates its state when disabled,
+so it cannot accept the correctly routed data arriving at cycle 20.
+
+## VITRA TEST-ONLY responsibility-boundary control
+
+The control config was derived from the known passing CSTORE config through the
+authoritative VITRA ADG field ranges. It is explicitly not ADORA-generated
+normal-STORE evidence. Only `UseEn` aggregate bit 127 changed from 1 to 0:
+
+- Source CSTORE SHA256: `dd1ce4f4244e81cfc0e7b76e3970e480ec4331ff6f540b00a4b1db2e6f1d44e9`
+- TEST-ONLY config SHA256: `d143b8bed237b6afecf43fb018a49ac4c0787a5163b9bc2e36985a40385931c8`
+- Target ADG IOB 413; index 34; tile 5; physical bank 33; byte offset 12
+- Controller before/after: `1/1/1` -> `1/1/0`
+- Unchanged mux selects: `[1, 0, 1]`
+- Unchanged delays: `[5, 5, 0]`
+- Predicate input: `0x0002` (bit 0 false), deliberately ignored because `UseEn=0`
+
+The control passed: exactly one bank-33 write at byte offset 12, mask 3, data
+`0x4567`; readback was `0x4567`.
+
+| Cycle | IOB en | Delay en | Raw selected data/address | Delay/controller data/address | Issue/SRAM |
+|---:|---:|---:|---|---|---|
+| 23 | 1 | 1 | `0x4567 / 12` | `0 / 0` | none |
+| 28 | 1 | 1 | `0x4567 / 12` | **`0x4567 / 12`** | issue=1 |
+| 29 | 1 | 1 | `0x4567 / 12` | `0x4567 / 12` | **bank 33, mask 3, data `0x4567`** |
+| 30 | 0 | 1 | stable | stable | completed |
+
+Control result SHA256: `e37ae3f8c36a7426f807d11565dabf75724ce4efe70618aa1ead433c518ba49c`.
+Control trace SHA256: `eebbf7ab08256487af5f75e477990156c5ff5241685a5e2547116ae65a5750e6`.
+Control derivation manifest SHA256:
+`6e22b3e4c8ff8fd31f81a6c6fd805ae66bff5c915e64170f928c4ae73a312f64`.
+
+## Passing CSTORE references
+
+Both cases used the same unmodified config hash
+`dd1ce4f4244e81cfc0e7b76e3970e480ec4331ff6f540b00a4b1db2e6f1d44e9`:
+
+| Case | Runtime predicate | Result | Target writes | Final value |
+|---|---:|---|---:|---:|
+| `cstore-true` | 1 | PASS | 1, data `0x1236` | `0x1236` |
+| `cstore-false` | 0 | PASS | 0 | initial `0xbeef` preserved |
+
+They were rerun from the same fresh bundle and compiled wrapper by preparing the
+original CSTORE config, then invoking `make` with respectively
+`E2E_CASE=/tmp/vitra-task3/cases/cstore-true.json` and
+`E2E_CASE=/tmp/vitra-task3/cases/cstore-false.json`, with
+`E2E_POST_DONE_DRAIN_CYCLES=32`. Result hashes are
+`dba14ec37dea6e590c89f4988671e0d49811ac4662ed31a773291c5172ebc3d4` and
+`54ea547b9f450560ea2ba3a9b54f70a3be69bad44d9df338dfc99476dc223b9c`.
+
+## Root cause and ownership
+
+The production defect is in `VitraCGRAController.scala`:
+
+```scala
+class TileStateCtrl(numIOB: Int, numTiles: Int) extends Module {
+  ...
+  val exeTileEnReq = Input(UInt(numIOB.W))
+  ...
+  val exeRelatedTileReg = RegInit(0.U(numIOB.W))
+  ...
+  tileState.io.exeTileEnReq := exe_en_tiles
+}
+```
+
+This generated CGRA has `numIOB=6` per tile and `numTiles=8`. The full 8-bit
+selected-tile mask is therefore truncated to 6 bits. The failing normal case uses
+tile mask `0x94` (tiles 7, 4, 2), which becomes `0x14`; tile 7 is omitted from the
+completion dependency. TileStateCtrl consequently considers the related set done,
+leaves `s_exe_run`, and deasserts `cgra.io.en` while tile-7 IOB 484 is still in its
+latency state. The control target is on tile 5, which remains representable in six
+bits and stays enabled through its issue cycle.
+
+This directly satisfies the VITRA ownership condition: the ADORA config delivers
+the correct lane-0 value and correct schedule, but VITRA disables the configured
+pipeline before the value can be consumed. Therefore:
+
+```text
+OWNER = VITRA
+```
+
+## Diagnostic-only changes
+
+- Extended `runtime.py` with authoritative ADG IOB decode, TEST-ONLY control
+  derivation, and target-aware wrapper generation.
+- Extended `cocotb_full_cgra.py` with cycle-aligned target IOB tracing and failure
+  artifact persistence.
+- Extended `run-adora-cstore-e2e.sh` with target trace plumbing and strict result
+  status propagation.
+- Added unit tests for lane/config decode, single-bit control derivation, and
+  wrapper observability.
+- Added TEST-ONLY control workload input JSON.
+- Added this report.
+
+Production files under `cgra-mg/src/main/scala` were inspected read-only and were
+not modified. No ADORA file was modified. No commit or push was performed.
+
+## Final verification
+
+- `python3 -m unittest cgra-mg.e2e.cstore.test_runtime`: 11/11 passed.
+- `VitraTask2StructuralSpec` + `VitraTask3CStoreSpec`: 18/18 passed in the
+  isolated Chipyard tree, including independent-lane DelayPipe alignment and
+  normal STORE `UseEn=0` behavior.
+- `python3 -m py_compile` for both E2E Python files: passed.
+- `bash -n scripts/run-adora-cstore-e2e.sh`: passed.
+- `git diff --check`: passed.
+- Full-CGRA outcomes: normal STORE failed with one zero-data write; TEST-ONLY
+  normal STORE control passed with one `0x4567` write; CSTORE true/false both
+  passed with the same config hash.

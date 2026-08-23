@@ -58,7 +58,9 @@
   "sram": {
     "element_width_bits": 16,
     "input_loading": "AXI writes to the physical scratchpad bank address map",
+    "iob_to_spad_banks_source": "vitra_cgra_adg.json:iob_to_spad_banks; BaseAddr selects within the listed coalesced group",
     "output_readback": "AXI reads from the physical scratchpad bank address map",
+    "post_done_drain_cycles": 2,
     "write_mask_width_bits": 2
   },
   "sram_write_trace": {
