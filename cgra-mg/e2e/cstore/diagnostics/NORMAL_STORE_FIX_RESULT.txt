@@ -1,0 +1,124 @@
+NORMAL STORE FIX RESULT
+=======================
+
+Status: STEP 2A COMPLETE; STEP 3 FRESH-COMMIT ORACLES REQUIRED
+Owner: VITRA
+VITRA_FIX_COMMIT: eba80a8f9595fcd67209938e03c643aecf6fc26c
+Remote verification:
+  eba80a8f9595fcd67209938e03c643aecf6fc26c refs/heads/feature/cstore-hardware
+
+Root cause
+----------
+
+TileStateCtrl sized exeTileEnReq and exeRelatedTileReg with numIOB rather than
+numTiles.  The production CSTORE generation has six IOB banks and eight tiles,
+so normal STORE's 0x94 dependency mask was truncated to 0x14.  Tile 7 was
+omitted, the target IOB execution enable fell nine cycles before its routed
+0x4567 data arrived, and SRAM received one zero-data write.
+
+Production fix
+--------------
+
+In cgra-mg/src/main/scala/vitra/VitraCGRAController.scala:
+
+- exeTileEnReq is now UInt(numTiles.W).
+- exeRelatedTileReg is now UInt(numTiles.W).
+
+exeIobEnReq and exeIobEnReg remain UInt(numIOB.W).  No CSTORE operand,
+UseEn/UseAddr/IsStore, Mux, DelayPipe, CLOAD, or physical-operation contract
+changed.
+
+Regression
+----------
+
+cgra-mg/src/test/scala/vitra/VitraTileStateCtrlSpec.scala instantiates the real
+TileStateCtrl with numIOB=6 and numTiles=8.  It proves that the tile request and
+completion masks are eight bits wide, that completion of tiles 0..6 does not
+end execution while tile 7 is outstanding, and that execution completes only
+after tile 7 reports done.
+
+TDD RED result:
+
+  testOnly tram.vitra.VitraTileStateCtrlSpec
+  FAIL before the production edit: exeTileEnReq width was 6, expected 8.
+
+TDD GREEN and affected Scala regressions:
+
+  /home/jhlou/chipyard/.conda-env/bin/sbt \
+    -java-home /usr/lib/jvm/java-11-openjdk-amd64 -batch \
+    'project fdra' \
+    'testOnly tram.vitra.VitraTileStateCtrlSpec tram.vitra.VitraTask2StructuralSpec tram.vitra.VitraTask3CStoreSpec'
+
+  PASS: 19 tests, 3 suites, 0 failures.
+
+Runtime and static checks:
+
+  (cd cgra-mg/e2e/cstore && python3 -m unittest test_runtime.py)
+  PASS: 11 tests.
+
+  python3 -m py_compile \
+    cgra-mg/e2e/cstore/runtime.py \
+    cgra-mg/e2e/cstore/cocotb_full_cgra.py
+  PASS.
+
+  bash -n scripts/run-adora-cstore-e2e.sh
+  PASS.
+
+  git diff --check
+  PASS.
+
+Pre-commit full-CGRA fix validation
+-----------------------------------
+
+All three cases used one fresh-generated fixed-worktree RTL bundle:
+
+  CGRAWithAXI.v SHA256:
+    710c04eb320a212479f6825a84c533919c9defd73fc8e7d74f44d02cfea445ec
+
+The normal STORE case was invoked with:
+
+  E2E_POST_DONE_DRAIN_CYCLES=32 COCOTB_LOG_LEVEL=INFO \
+  scripts/run-adora-cstore-e2e.sh \
+    --config /home/jyhu/adora-compiler-scheduletasks-h/test/cgra-mapper/cstore_contract/Output/mapped_routes.mlir.tmp/normal-store/store_block_arg_map_result/config.bit \
+    --case /tmp/vitra-task3/cases/normal-store.json \
+    --result /tmp/vitra-step2a-oracles/results/normal-store.json \
+    --trace /tmp/vitra-step2a-oracles/write-traces/normal-store.json \
+    --iob-trace /tmp/vitra-step2a-oracles/iob-traces/normal-store.json \
+    --work-dir /tmp/vitra-step2a-oracles/normal-work \
+    --chipyard-root /tmp/vitra-cstore-closeout-chipyard.xiZnMy \
+    --sbt-cache-root /tmp/vitra-cstore-closeout-sbt
+
+The CSTORE config was prepared once against that bundle, then the same compiled
+wrapper was run with cstore-true.json and cstore-false.json as E2E_CASE.  Both
+used config SHA256:
+
+  dd1ce4f4244e81cfc0e7b76e3970e480ec4331ff6f540b00a4b1db2e6f1d44e9
+
+Results:
+
+- normal STORE: PASS; UseEn=0; OLD 0xbeef -> NEW 0x4567; bank 42;
+  byte address 0; word address 0; mask 3; exactly one target write; done cycle 2.
+- CSTORE true: PASS; predicate bit 0=1; OLD 0xbeef -> NEW 0x1236;
+  bank 33; byte address 12; word address 6; mask 3; exactly one target write;
+  done cycle 3.
+- CSTORE false: PASS; predicate bit 0=0; zero target writes; OLD 0xbeef
+  preserved; done cycle 3.
+
+Result SHA256 values:
+
+- normal STORE: 38a4809a8b2b49ae3e27f77b6b5298b2271979ce45de4301398ebb0a81d63d95
+- CSTORE true: 6df36ded465ef56adef41782be94661a85b746336368a16f5f63120c7dbd0741
+- CSTORE false: 1e134b6b7f4679d0885ec7a7099cc3bf620f99beaea49e61880566b9de37bbab
+
+Before/after
+------------
+
+Before eba80a8, normal STORE produced one bank-42/address-0/mask-3 write with
+data 0x0000 and final memory 0x0000.  With the two-width fix applied, the same
+unmodified ADORA normal STORE config produced one write with data 0x4567 and
+final memory 0x4567.  Existing CSTORE true/false behavior remained unchanged.
+
+The pre-commit runner necessarily recorded the then-current parent HEAD in its
+temporary manifest while compiling the dirty fixed worktree.  Step 3 therefore
+must fresh-generate and rerun the mandatory oracles from a clean, committed,
+pushed VITRA HEAD before packaging final immutable artifacts.
